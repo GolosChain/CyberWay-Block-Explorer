@@ -44,7 +44,7 @@ export default class Connection {
     });
   }
 
-  async callApi(apiName, params) {
+  async callApi(apiName, params = {}) {
     if (!this.socket) {
       return new Promise((resolve, reject) => {
         const delayedItem = {
