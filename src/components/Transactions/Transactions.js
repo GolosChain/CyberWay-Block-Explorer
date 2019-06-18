@@ -2,6 +2,8 @@ import React, { PureComponent } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import is from 'styled-is';
+import { last } from 'ramda';
+import InfiniteScroll from 'react-infinite-scroller';
 
 import InlineSwitch from '../InlineSwitch';
 
@@ -60,6 +62,19 @@ export default class Transactions extends PureComponent {
     loadTransactions({ blockId, status: filter });
   }
 
+  onLoadMore = () => {
+    const { isLoading, transactions, blockId, loadTransactions } = this.props;
+    const { filter } = this.state;
+
+    if (isLoading || transactions.length === 0) {
+      return;
+    }
+
+    const { index } = last(transactions);
+
+    loadTransactions({ blockId, status: filter, fromIndex: index });
+  };
+
   onFilterChange = value => {
     this.setState(
       {
@@ -77,7 +92,7 @@ export default class Transactions extends PureComponent {
     return (
       <Item key={transaction.id}>
         <LinkStyled to={`/trx/${transaction.id}`}>
-          <TransactionIndex>({transaction.index})</TransactionIndex>{' '}
+          <TransactionIndex>({transaction.index + 1})</TransactionIndex>{' '}
           <TransactionId>{transaction.id}</TransactionId>{' '}
           <StatusText expired={transaction.status === 'expired'}>{transaction.status}</StatusText>{' '}
         </LinkStyled>
@@ -100,7 +115,9 @@ export default class Transactions extends PureComponent {
           />
         </SubTitle>
         {transactions.length ? (
-          <List>{transactions.map(this.renderTransactionLine)}</List>
+          <InfiniteScroll hasMore={true} loadMore={this.onLoadMore}>
+            <List>{transactions.map(this.renderTransactionLine)}</List>
+          </InfiniteScroll>
         ) : (
           'No transactions'
         )}
