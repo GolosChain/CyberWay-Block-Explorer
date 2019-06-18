@@ -1,12 +1,11 @@
-const initialState = {
-  items: [],
-};
+const initialState = {};
 
 export default function(state = initialState, { type, payload }) {
   switch (type) {
-    case 'FETCH_BLOCKS_SUCCESS':
+    case 'FETCH_BLOCK_SUCCESS':
       return {
-        items: payload.blocks,
+        ...state,
+        [payload.block.id]: payload.block,
       };
     default:
       return state;

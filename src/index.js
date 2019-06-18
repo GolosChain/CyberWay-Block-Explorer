@@ -8,7 +8,7 @@ import Connection from './utils/Connection';
 import App from './components/App';
 
 const connection = new Connection({
-  url: 'ws://localhost:9595',
+  url: `ws://${window.location.hostname}:9595`,
 });
 
 connection.connect().catch(err => {
@@ -17,9 +17,3 @@ connection.connect().catch(err => {
 });
 
 ReactDOM.render(<App />, document.getElementById('root'));
-
-// setTimeout(async () => {
-//   const result = await connection.callApi('blocks.getBlockList');
-//
-//   console.log('getBlockList result', result);
-// });
