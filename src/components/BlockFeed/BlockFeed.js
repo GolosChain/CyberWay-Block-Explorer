@@ -15,12 +15,14 @@ const Title = styled.h1``;
 
 const List = styled.ul``;
 
-const Block = styled.li`
-  margin: 2px 0;
-`;
+const Block = styled.li``;
 
 const LinkStyled = styled(Link)`
+  display: block;
+  margin: 4px 0;
   font-size: 14px;
+  color: unset;
+  text-decoration: none;
 `;
 
 const BlockNum = styled.span``;
@@ -87,7 +89,8 @@ export default class BlockFeed extends PureComponent {
     return (
       <Block key={block.id}>
         <LinkStyled to={`/block/${block.id}`}>
-          <BlockNum>({block.blockNum})</BlockNum> <BlockId>{block.id}</BlockId>
+          <BlockNum>({block.blockNum})</BlockNum> <BlockId>{block.id}</BlockId> (txs:{' '}
+          {block.counters.transactions.total})
         </LinkStyled>
       </Block>
     );

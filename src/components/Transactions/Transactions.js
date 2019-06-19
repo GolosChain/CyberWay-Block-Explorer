@@ -63,10 +63,10 @@ export default class Transactions extends PureComponent {
   }
 
   onLoadMore = () => {
-    const { isLoading, transactions, blockId, loadTransactions } = this.props;
+    const { isLoading, isEnd, transactions, blockId, loadTransactions } = this.props;
     const { filter } = this.state;
 
-    if (isLoading || transactions.length === 0) {
+    if (isLoading || isEnd || transactions.length === 0) {
       return;
     }
 

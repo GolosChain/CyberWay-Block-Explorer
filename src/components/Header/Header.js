@@ -16,7 +16,7 @@ export default class Header extends PureComponent {
   render() {
     return (
       <Wrapper>
-        <Link to="/">HEADER</Link>
+        <Link to="/">Home</Link>
         <SearchPanel />
       </Wrapper>
     );

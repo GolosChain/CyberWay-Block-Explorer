@@ -8,6 +8,7 @@ export default connect(
     const transactions = state.blockTransactions.blocks[props.blockId] || [];
 
     return {
+      isEnd: state.blockTransactions.isEnd,
       transactions,
     };
   },

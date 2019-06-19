@@ -10,7 +10,9 @@ const SearchForm = styled.form`
   margin-left: 40px;
 `;
 
-const SearchInput = styled.input``;
+const SearchInput = styled.input`
+  width: 350px;
+`;
 
 const Button = styled.button`
   margin-left: 6px;
