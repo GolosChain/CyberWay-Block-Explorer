@@ -8,7 +8,7 @@ import Connection from './utils/Connection';
 import App from './components/App';
 
 const connection = new Connection({
-  url: `ws://${window.location.hostname}:9595`,
+  url: `ws://${window.location.hostname}:8080`,
 });
 
 connection.connect().catch(err => {
