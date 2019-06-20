@@ -12,6 +12,11 @@ const Wrapper = styled.div`
 `;
 
 export default class Main extends PureComponent {
+  componentDidMount() {
+    const { loadBlockChainInfo } = this.props;
+    loadBlockChainInfo();
+  }
+
   render() {
     return (
       <Wrapper>
