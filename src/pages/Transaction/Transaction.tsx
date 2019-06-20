@@ -5,8 +5,8 @@ import is from 'styled-is';
 
 import { TransactionType } from '../../types';
 
-import { Field, FieldTitle, FieldValue, Id } from '../Form';
-import TransactionActions from '../TransactionActions';
+import { Field, FieldTitle, FieldValue, Id } from '../../components/Form';
+import TransactionActions from '../../components/TransactionActions';
 
 const Wrapper = styled.div`
   margin: 16px;

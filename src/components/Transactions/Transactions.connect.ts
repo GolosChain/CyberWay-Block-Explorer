@@ -3,10 +3,7 @@ import { connect } from 'react-redux';
 import { Dispatch, TransactionStatus } from '../../types';
 import { State } from '../../store';
 
-import {
-  FETCH_TRANSACTIONS,
-  FETCH_TRANSACTIONS_SUCCESS,
-} from '../../store/constants';
+import { FETCH_TRANSACTIONS, FETCH_TRANSACTIONS_SUCCESS } from '../../store/constants';
 import Connection from '../../utils/Connection';
 import Transactions from './Transactions';
 
@@ -42,10 +39,7 @@ export default connect(
         meta: params,
       });
 
-      const result = await Connection.get().callApi(
-        'blocks.getBlockTransactions',
-        params
-      );
+      const result = await Connection.get().callApi('blocks.getBlockTransactions', params);
 
       dispatch({
         type: FETCH_TRANSACTIONS_SUCCESS,

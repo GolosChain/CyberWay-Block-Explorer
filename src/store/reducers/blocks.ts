@@ -1,5 +1,5 @@
-import { FETCH_BLOCK_SUCCESS } from "../constants";
-import { Action, BlockSummary } from "../../types";
+import { FETCH_BLOCK_SUCCESS } from '../constants';
+import { Action, BlockSummary } from '../../types';
 
 export type State = {
   [key: string]: BlockSummary;
@@ -12,7 +12,7 @@ export default function(state = initialState, { type, payload }: Action) {
     case FETCH_BLOCK_SUCCESS:
       return {
         ...state,
-        [payload.block.id]: payload.block
+        [payload.block.id]: payload.block,
       };
     default:
       return state;

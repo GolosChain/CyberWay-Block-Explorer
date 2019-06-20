@@ -1,9 +1,9 @@
-import { connect } from "react-redux";
+import { connect } from 'react-redux';
 
-import { State } from "../../store";
+import { State } from '../../store';
 
-import Header from "./Header";
+import Header from './Header';
 
 export default connect((state: State) => ({
-  blockchainHost: state.blockchain.blockchainHost
+  blockchainHost: state.blockchain.blockchainHost,
 }))(Header);

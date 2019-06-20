@@ -1,6 +1,6 @@
-import { Action, TransactionType } from "../../types";
+import { Action, TransactionType } from '../../types';
 
-import { FETCH_TRANSACTION_SUCCESS } from "../constants";
+import { FETCH_TRANSACTION_SUCCESS } from '../constants';
 
 export type State = {
   [key: string]: TransactionType;
@@ -8,14 +8,11 @@ export type State = {
 
 const initialState: State = {};
 
-export default function(
-  state: State = initialState,
-  { type, payload, meta }: Action
-) {
+export default function(state: State = initialState, { type, payload, meta }: Action) {
   switch (type) {
     case FETCH_TRANSACTION_SUCCESS:
       for (const action of payload.actions) {
-        if (action.data === "") {
+        if (action.data === '') {
           delete action.data;
         }
 
@@ -26,7 +23,7 @@ export default function(
 
       return {
         ...state,
-        [payload.id]: payload
+        [payload.id]: payload,
       };
     default:
       return state;

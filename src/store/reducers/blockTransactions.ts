@@ -1,45 +1,40 @@
-import { Action } from "../../types";
+import { Action, TransactionType } from '../../types';
 
-import { FETCH_TRANSACTIONS, FETCH_TRANSACTIONS_SUCCESS } from "../constants";
+import { FETCH_TRANSACTIONS, FETCH_TRANSACTIONS_SUCCESS } from '../constants';
 
 export type State = {
   isLoading: boolean;
   isEnd: boolean;
   blocks: {
-    [key: string]: any;
+    [key: string]: [TransactionType];
   };
 };
 
 const initialState: State = {
   isLoading: false,
   isEnd: false,
-  blocks: {}
+  blocks: {},
 };
 
-export default function(
-  state: State = initialState,
-  { type, payload, meta }: Action
-) {
+export default function(state: State = initialState, { type, payload, meta }: Action) {
   switch (type) {
     case FETCH_TRANSACTIONS:
       if (meta.fromIndex) {
         return {
           ...state,
-          isLoading: true
+          isLoading: true,
         };
       } else {
         return {
           ...initialState,
-          isLoading: true
+          isLoading: true,
         };
       }
     case FETCH_TRANSACTIONS_SUCCESS:
       let transactions;
 
       if (meta.fromIndex) {
-        transactions = (state.blocks[meta.blockId] || []).concat(
-          payload.transactions
-        );
+        transactions = (state.blocks[meta.blockId] || []).concat(payload.transactions);
       } else {
         transactions = payload.transactions;
       }
@@ -50,8 +45,8 @@ export default function(
         isEnd: payload.transactions.length < meta.limit,
         blocks: {
           ...state.blocks,
-          [meta.blockId]: transactions
-        }
+          [meta.blockId]: transactions,
+        },
       };
     default:
       return state;

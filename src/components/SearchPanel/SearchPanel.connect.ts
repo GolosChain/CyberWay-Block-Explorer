@@ -1,17 +1,17 @@
-import { connect } from "react-redux";
+import { connect } from 'react-redux';
 
-import SearchPanel from "./SearchPanel";
-import Connection from "../../utils/Connection";
+import SearchPanel from './SearchPanel';
+import Connection from '../../utils/Connection';
 
 export default connect(
   null,
   {
     search: ({ text }: { text: string }) => async () => {
       const params = {
-        text
+        text,
       };
 
-      return await Connection.get().callApi("blocks.findEntity", params);
-    }
+      return await Connection.get().callApi('blocks.findEntity', params);
+    },
   }
 )(SearchPanel);

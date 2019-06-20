@@ -4,8 +4,8 @@ import styled from 'styled-components';
 import is from 'styled-is';
 
 import { BlockSummary } from '../../types';
-import { Field, FieldTitle, FieldValue, Id } from '../Form';
-import Transactions from '../Transactions';
+import { Field, FieldTitle, FieldValue, Id } from '../../components/Form';
+import Transactions from '../../components/Transactions';
 
 const Wrapper = styled.div`
   margin: 16px;

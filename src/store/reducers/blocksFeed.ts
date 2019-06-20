@@ -1,14 +1,14 @@
-import { uniqBy, last } from "ramda";
+import { uniqBy, last } from 'ramda';
 
-import { Action, BlockSummary } from "../../types";
+import { Action, BlockSummary } from '../../types';
 
 import {
   FETCH_BLOCKS,
   FETCH_BLOCKS_SUCCESS,
   FETCH_BLOCKS_ERROR,
   FETCH_NEW_BLOCKS_SUCCESS,
-  CLEAR_FEED_BLOCKS
-} from "../constants";
+  CLEAR_FEED_BLOCKS,
+} from '../constants';
 
 export type State = {
   isLoading: boolean;
@@ -17,35 +17,32 @@ export type State = {
 
 const initialState: State = {
   isLoading: false,
-  items: []
+  items: [],
 };
 
-export default function(
-  state: State = initialState,
-  { type, payload, meta }: Action
-) {
+export default function(state: State = initialState, { type, payload, meta }: Action) {
   switch (type) {
     case FETCH_BLOCKS:
       if (meta.fromBlockNum) {
         return {
           ...state,
-          isLoading: true
+          isLoading: true,
         };
       } else {
         return {
           ...initialState,
-          isLoading: true
+          isLoading: true,
         };
       }
     case FETCH_BLOCKS_SUCCESS:
       return {
         isLoading: false,
-        items: state.items.concat(payload.blocks)
+        items: state.items.concat(payload.blocks),
       };
     case FETCH_BLOCKS_ERROR:
       return {
         ...state,
-        isLoading: false
+        isLoading: false,
       };
     case FETCH_NEW_BLOCKS_SUCCESS:
       const lastReceived: any = last(payload.blocks);
@@ -54,16 +51,13 @@ export default function(
       if (firstInList && lastReceived.blockNum > firstInList.blockNum + 1) {
         return {
           isLoading: false,
-          items: payload.blocks
+          items: payload.blocks,
         };
       }
 
       return {
         ...state,
-        items: uniqBy(
-          (block: BlockSummary) => block.id,
-          payload.blocks.concat(state.items)
-        )
+        items: uniqBy((block: BlockSummary) => block.id, payload.blocks.concat(state.items)),
       };
     case CLEAR_FEED_BLOCKS:
       return initialState;

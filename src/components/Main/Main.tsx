@@ -2,9 +2,9 @@ import React, { PureComponent } from 'react';
 import styled from 'styled-components';
 import { Route } from 'react-router-dom';
 
-import BlockFeed from '../BlockFeed';
-import Block from '../Block';
-import Transaction from '../Transaction';
+import BlockFeed from '../../pages/BlockFeed';
+import Block from '../../pages/Block';
+import Transaction from '../../pages/Transaction';
 
 const Wrapper = styled.div`
   flex-grow: 1;
