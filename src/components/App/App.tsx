@@ -39,7 +39,7 @@ const Wrapper = styled.div`
   min-height: 100%;
 `;
 
-const App: React.FC = function App() {
+export default function App() {
   return (
     <>
       <GlobalStyles />
@@ -56,5 +56,3 @@ const App: React.FC = function App() {
     </>
   );
 };
-
-export default App;
