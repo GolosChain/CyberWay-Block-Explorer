@@ -1,14 +1,18 @@
 {
-  "name": "block-explorer",
+  "name": "block-explorer-ts",
   "version": "0.1.0",
   "private": true,
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
-  },
   "dependencies": {
+    "@types/jest": "24.0.15",
+    "@types/lodash.throttle": "^4.1.6",
+    "@types/node": "12.0.8",
+    "@types/ramda": "^0.26.9",
+    "@types/react": "16.8.21",
+    "@types/react-dom": "16.8.4",
+    "@types/react-infinite-scroller": "^1.2.1",
+    "@types/react-redux": "^7.1.0",
+    "@types/react-router-dom": "^4.3.4",
+    "@types/styled-components": "^4.1.16",
     "lodash.throttle": "^4.1.1",
     "normalize.css": "^8.0.1",
     "ramda": "^0.26.1",
@@ -24,7 +28,14 @@
     "rpc-websockets": "^4.4.0",
     "styled-components": "^4.3.1",
     "styled-is": "^1.3.0",
-    "toasts-manager": "^0.1.8"
+    "toasts-manager": "^0.1.8",
+    "typescript": "3.5.2"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
   },
   "eslintConfig": {
     "extends": "react-app"
