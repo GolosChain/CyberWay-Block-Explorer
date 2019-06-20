@@ -45,10 +45,10 @@ export default function(state: State = initialState, { type, payload, meta }: Ac
         isLoading: false,
       };
     case FETCH_NEW_BLOCKS_SUCCESS:
-      const lastReceived: any = last(payload.blocks);
+      const lastReceived = last(payload.blocks as BlockSummary[]);
       const firstInList = state.items[0];
 
-      if (firstInList && lastReceived.blockNum > firstInList.blockNum + 1) {
+      if (firstInList && lastReceived && lastReceived.blockNum > firstInList.blockNum + 1) {
         return {
           isLoading: false,
           items: payload.blocks,

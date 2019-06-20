@@ -14,7 +14,7 @@ const Wrapper = styled.div`
 
 const Title = styled.h1``;
 
-const Status: any = styled.span`
+const Status = styled.span<{ expired: boolean }>`
   ${is('expired')`
     color: #f00;
   `}

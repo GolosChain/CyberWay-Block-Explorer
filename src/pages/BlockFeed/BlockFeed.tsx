@@ -41,7 +41,7 @@ type Props = {
   isLoading: boolean;
   lastBlockNum: number;
   blocks: BlockSummary[];
-  loadNewBlocks: Function;
+  loadNewBlocks(arg?: { fromBlockNum?: number }): void;
   clearData: Function;
   loadBlocks: Function;
 };
@@ -105,7 +105,7 @@ export default class BlockFeed extends PureComponent<Props, State> {
     }
 
     try {
-      const query: any = {};
+      const query: { fromBlockNum?: number } = {};
 
       if (lastBlockNum) {
         query.fromBlockNum = lastBlockNum - 1;

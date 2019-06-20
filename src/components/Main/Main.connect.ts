@@ -1,9 +1,9 @@
+import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
 // @ts-ignore
 import ToastsManager from 'toasts-manager';
 
 import { FETCH_BLOCK_CHAIN_INFO_SUCCESS } from '../../store/constants';
-import { Dispatch } from '../../types';
 import Main from './Main';
 import Connection from '../../utils/Connection';
 

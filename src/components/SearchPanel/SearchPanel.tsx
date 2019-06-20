@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent, ChangeEvent, FormEvent } from 'react';
 import styled from 'styled-components';
 import throttle from 'lodash.throttle';
 
@@ -43,7 +43,7 @@ export default class SearchPanel extends PureComponent<Props, State> {
     this.searchLazy.cancel();
   }
 
-  onSearchTextChange = (e: any) => {
+  onSearchTextChange = (e: ChangeEvent<HTMLInputElement>) => {
     const text = e.target.value;
 
     this.setState({
@@ -100,7 +100,7 @@ export default class SearchPanel extends PureComponent<Props, State> {
 
   searchLazy = throttle(this.search, 400, { leading: false, trailing: true });
 
-  onSearchSubmit = async (e: any) => {
+  onSearchSubmit = async (e: FormEvent) => {
     e.preventDefault();
     this.search();
   };
@@ -114,10 +114,11 @@ export default class SearchPanel extends PureComponent<Props, State> {
   render() {
     const { searchText, result, isSuggestClosed } = this.state;
 
-    let panel = null;
+    const items: Suggest[] = [];
 
     if (result && !isSuggestClosed) {
-      panel = <SuggestPanel items={[result as any]} close={this.onSuggestClose} />;
+      // @ts-ignore
+      items.push(result);
     }
 
     return (
@@ -128,7 +129,7 @@ export default class SearchPanel extends PureComponent<Props, State> {
           onFocus={this.onSearchTextFocus}
           onChange={this.onSearchTextChange}
         />
-        {panel}
+        {<SuggestPanel items={items} close={this.onSuggestClose} />}
         <Button>Find</Button>
       </SearchForm>
     );

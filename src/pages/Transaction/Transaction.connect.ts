@@ -1,7 +1,8 @@
+import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
 
-import { Dispatch } from '../../types';
 import { State } from '../../store';
+import { TransactionRouteParams } from '../../routes/Routes';
 import { FETCH_TRANSACTION_SUCCESS } from '../../store/constants';
 import Connection from '../../utils/Connection';
 
@@ -9,7 +10,7 @@ import Transaction from './Transaction';
 
 type Props = {
   match: {
-    params: any;
+    params: TransactionRouteParams;
   };
 };
 

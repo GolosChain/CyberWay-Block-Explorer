@@ -1,12 +1,9 @@
 import React, { PureComponent } from 'react';
 import styled from 'styled-components';
-import { Route } from 'react-router-dom';
 
-import BlockFeed from '../../pages/BlockFeed';
-import Block from '../../pages/Block';
-import Transaction from '../../pages/Transaction';
+import Routes from '../../routes';
 
-const Wrapper = styled.div`
+const Wrapper = styled.main`
   flex-grow: 1;
   flex-shrink: 0;
 `;
@@ -24,10 +21,7 @@ export default class Main extends PureComponent<Props> {
   render() {
     return (
       <Wrapper>
-        <Route path="/" exact component={BlockFeed} />
-        <Route path="/block/:blockId" exact component={Block} />
-        <Route path="/trx/:transactionId" exact component={Transaction} />
-        <></>
+        <Routes />
       </Wrapper>
     );
   }

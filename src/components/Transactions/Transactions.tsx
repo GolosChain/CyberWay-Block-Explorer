@@ -39,7 +39,7 @@ const TransactionId = styled.span`
   font-family: monospace;
 `;
 
-const StatusText: any = styled.span`
+const StatusText = styled.span<{ expired: boolean }>`
   color: #24a624;
 
   ${is('expired')`
@@ -80,7 +80,7 @@ export default class Transactions extends PureComponent<Props> {
       return;
     }
 
-    const { index }: any = last(transactions);
+    const { index } = last(transactions) as TransactionType;
 
     loadTransactions({ blockId, status: filter, fromIndex: index });
   };

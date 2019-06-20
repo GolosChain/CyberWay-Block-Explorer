@@ -22,7 +22,7 @@ export default class Connection {
 
   private readonly url: string;
   private queue: QueueItem[];
-  private socket: any;
+  private socket: Client;
 
   constructor({ url }: { url: string }) {
     this.url = url;

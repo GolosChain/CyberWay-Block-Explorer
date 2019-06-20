@@ -11,7 +11,7 @@ const Wrapper = styled.div`
   margin: 16px;
 `;
 
-const Colored: any = styled.span`
+const Colored = styled.span<{ bad?: boolean }>`
   color: #24a624;
 
   ${is('bad')`

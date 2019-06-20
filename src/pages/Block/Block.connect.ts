@@ -1,13 +1,14 @@
 import { connect } from 'react-redux';
 
 import { FETCH_BLOCK_SUCCESS } from '../../store/constants';
+import { BlockRouteParams } from '../../routes/Routes';
 import { State } from '../../store';
 import Connection from '../../utils/Connection';
 import Block from './Block';
 
 type Props = {
   match: {
-    params: any;
+    params: BlockRouteParams;
   };
 };
 

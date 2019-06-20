@@ -1,4 +1,4 @@
-import React, { PureComponent, createRef } from 'react';
+import React, { PureComponent, createRef, RefObject } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -45,7 +45,7 @@ type Props = {
 };
 
 export default class SuggestPanel extends PureComponent<Props> {
-  rootRef: { current: any } = createRef();
+  rootRef: RefObject<HTMLDivElement> = createRef();
 
   private addListenerTimeout: number | undefined = undefined;
 
@@ -60,8 +60,8 @@ export default class SuggestPanel extends PureComponent<Props> {
     document.removeEventListener('click', this.onAwayClick);
   }
 
-  onAwayClick = (e: any) => {
-    if (!this.rootRef.current.contains(e.target)) {
+  onAwayClick = (e: MouseEvent) => {
+    if (this.rootRef.current && !this.rootRef.current.contains(e.target as Node)) {
       this.props.close();
     }
   };

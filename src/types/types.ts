@@ -1,5 +1,6 @@
-export type Action = {
-  type: String;
+import { Action as ReduxAction } from 'redux';
+
+export type Action = ReduxAction & {
   payload?: any;
   meta?: any;
 };
@@ -16,16 +17,23 @@ export type BlockSummary = {
   };
 };
 
-export type Dispatch = (arg0: Action) => {};
-
 type SuggestType = 'block' | 'transaction';
 
 export type Suggest = {
   type: SuggestType;
-  data: any;
+  data: {
+    id: string;
+  };
 };
 
 export type TransactionStatus = 'executed' | 'expired' | 'soft_fail';
+
+type TransactionStats = {
+  cpu_usage_us: number;
+  net_usage_words: number;
+  ram_kbytes: number;
+  storage_kbytes: number;
+};
 
 export type TransactionType = {
   id: string;
@@ -34,7 +42,7 @@ export type TransactionType = {
   blockNum: number;
   blockTime: Date;
   status: TransactionStatus;
-  stats: any;
+  stats: TransactionStats;
   actions: TransactionAction[];
 };
 

@@ -1,3 +1,4 @@
+import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
 import { last } from 'ramda';
 // @ts-ignore
@@ -10,7 +11,6 @@ import {
   FETCH_NEW_BLOCKS_SUCCESS,
   CLEAR_FEED_BLOCKS,
 } from '../../store/constants';
-import { Dispatch } from '../../types';
 import { State } from '../../store';
 import Connection from '../../utils/Connection';
 
@@ -29,7 +29,9 @@ export default connect(
     };
   },
   {
-    loadBlocks: ({ fromBlockNum = undefined }: any = {}) => async (dispatch: Function) => {
+    loadBlocks: ({ fromBlockNum = undefined }: { fromBlockNum?: number } = {}) => async (
+      dispatch: Function
+    ) => {
       const params = {
         fromBlockNum,
         limit: 20,

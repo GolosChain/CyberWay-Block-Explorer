@@ -1,6 +1,7 @@
+import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
 
-import { Dispatch, TransactionStatus } from '../../types';
+import { TransactionStatus } from '../../types';
 import { State } from '../../store';
 
 import { FETCH_TRANSACTIONS, FETCH_TRANSACTIONS_SUCCESS } from '../../store/constants';

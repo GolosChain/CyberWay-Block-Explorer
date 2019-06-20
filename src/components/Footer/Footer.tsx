@@ -7,7 +7,7 @@ const Wrapper = styled.footer`
   background-color: #eee;
 `;
 
-export default class Footer extends PureComponent<any> {
+export default class Footer extends PureComponent {
   render() {
     return <Wrapper>FOOTER</Wrapper>;
   }

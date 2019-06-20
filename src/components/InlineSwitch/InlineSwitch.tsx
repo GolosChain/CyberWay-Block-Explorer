@@ -6,10 +6,10 @@ const Wrapper = styled.span`
   font-weight: normal;
 `;
 
-const Option: any = styled.span`
+const Option = styled.span<{ isActive: boolean }>`
   margin: 0 2px;
 
-  ${({ isActive }: any) =>
+  ${({ isActive }) =>
     isActive
       ? 'font-weight: 600; cursor: default;'
       : 'color: #00f; text-decoration: underline; cursor: pointer;'}
