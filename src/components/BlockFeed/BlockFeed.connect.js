@@ -65,5 +65,8 @@ export default connect(
         },
       });
     },
+    clearData: () => ({
+      type: 'CLEAR_BLOCKS',
+    }),
   }
 )(BlockFeed);

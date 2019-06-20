@@ -46,6 +46,8 @@ export default function(state = initialState, { type, payload, meta }) {
         ...state,
         items: uniqBy(block => block.id, payload.blocks.concat(state.items)),
       };
+    case 'CLEAR_BLOCKS':
+      return initialState;
     default:
       return state;
   }

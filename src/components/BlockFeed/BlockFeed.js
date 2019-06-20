@@ -40,6 +40,11 @@ export default class BlockFeed extends PureComponent {
     stopNewBlockUpdating: false,
   };
 
+  componentWillMount() {
+    const { clearData } = this.props;
+    clearData();
+  }
+
   componentDidMount() {
     this._refreshInterval = setInterval(this.checkNewBlocks, CHECK_NEW_BLOCKS_EVERY);
 
