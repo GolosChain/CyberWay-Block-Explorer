@@ -2,19 +2,25 @@ import { connect } from 'react-redux';
 import { last } from 'ramda';
 import ToastsManager from 'toasts-manager';
 
+import {
+  FETCH_BLOCKS,
+  FETCH_BLOCKS_SUCCESS,
+  FETCH_BLOCKS_ERROR,
+  FETCH_NEW_BLOCKS_SUCCESS,
+  CLEAR_FEED_BLOCKS,
+} from '../../store/constants';
 import Connection from '../../utils/Connection';
 import BlockFeed from './BlockFeed';
 
 export default connect(
   state => {
-    const { items, isLoading, stopUpdateBlocks } = state.blocksFeed;
+    const { items, isLoading } = state.blocksFeed;
 
     const lastBlock = last(items);
 
     return {
       lastBlockNum: lastBlock ? lastBlock.blockNum : 0,
       isLoading,
-      stopUpdateBlocks,
       blocks: items,
     };
   },
@@ -26,7 +32,7 @@ export default connect(
       };
 
       dispatch({
-        type: 'FETCH_BLOCKS',
+        type: FETCH_BLOCKS,
         meta: params,
       });
 
@@ -39,14 +45,14 @@ export default connect(
         ToastsManager.error(`Request failed:, ${err.message}`);
 
         dispatch({
-          type: 'FETCH_BLOCKS_ERROR',
+          type: FETCH_BLOCKS_ERROR,
           meta: params,
         });
         return;
       }
 
       dispatch({
-        type: 'FETCH_BLOCKS_SUCCESS',
+        type: FETCH_BLOCKS_SUCCESS,
         payload: {
           blocks: results.blocks,
         },
@@ -59,14 +65,14 @@ export default connect(
       });
 
       dispatch({
-        type: 'FETCH_NEW_BLOCKS_SUCCESS',
+        type: FETCH_NEW_BLOCKS_SUCCESS,
         payload: {
           blocks,
         },
       });
     },
     clearData: () => ({
-      type: 'CLEAR_BLOCKS',
+      type: CLEAR_FEED_BLOCKS,
     }),
   }
 )(BlockFeed);

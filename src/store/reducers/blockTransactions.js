@@ -1,3 +1,5 @@
+import { FETCH_TRANSACTIONS, FETCH_TRANSACTIONS_SUCCESS } from '../constants';
+
 const initialState = {
   isLoading: false,
   blocks: {},
@@ -5,7 +7,7 @@ const initialState = {
 
 export default function(state = initialState, { type, payload, meta }) {
   switch (type) {
-    case 'FETCH_TRANSACTIONS':
+    case FETCH_TRANSACTIONS:
       if (meta.fromIndex) {
         return {
           ...state,
@@ -17,7 +19,7 @@ export default function(state = initialState, { type, payload, meta }) {
           isLoading: true,
         };
       }
-    case 'FETCH_TRANSACTIONS_SUCCESS':
+    case FETCH_TRANSACTIONS_SUCCESS:
       let transactions;
 
       if (meta.fromIndex) {

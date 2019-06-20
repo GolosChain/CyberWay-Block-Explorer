@@ -1,5 +1,6 @@
 import { connect } from 'react-redux';
 
+import { FETCH_TRANSACTION_SUCCESS } from '../../store/constants';
 import Connection from '../../utils/Connection';
 import Transaction from './Transaction';
 
@@ -19,7 +20,7 @@ export default connect(
       });
 
       return dispatch({
-        type: 'FETCH_TRANSACTION_SUCCESS',
+        type: FETCH_TRANSACTION_SUCCESS,
         payload: result,
       });
     },

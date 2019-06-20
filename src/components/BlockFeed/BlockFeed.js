@@ -5,7 +5,6 @@ import InfiniteScroll from 'react-infinite-scroller';
 import ToastsManager from 'toasts-manager';
 
 const CHECK_NEW_BLOCKS_EVERY = 3000;
-const STOP_UPDATING_TIMEOUT = 15 * 60 * 1000;
 
 const Wrapper = styled.div`
   margin: 16px;
@@ -46,28 +45,34 @@ export default class BlockFeed extends PureComponent {
   }
 
   componentDidMount() {
-    this._refreshInterval = setInterval(this.checkNewBlocks, CHECK_NEW_BLOCKS_EVERY);
+    this.startAutoUpdating();
 
-    this._stopRefreshTimeout = setTimeout(() => {
-      this.setState({
-        stopNewBlockUpdating: true,
-      });
-      clearInterval(this._refreshInterval);
-    }, STOP_UPDATING_TIMEOUT);
+    document.addEventListener('visibilitychange', this.onVisibilityChange);
   }
 
   componentWillUnmount() {
     clearInterval(this._refreshInterval);
-    clearTimeout(this._stopRefreshTimeout);
+  }
+
+  onVisibilityChange = () => {
+    if (document.hidden) {
+      this.stopAutoUpdating();
+    } else {
+      this.checkNewBlocks();
+      this.startAutoUpdating();
+    }
+  };
+
+  startAutoUpdating() {
+    this._refreshInterval = setInterval(this.checkNewBlocks, CHECK_NEW_BLOCKS_EVERY);
+  }
+
+  stopAutoUpdating() {
+    clearInterval(this._refreshInterval);
   }
 
   checkNewBlocks = () => {
-    const { isLoading, stopUpdateBlocks, loadNewBlocks } = this.props;
-
-    if (stopUpdateBlocks) {
-      clearInterval(this._refreshInterval);
-      return;
-    }
+    const { isLoading, loadNewBlocks } = this.props;
 
     if (!isLoading) {
       loadNewBlocks();
