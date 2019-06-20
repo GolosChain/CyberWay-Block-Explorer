@@ -13,6 +13,10 @@ const Wrapper = styled.div`
 
 const Title = styled.h1``;
 
+const ListWrapper = styled.div`
+  display: flex;
+`;
+
 const List = styled.ul``;
 
 const Block = styled.li``;
@@ -102,9 +106,11 @@ export default class BlockFeed extends PureComponent {
     return (
       <Wrapper>
         <Title>Blocks feed:</Title>
-        <InfiniteScroll hasMore={true} loadMore={this.onLoadMore}>
-          <List>{blocks.map(this.renderBlockLine)}</List>
-        </InfiniteScroll>
+        <ListWrapper>
+          <InfiniteScroll hasMore={true} loadMore={this.onLoadMore}>
+            <List>{blocks.map(this.renderBlockLine)}</List>
+          </InfiniteScroll>
+        </ListWrapper>
       </Wrapper>
     );
   }
