@@ -129,7 +129,7 @@ export default class SearchPanel extends PureComponent<Props, State> {
           onFocus={this.onSearchTextFocus}
           onChange={this.onSearchTextChange}
         />
-        {<SuggestPanel items={items} close={this.onSuggestClose} />}
+        {items.length ? <SuggestPanel items={items} close={this.onSuggestClose} /> : null}
         <Button>Find</Button>
       </SearchForm>
     );
