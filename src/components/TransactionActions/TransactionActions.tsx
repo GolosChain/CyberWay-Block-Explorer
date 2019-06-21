@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
 import styled from 'styled-components';
+import JSONPretty from 'react-json-pretty';
 
 import { TransactionAction } from '../../types';
 
@@ -26,7 +27,7 @@ export default class TransactionActions extends PureComponent<Props> {
     return (
       <Action key={i}>
         <ActionIndex>Action ({i + 1}):</ActionIndex>
-        <pre>{JSON.stringify(action, null, 2)}</pre>
+        <JSONPretty json={action} />
       </Action>
     );
   };
