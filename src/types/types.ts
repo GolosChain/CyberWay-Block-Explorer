@@ -47,3 +47,8 @@ export type TransactionType = {
 };
 
 export type TransactionAction = {};
+
+export type FiltersType = {
+  code?: string;
+  action?: string;
+};

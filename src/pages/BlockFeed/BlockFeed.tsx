@@ -5,7 +5,7 @@ import InfiniteScroll from 'react-infinite-scroller';
 // @ts-ignore
 import ToastsManager from 'toasts-manager';
 
-import { BlockSummary } from '../../types';
+import { BlockSummary, FiltersType } from '../../types';
 
 const CHECK_NEW_BLOCKS_EVERY = 3000;
 
@@ -39,9 +39,11 @@ const BlockId = styled.span`
 
 type Props = {
   isLoading: boolean;
+  isEnd: boolean;
   lastBlockNum: number;
   blocks: BlockSummary[];
-  loadNewBlocks(arg?: { fromBlockNum?: number }): void;
+  filters: FiltersType;
+  loadNewBlocks: Function;
   clearData: Function;
   loadBlocks: Function;
 };
@@ -68,6 +70,16 @@ export default class BlockFeed extends PureComponent<Props, State> {
     document.addEventListener('visibilitychange', this.onVisibilityChange);
   }
 
+  componentWillReceiveProps(nextProps: Readonly<Props>) {
+    const props = this.props;
+
+    if (props.filters !== nextProps.filters) {
+      setTimeout(() => {
+        this.load();
+      });
+    }
+  }
+
   componentWillUnmount() {
     clearInterval(this._refreshInterval);
   }
@@ -90,24 +102,32 @@ export default class BlockFeed extends PureComponent<Props, State> {
   }
 
   checkNewBlocks = () => {
-    const { isLoading, loadNewBlocks } = this.props;
+    const { isLoading, filters, loadNewBlocks } = this.props;
 
     if (!isLoading) {
-      loadNewBlocks();
+      loadNewBlocks(filters);
     }
   };
 
-  onLoadMore = async () => {
-    const { isLoading, lastBlockNum, loadBlocks } = this.props;
+  onLoadMore = () => {
+    const { isLoading, isEnd } = this.props;
 
-    if (isLoading) {
+    if (isLoading || isEnd) {
       return;
     }
 
-    try {
-      const query: { fromBlockNum?: number } = {};
+    this.load(true);
+  };
 
-      if (lastBlockNum) {
+  async load(isMore = false) {
+    const { lastBlockNum, filters, loadBlocks } = this.props;
+
+    try {
+      const query: { fromBlockNum?: number; code?: string; action?: string } = {
+        ...filters,
+      };
+
+      if (lastBlockNum && isMore) {
         query.fromBlockNum = lastBlockNum - 1;
       }
 
@@ -115,7 +135,7 @@ export default class BlockFeed extends PureComponent<Props, State> {
     } catch (err) {
       ToastsManager.error(`Failed: ${err.message}`);
     }
-  };
+  }
 
   renderBlockLine = (block: BlockSummary) => {
     return (

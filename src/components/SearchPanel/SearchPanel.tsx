@@ -12,7 +12,7 @@ const SearchForm = styled.form`
 `;
 
 const SearchInput = styled.input`
-  width: 350px;
+  width: 500px;
 `;
 
 const Button = styled.button`
@@ -21,6 +21,7 @@ const Button = styled.button`
 
 type Props = {
   search: Function;
+  applyFilter: Function;
 };
 
 type State = {
@@ -50,6 +51,10 @@ export default class SearchPanel extends PureComponent<Props, State> {
       searchText: text,
     });
 
+    if (text.trim() === '') {
+      this.applyFilters('');
+    }
+
     if (text.length >= 2) {
       this.searchLazy();
     } else {
@@ -65,10 +70,13 @@ export default class SearchPanel extends PureComponent<Props, State> {
     });
   };
 
-  search = async () => {
+  search = async (isSubmit?: boolean) => {
     const { search } = this.props;
-
     const { searchText } = this.state;
+
+    if (isSubmit) {
+      this.applyFilters(searchText);
+    }
 
     const startIndex = ++this.requestStartIndex;
 
@@ -102,7 +110,7 @@ export default class SearchPanel extends PureComponent<Props, State> {
 
   onSearchSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    this.search();
+    this.search(true);
   };
 
   onSuggestClose = () => {
@@ -110,6 +118,30 @@ export default class SearchPanel extends PureComponent<Props, State> {
       isSuggestClosed: true,
     });
   };
+
+  applyFilters(searchText: string) {
+    const { applyFilter } = this.props;
+
+    const filters: { [key: string]: string } = {};
+
+    const matches = searchText.match(/\b(?:action|code)\s*:\s*[\w\d.]+\b/g);
+
+    if (matches) {
+      for (const subString of matches) {
+        const pair = subString.match(/^(\w+)\s*:\s*([\w\d.]+)$/);
+
+        if (!pair) {
+          continue;
+        }
+
+        const [, type, value] = pair;
+
+        filters[type] = value;
+      }
+    }
+
+    applyFilter(filters);
+  }
 
   render() {
     const { searchText, result, isSuggestClosed } = this.state;
@@ -124,8 +156,9 @@ export default class SearchPanel extends PureComponent<Props, State> {
     return (
       <SearchForm onSubmit={this.onSearchSubmit}>
         <SearchInput
-          value={searchText}
           type="search"
+          placeholder={`Block id, trx id or filter like: "code: gls.publish action: reblog"`}
+          value={searchText}
           onFocus={this.onSearchTextFocus}
           onChange={this.onSearchTextChange}
         />

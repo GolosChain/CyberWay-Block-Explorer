@@ -15,7 +15,7 @@ const Colored = styled.span<{ bad?: boolean }>`
   color: #24a624;
 
   ${is('bad')`
-    color: #f00;    
+    color: #f00;
   `};
 `;
 
