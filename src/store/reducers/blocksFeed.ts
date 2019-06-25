@@ -89,6 +89,7 @@ export default function(state: State = initialState, { type, payload, meta }: Ac
         return {
           ...state,
           isLoading: false,
+          isEnd: false,
           items: payload.blocks,
         };
       }
