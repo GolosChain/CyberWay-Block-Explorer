@@ -36,7 +36,7 @@
     "rpc-websockets": "^4.4.0",
     "styled-components": "^4.3.1",
     "styled-is": "^1.3.0",
-    "toasts-manager": "^0.1.8",
+    "toasts-manager": "^0.1.10",
     "typescript": "3.5.2"
   },
   "eslintConfig": {

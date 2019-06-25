@@ -10161,10 +10161,10 @@ to-regex@^3.0.1, to-regex@^3.0.2:
     regex-not "^1.0.2"
     safe-regex "^1.1.0"
 
-toasts-manager@^0.1.8:
-  version "0.1.8"
-  resolved "https://npm.golos.io/toasts-manager/-/toasts-manager-0.1.8.tgz#784abb56d65db2eb79821fbedc62735935659462"
-  integrity sha512-bZKsPprta09U12G4vAHz51K+nqaMWg6plufGGgrOocLET/zLZ56+mXTe58EyGZPN7HLJYPy7mlKpKyTiU4vZxg==
+toasts-manager@^0.1.10:
+  version "0.1.10"
+  resolved "https://npm.golos.io/toasts-manager/-/toasts-manager-0.1.10.tgz#c19c845954033146f5d6e0e9df2f8acaad1bb6a2"
+  integrity sha512-8YLFtW5VGzk1PTTpdtV4u98cF1b1KwV/RmsX5WXcRjnBzBAAmbtWG+HcBMUdpyn8b5GwEC/IVmx/qTupNo9LGA==
 
 tough-cookie@>=2.3.3, tough-cookie@^2.3.4, tough-cookie@~2.4.3:
   version "2.4.3"
