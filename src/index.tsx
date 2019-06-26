@@ -10,8 +10,18 @@ import Connection from './utils/Connection';
 import App from './components/App';
 
 const connection = new Connection({
-  url: `ws://${window.location.hostname}:8080`,
+  url: getWebSocketUrl(),
 });
+
+function getWebSocketUrl() {
+  const { protocol, hostname } = window.location;
+
+  if (protocol === 'https:') {
+    return `wss://gate-${hostname}`;
+  }
+
+  return `ws://${hostname}:8080`;
+}
 
 connection.connect().catch(err => {
   console.error(err);
