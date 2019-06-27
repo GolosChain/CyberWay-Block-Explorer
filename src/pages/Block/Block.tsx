@@ -2,6 +2,7 @@ import React, { PureComponent } from 'react';
 import styled from 'styled-components';
 // @ts-ignore
 import is from 'styled-is';
+import { Link } from 'react-router-dom';
 
 import { BlockSummary } from '../../types';
 import { Field, FieldTitle, FieldValue, Id } from '../../components/Form';
@@ -17,6 +18,10 @@ const Colored = styled.span<{ bad?: boolean }>`
   ${is('bad')`
     color: #f00;
   `};
+`;
+
+const LinkStyled = styled(Link)`
+  color: #000;
 `;
 
 type Props = {
@@ -49,7 +54,9 @@ export default class Block extends PureComponent<Props> {
             <Field>
               <FieldTitle>Parent id:</FieldTitle>
               <FieldValue>
-                <Id>{block.parentId}</Id>
+                <LinkStyled to={`/block/${block.parentId}`}>
+                  <Id>{block.parentId}</Id>
+                </LinkStyled>
               </FieldValue>
             </Field>
             <Field>
