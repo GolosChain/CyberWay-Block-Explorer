@@ -14,7 +14,9 @@ const Wrapper = styled.div`
   margin: 16px;
 `;
 
-const Title = styled.h1``;
+const Title = styled.h1`
+  margin: 12px 0;
+`;
 
 const Status = styled.span<{ expired: boolean }>`
   ${is('expired')`

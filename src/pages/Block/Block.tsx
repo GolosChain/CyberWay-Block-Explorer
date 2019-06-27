@@ -13,6 +13,10 @@ const Wrapper = styled.div`
   margin: 16px;
 `;
 
+const Title = styled.h1`
+  margin: 12px 0;
+`;
+
 const Colored = styled.span<{ bad?: boolean }>`
   color: #24a624;
 
@@ -54,7 +58,7 @@ export default class Block extends PureComponent<Props> {
             },
           ]}
         />
-        <h1>Block</h1>
+        <Title>Block</Title>
         <Field>
           <FieldTitle>Block id:</FieldTitle>
           <FieldValue>

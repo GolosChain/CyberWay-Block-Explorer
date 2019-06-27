@@ -13,7 +13,9 @@ const Wrapper = styled.div`
   margin: 16px;
 `;
 
-const Title = styled.h1``;
+const Title = styled.h1`
+  margin: 12px 0;
+`;
 
 const ListWrapper = styled.div`
   display: flex;
