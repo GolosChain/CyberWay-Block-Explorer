@@ -60,7 +60,7 @@ export default connect(
         results = await Connection.get().callApi('blocks.getBlockList', params);
       } catch (err) {
         console.error(err);
-        ToastsManager.error(`Request failed:, ${err.message}`);
+        ToastsManager.error(`Request failed: ${err.message}`);
 
         dispatch({
           type: FETCH_BLOCKS_ERROR,

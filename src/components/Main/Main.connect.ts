@@ -17,7 +17,7 @@ export default connect(
         results = await Connection.get().callApi('blocks.getBlockChainInfo');
       } catch (err) {
         console.error(err);
-        ToastsManager.error(`Request failed:, ${err.message}`);
+        ToastsManager.error(`Request failed: ${err.message}`);
         return;
       }
 
