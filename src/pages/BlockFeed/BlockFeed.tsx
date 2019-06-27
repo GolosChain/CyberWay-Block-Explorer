@@ -57,7 +57,9 @@ export default class BlockFeed extends PureComponent<Props, State> {
     stopNewBlockUpdating: false,
   };
 
-  private _refreshInterval: number | undefined = undefined;
+  private _resumeUpdateTimeout: number | undefined;
+
+  private _refreshInterval: number | undefined;
 
   componentWillMount() {
     const { clearData } = this.props;
@@ -82,9 +84,12 @@ export default class BlockFeed extends PureComponent<Props, State> {
 
   componentWillUnmount() {
     clearInterval(this._refreshInterval);
+    clearTimeout(this._resumeUpdateTimeout);
   }
 
   onVisibilityChange = () => {
+    clearTimeout(this._resumeUpdateTimeout);
+
     if (document.hidden) {
       this.stopAutoUpdating();
     } else {
@@ -94,6 +99,7 @@ export default class BlockFeed extends PureComponent<Props, State> {
   };
 
   startAutoUpdating() {
+    clearTimeout(this._resumeUpdateTimeout);
     this._refreshInterval = setInterval(this.checkNewBlocks, CHECK_NEW_BLOCKS_EVERY);
   }
 
@@ -137,6 +143,16 @@ export default class BlockFeed extends PureComponent<Props, State> {
     }
   }
 
+  onMouseMove = () => {
+    this.stopAutoUpdating();
+
+    clearTimeout(this._resumeUpdateTimeout);
+
+    this._resumeUpdateTimeout = setTimeout(() => {
+      this.startAutoUpdating();
+    }, 2000);
+  };
+
   renderBlockLine = (block: BlockSummary) => {
     return (
       <Block key={block.id}>
@@ -156,7 +172,7 @@ export default class BlockFeed extends PureComponent<Props, State> {
         <Title>Block feed:</Title>
         <ListWrapper>
           <InfiniteScroll hasMore={!isEnd} loadMore={this.onLoadMore}>
-            <List>{blocks.map(this.renderBlockLine)}</List>
+            <List onMouseMove={this.onMouseMove}>{blocks.map(this.renderBlockLine)}</List>
           </InfiniteScroll>
         </ListWrapper>
       </Wrapper>
