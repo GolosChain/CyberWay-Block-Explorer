@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 
 import { FiltersType, TransactionType } from '../../types';
 
+import Navigation from '../../components/Navigation';
 import { Field, FieldTitle, FieldValue, Id } from '../../components/Form';
 import TransactionActions from '../../components/TransactionActions';
 
@@ -50,8 +51,22 @@ export default class Transaction extends PureComponent<Props> {
 
     return (
       <Wrapper>
+        <Navigation
+          items={[
+            {
+              text: 'Feed',
+              url: '/',
+            },
+            {
+              text: `Block${transaction ? ` (${transaction.blockNum})` : ''}`,
+              url: transaction ? `/block/${transaction.blockId}` : null,
+            },
+            {
+              text: 'Transaction',
+            },
+          ]}
+        />
         <Title>Transaction</Title>
-
         <Field>
           <FieldTitle>Transaction id:</FieldTitle>
           <FieldValue>
@@ -63,7 +78,7 @@ export default class Transaction extends PureComponent<Props> {
             <Field>
               <FieldTitle>Block id:</FieldTitle>
               <FieldValue>
-                <LinkStyled to={`block/${transaction.blockId}`}>
+                <LinkStyled to={`/block/${transaction.blockId}`}>
                   <Id>{transaction.blockId}</Id>
                 </LinkStyled>
               </FieldValue>
@@ -71,7 +86,7 @@ export default class Transaction extends PureComponent<Props> {
             <Field>
               <FieldTitle>Block num:</FieldTitle>
               <FieldValue>
-                <LinkStyled to={`block/${transaction.blockId}`}>
+                <LinkStyled to={`/block/${transaction.blockId}`}>
                   <Id>{transaction.blockNum}</Id>
                 </LinkStyled>
               </FieldValue>

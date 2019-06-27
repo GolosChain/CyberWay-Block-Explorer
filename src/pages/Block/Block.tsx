@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom';
 import { BlockSummary } from '../../types';
 import { Field, FieldTitle, FieldValue, Id } from '../../components/Form';
 import Transactions from '../../components/Transactions';
+import Navigation from '../../components/Navigation';
 
 const Wrapper = styled.div`
   margin: 16px;
@@ -42,6 +43,17 @@ export default class Block extends PureComponent<Props> {
 
     return (
       <Wrapper>
+        <Navigation
+          items={[
+            {
+              text: 'Feed',
+              url: '/',
+            },
+            {
+              text: `Block${block ? ` (${block.blockNum})` : ''}`,
+            },
+          ]}
+        />
         <h1>Block</h1>
         <Field>
           <FieldTitle>Block id:</FieldTitle>

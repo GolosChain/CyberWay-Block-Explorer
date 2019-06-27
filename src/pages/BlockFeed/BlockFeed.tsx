@@ -149,13 +149,13 @@ export default class BlockFeed extends PureComponent<Props, State> {
   };
 
   render() {
-    const { blocks } = this.props;
+    const { blocks, isEnd } = this.props;
 
     return (
       <Wrapper>
-        <Title>Blocks feed:</Title>
+        <Title>Block feed:</Title>
         <ListWrapper>
-          <InfiniteScroll hasMore={true} loadMore={this.onLoadMore}>
+          <InfiniteScroll hasMore={!isEnd} loadMore={this.onLoadMore}>
             <List>{blocks.map(this.renderBlockLine)}</List>
           </InfiniteScroll>
         </ListWrapper>

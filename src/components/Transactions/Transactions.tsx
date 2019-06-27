@@ -134,7 +134,7 @@ export default class Transactions extends PureComponent<Props, State> {
   };
 
   render() {
-    const { transactions } = this.props;
+    const { transactions, isEnd } = this.props;
     const { filter } = this.state;
 
     return (
@@ -148,7 +148,7 @@ export default class Transactions extends PureComponent<Props, State> {
           />
         </SubTitle>
         {transactions.length ? (
-          <InfiniteScroll hasMore={true} loadMore={this.onLoadMore}>
+          <InfiniteScroll hasMore={!isEnd} loadMore={this.onLoadMore}>
             <List>{transactions.map(this.renderTransactionLine)}</List>
           </InfiniteScroll>
         ) : (
