@@ -7,8 +7,14 @@ import SuggestPanel from '../SuggestPanel';
 
 const SearchForm = styled.form`
   display: flex;
+  align-items: center;
   position: relative;
   margin-left: 40px;
+`;
+
+const Hint = styled.span`
+  margin-right: 10px;
+  cursor: pointer;
 `;
 
 const SearchInput = styled.input`
@@ -161,9 +167,16 @@ export default class SearchPanel extends PureComponent<Props, State> {
 
     return (
       <SearchForm onSubmit={this.onSearchSubmit}>
+        <Hint
+          title={
+            'Allowed query: block id, transaction id. Allowed filters: code, action, nonempty, example: "code: gls.publish action: upvote" or simple "nonempty"'
+          }
+        >
+          [?]
+        </Hint>
         <SearchInput
           type="search"
-          placeholder={`Block id, trx id or filter like: "code: gls.publish action: reblog"`}
+          placeholder="Block id, transaction id or filters (see hint)"
           value={searchText}
           onFocus={this.onSearchTextFocus}
           onChange={this.onSearchTextChange}
