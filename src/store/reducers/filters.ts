@@ -12,6 +12,7 @@ export default function(state: State = initialState, { type, payload, meta }: Ac
       return {
         code: payload.code,
         action: payload.action,
+        nonEmpty: payload.nonEmpty,
       };
     default:
       return state;

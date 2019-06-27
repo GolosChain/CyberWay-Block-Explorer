@@ -43,9 +43,9 @@ type Props = {
   lastBlockNum: number;
   blocks: BlockSummary[];
   filters: FiltersType;
+  loadBlocks: Function;
   loadNewBlocks: Function;
   clearData: Function;
-  loadBlocks: Function;
 };
 
 type State = {
@@ -123,7 +123,7 @@ export default class BlockFeed extends PureComponent<Props, State> {
     const { lastBlockNum, filters, loadBlocks } = this.props;
 
     try {
-      const query: { fromBlockNum?: number; code?: string; action?: string } = {
+      const query: { fromBlockNum?: number; code?: string; action?: string; nonEmpty?: boolean } = {
         ...filters,
       };
 

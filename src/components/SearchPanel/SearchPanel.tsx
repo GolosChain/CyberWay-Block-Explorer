@@ -2,7 +2,7 @@ import React, { PureComponent, ChangeEvent, FormEvent } from 'react';
 import styled from 'styled-components';
 import throttle from 'lodash.throttle';
 
-import { Suggest } from '../../types';
+import { FiltersType, Suggest } from '../../types';
 import SuggestPanel from '../SuggestPanel';
 
 const SearchForm = styled.form`
@@ -122,7 +122,7 @@ export default class SearchPanel extends PureComponent<Props, State> {
   applyFilters(searchText: string) {
     const { applyFilter } = this.props;
 
-    const filters: { [key: string]: string } = {};
+    const filters: FiltersType = {};
 
     const matches = searchText.match(/\b(?:action|code)\s*:\s*[\w\d.]+\b/g);
 
@@ -136,9 +136,15 @@ export default class SearchPanel extends PureComponent<Props, State> {
 
         const [, type, value] = pair;
 
-        filters[type] = value;
+        if (type === 'action') {
+          filters.action = value;
+        } else if (type === 'code') {
+          filters.code = value;
+        }
       }
     }
+
+    filters.nonEmpty = /\bnon?-?Empty\b/i.test(searchText);
 
     applyFilter(filters);
   }
