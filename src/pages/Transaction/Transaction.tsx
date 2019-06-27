@@ -38,14 +38,11 @@ export default class Transaction extends PureComponent<Props> {
   }
 
   load() {
-    const { transactionId, filters, loadTransaction } = this.props;
+    const { transactionId, loadTransaction } = this.props;
 
-    const query = {
+    loadTransaction({
       transactionId,
-      ...filters,
-    };
-
-    loadTransaction(query);
+    });
   }
 
   render() {

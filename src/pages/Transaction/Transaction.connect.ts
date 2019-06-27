@@ -25,19 +25,11 @@ export default connect(
     };
   },
   {
-    loadTransaction: ({
-      transactionId,
-      code,
-      action,
-    }: {
-      transactionId: string;
-      code?: string;
-      action?: string;
-    }) => async (dispatch: Dispatch) => {
+    loadTransaction: ({ transactionId }: { transactionId: string }) => async (
+      dispatch: Dispatch
+    ) => {
       const result = await Connection.get().callApi('blocks.getTransaction', {
         transactionId,
-        code,
-        action,
       });
 
       dispatch({
