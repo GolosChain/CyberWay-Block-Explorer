@@ -8,14 +8,23 @@ import { FETCH_TRANSACTIONS, FETCH_TRANSACTIONS_SUCCESS } from '../../store/cons
 import Connection from '../../utils/Connection';
 import Transactions from './Transactions';
 
+export type LoadTransactionsParams = {
+  blockId: string;
+  status?: TransactionStatus;
+  fromIndex?: number;
+  code?: string;
+  action?: string;
+};
+
 export default connect(
-  ({ blockTransactions }: State, props: { blockId: string }) => {
+  ({ blockTransactions, filters }: State, props: { blockId: string }) => {
     const transactions = blockTransactions.blocks[props.blockId] || [];
 
     return {
       isLoading: blockTransactions.isLoading,
       isEnd: blockTransactions.isEnd,
       transactions,
+      filters,
     };
   },
   {
@@ -23,28 +32,30 @@ export default connect(
       blockId,
       status,
       fromIndex,
-    }: {
-      blockId: string;
-      status?: TransactionStatus;
-      fromIndex?: number;
-    }) => async (dispatch: Dispatch) => {
+      code,
+      action,
+    }: LoadTransactionsParams) => async (dispatch: Dispatch) => {
       const params = {
         blockId,
         status,
         fromIndex,
         limit: 20,
+        code,
+        action,
       };
+
+      const meta = { ...params };
 
       dispatch({
         type: FETCH_TRANSACTIONS,
-        meta: params,
+        meta,
       });
 
       const result = await Connection.get().callApi('blocks.getBlockTransactions', params);
 
       dispatch({
         type: FETCH_TRANSACTIONS_SUCCESS,
-        meta: params,
+        meta,
         payload: result,
       });
     },

@@ -21,17 +21,26 @@ export default connect(
     return {
       transaction: state.transactions[transactionId],
       transactionId,
+      filters: state.filters,
     };
   },
   {
-    loadTransaction: ({ transactionId }: { transactionId: string }) => async (
-      dispatch: Dispatch
-    ) => {
+    loadTransaction: ({
+      transactionId,
+      code,
+      action,
+    }: {
+      transactionId: string;
+      code?: string;
+      action?: string;
+    }) => async (dispatch: Dispatch) => {
       const result = await Connection.get().callApi('blocks.getTransaction', {
         transactionId,
+        code,
+        action,
       });
 
-      return dispatch({
+      dispatch({
         type: FETCH_TRANSACTION_SUCCESS,
         payload: result,
       });

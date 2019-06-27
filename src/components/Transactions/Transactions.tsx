@@ -6,8 +6,10 @@ import is from 'styled-is';
 import { last } from 'ramda';
 import InfiniteScroll from 'react-infinite-scroller';
 
-import { TransactionStatus, TransactionType } from '../../types';
+import { FiltersType, TransactionStatus, TransactionType } from '../../types';
 import InlineSwitch from '../InlineSwitch';
+
+import { LoadTransactionsParams } from './Transactions.connect';
 
 const FILTER_STORAGE_KEY: TransactionStatus = 'executed';
 
@@ -51,41 +53,62 @@ type Props = {
   blockId: string;
   isLoading: boolean;
   isEnd: boolean;
+  filters: FiltersType;
   transactions: TransactionType[];
-  loadTransactions: Function;
+  loadTransactions: (arg: LoadTransactionsParams) => void;
 };
 
-export default class Transactions extends PureComponent<Props> {
+type State = {
+  showOnlyExecuted: boolean;
+  filter: TransactionStatus;
+};
+
+export default class Transactions extends PureComponent<Props, State> {
   state = {
     showOnlyExecuted: true,
-    filter: localStorage.getItem(FILTER_STORAGE_KEY) || 'all',
+    filter: (localStorage.getItem(FILTER_STORAGE_KEY) || 'all') as TransactionStatus,
   };
 
   componentDidMount() {
     this.loadData();
   }
 
-  loadData() {
-    const { blockId, loadTransactions } = this.props;
+  componentWillReceiveProps(nextProps: Readonly<Props>) {
+    const props = this.props;
+
+    if (props.filters !== nextProps.filters) {
+      setTimeout(() => {
+        this.loadData();
+      });
+    }
+  }
+
+  loadData(isMore = false) {
+    const { blockId, filters, transactions, loadTransactions } = this.props;
     const { filter } = this.state;
 
-    loadTransactions({ blockId, status: filter });
+    const query: LoadTransactionsParams = { blockId, status: filter, ...filters };
+
+    if (isMore) {
+      const { index } = last(transactions) as TransactionType;
+
+      query.fromIndex = index;
+    }
+
+    loadTransactions(query);
   }
 
   onLoadMore = () => {
-    const { isLoading, isEnd, transactions, blockId, loadTransactions } = this.props;
-    const { filter } = this.state;
+    const { isLoading, isEnd, transactions } = this.props;
 
     if (isLoading || isEnd || transactions.length === 0) {
       return;
     }
 
-    const { index } = last(transactions) as TransactionType;
-
-    loadTransactions({ blockId, status: filter, fromIndex: index });
+    this.loadData(true);
   };
 
-  onFilterChange = (value: string) => {
+  onFilterChange = (value: TransactionStatus) => {
     this.setState(
       {
         filter: value,

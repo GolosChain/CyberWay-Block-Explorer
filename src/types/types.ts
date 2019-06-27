@@ -26,7 +26,7 @@ export type Suggest = {
   };
 };
 
-export type TransactionStatus = 'executed' | 'expired' | 'soft_fail';
+export type TransactionStatus = 'all' | 'executed' | 'expired' | 'soft_fail';
 
 type TransactionStats = {
   cpu_usage_us: number;
@@ -46,7 +46,11 @@ export type TransactionType = {
   actions: TransactionAction[];
 };
 
-export type TransactionAction = {};
+export type TransactionAction = {
+  index: number;
+  code: string;
+  action: string;
+};
 
 export type FiltersType = {
   code?: string;

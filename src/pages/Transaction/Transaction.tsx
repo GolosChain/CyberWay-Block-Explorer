@@ -3,7 +3,7 @@ import styled from 'styled-components';
 // @ts-ignore
 import is from 'styled-is';
 
-import { TransactionType } from '../../types';
+import { FiltersType, TransactionType } from '../../types';
 
 import { Field, FieldTitle, FieldValue, Id } from '../../components/Form';
 import TransactionActions from '../../components/TransactionActions';
@@ -23,18 +23,28 @@ const Status = styled.span<{ expired: boolean }>`
 type Props = {
   transactionId: string;
   transaction: TransactionType | null;
+  filters: FiltersType;
   loadTransaction: Function;
 };
 
 export default class Transaction extends PureComponent<Props> {
   componentDidMount() {
-    const { transactionId } = this.props;
+    this.load();
+  }
 
-    this.props.loadTransaction({ transactionId });
+  load() {
+    const { transactionId, filters, loadTransaction } = this.props;
+
+    const query = {
+      transactionId,
+      ...filters,
+    };
+
+    loadTransaction(query);
   }
 
   render() {
-    const { transactionId, transaction } = this.props;
+    const { transactionId, transaction, filters } = this.props;
 
     return (
       <Wrapper>
@@ -76,7 +86,7 @@ export default class Transaction extends PureComponent<Props> {
               <FieldTitle>Statistics:</FieldTitle>
               <FieldValue>{JSON.stringify(transaction.stats, null, 2)}</FieldValue>
             </Field>
-            <TransactionActions actions={transaction.actions} />
+            <TransactionActions actions={transaction.actions} filters={filters} />
           </>
         ) : null}
       </Wrapper>
