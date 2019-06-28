@@ -23,6 +23,7 @@ export default connect(
     return {
       isLoading: blockTransactions.isLoading,
       isEnd: blockTransactions.isEnd,
+      currentFilters: blockTransactions.currentFilters,
       transactions,
       filters,
     };

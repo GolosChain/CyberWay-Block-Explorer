@@ -6,6 +6,7 @@ import ToastsManager from 'toasts-manager';
 
 import { BlockSummary, FiltersType } from '../../types';
 import Link from '../../components/Link';
+import CurrentFilters from '../../components/CurrentFilters';
 
 const CHECK_NEW_BLOCKS_EVERY = 3000;
 
@@ -17,9 +18,11 @@ const Title = styled.h1`
   margin: 12px 0;
 `;
 
-const ListWrapper = styled.div`
+const ListContainer = styled.div`
   display: flex;
 `;
+
+const ListWrapper = styled.div``;
 
 const List = styled.ul``;
 
@@ -45,6 +48,7 @@ type Props = {
   lastBlockNum: number;
   blocks: BlockSummary[];
   filters: FiltersType;
+  currentFilters: FiltersType;
   loadBlocks: Function;
   loadNewBlocks: Function;
   clearData: Function;
@@ -167,16 +171,23 @@ export default class BlockFeed extends PureComponent<Props, State> {
   };
 
   render() {
-    const { blocks, isEnd } = this.props;
+    const { blocks, isLoading, isEnd, currentFilters } = this.props;
 
     return (
       <Wrapper>
         <Title>Block feed:</Title>
-        <ListWrapper>
-          <InfiniteScroll hasMore={!isEnd} loadMore={this.onLoadMore}>
-            <List onMouseMove={this.onMouseMove}>{blocks.map(this.renderBlockLine)}</List>
-          </InfiniteScroll>
-        </ListWrapper>
+        <ListContainer>
+          <ListWrapper>
+            <CurrentFilters filters={currentFilters} />
+            <InfiniteScroll hasMore={!isEnd} loadMore={this.onLoadMore}>
+              {blocks.length ? (
+                <List onMouseMove={this.onMouseMove}>{blocks.map(this.renderBlockLine)}</List>
+              ) : isLoading ? null : (
+                'No blocks'
+              )}
+            </InfiniteScroll>
+          </ListWrapper>
+        </ListContainer>
       </Wrapper>
     );
   }

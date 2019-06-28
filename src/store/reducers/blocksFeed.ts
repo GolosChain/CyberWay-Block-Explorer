@@ -15,6 +15,7 @@ export type State = {
   isLoading: boolean;
   isEnd: boolean;
   filters: FiltersType;
+  currentFilters: FiltersType;
   queueId: number;
   items: BlockSummary[];
 };
@@ -23,6 +24,7 @@ const initialState: State = {
   isLoading: false,
   isEnd: false,
   filters: {},
+  currentFilters: {},
   queueId: 1,
   items: [],
 };
@@ -54,26 +56,34 @@ export default function(state: State = initialState, { type, payload, meta }: Ac
           isLoading: true,
         };
       }
-    case FETCH_BLOCKS_SUCCESS:
+    case FETCH_BLOCKS_SUCCESS: {
       if (meta.queueId !== state.queueId) {
         return state;
       }
 
+      const currentFilters = { code: meta.code, action: meta.action };
+
       return {
         ...state,
         isLoading: false,
+        currentFilters,
         isEnd: payload.blocks.length < meta.limit,
         items: state.items.concat(payload.blocks),
       };
-    case FETCH_BLOCKS_ERROR:
+    }
+    case FETCH_BLOCKS_ERROR: {
       if (meta.queueId !== state.queueId) {
         return state;
       }
 
+      const currentFilters = { code: meta.code, action: meta.action };
+
       return {
         ...state,
         isLoading: false,
+        currentFilters,
       };
+    }
     case FETCH_NEW_BLOCKS:
       meta.queueId = state.queueId;
       return state;

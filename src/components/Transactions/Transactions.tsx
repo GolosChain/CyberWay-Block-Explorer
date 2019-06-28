@@ -1,5 +1,4 @@
 import React, { PureComponent } from 'react';
-import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 // @ts-ignore
 import is from 'styled-is';
@@ -7,7 +6,9 @@ import { last } from 'ramda';
 import InfiniteScroll from 'react-infinite-scroller';
 
 import { FiltersType, TransactionStatus, TransactionType } from '../../types';
+import Link from '../Link';
 import InlineSwitch from '../InlineSwitch';
+import CurrentFilters from '../CurrentFilters';
 
 import { LoadTransactionsParams } from './Transactions.connect';
 
@@ -20,6 +21,12 @@ const Wrapper = styled.div`
 const SubTitle = styled.h2`
   margin-bottom: 8px;
 `;
+
+const ListContainer = styled.div`
+  display: flex;
+`;
+
+const ListWrapper = styled.div``;
 
 const List = styled.ul``;
 
@@ -54,6 +61,7 @@ type Props = {
   isLoading: boolean;
   isEnd: boolean;
   filters: FiltersType;
+  currentFilters: FiltersType;
   transactions: TransactionType[];
   loadTransactions: (arg: LoadTransactionsParams) => void;
 };
@@ -66,7 +74,7 @@ type State = {
 export default class Transactions extends PureComponent<Props, State> {
   state = {
     showOnlyExecuted: true,
-    filter: (localStorage.getItem(FILTER_STORAGE_KEY) || 'all') as TransactionStatus,
+    filter: (localStorage.getItem(FILTER_STORAGE_KEY) || 'executed') as TransactionStatus,
   };
 
   componentDidMount() {
@@ -124,7 +132,7 @@ export default class Transactions extends PureComponent<Props, State> {
   renderTransactionLine = (transaction: TransactionType) => {
     return (
       <Item key={transaction.id}>
-        <LinkStyled to={`/trx/${transaction.id}`}>
+        <LinkStyled to={`/trx/${transaction.id}`} keepHash>
           <TransactionIndex>({transaction.index + 1})</TransactionIndex>{' '}
           <TransactionId>{transaction.id}</TransactionId>{' '}
           <StatusText expired={transaction.status === 'expired'}>{transaction.status}</StatusText>{' '}
@@ -134,7 +142,7 @@ export default class Transactions extends PureComponent<Props, State> {
   };
 
   render() {
-    const { transactions, isEnd } = this.props;
+    const { transactions, isLoading, isEnd, currentFilters } = this.props;
     const { filter } = this.state;
 
     return (
@@ -147,13 +155,18 @@ export default class Transactions extends PureComponent<Props, State> {
             onChange={this.onFilterChange}
           />
         </SubTitle>
-        {transactions.length ? (
-          <InfiniteScroll hasMore={!isEnd} loadMore={this.onLoadMore}>
-            <List>{transactions.map(this.renderTransactionLine)}</List>
-          </InfiniteScroll>
-        ) : (
-          'No transactions'
-        )}
+        <ListContainer>
+          <ListWrapper>
+            <CurrentFilters filters={currentFilters} />
+            {transactions.length ? (
+              <InfiniteScroll hasMore={!isEnd} loadMore={this.onLoadMore}>
+                <List>{transactions.map(this.renderTransactionLine)}</List>
+              </InfiniteScroll>
+            ) : isLoading ? null : (
+              'No transactions'
+            )}
+          </ListWrapper>
+        </ListContainer>
       </Wrapper>
     );
   }

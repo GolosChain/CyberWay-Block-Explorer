@@ -20,7 +20,8 @@ import { FiltersType } from '../../types';
 
 export default connect(
   (state: State) => {
-    const { items, isLoading, isEnd } = state.blocksFeed;
+    const { filters } = state;
+    const { items, isLoading, isEnd, currentFilters } = state.blocksFeed;
 
     const lastBlock = last(items);
 
@@ -29,7 +30,8 @@ export default connect(
       isLoading,
       isEnd,
       blocks: items,
-      filters: state.filters,
+      currentFilters,
+      filters,
     };
   },
   {

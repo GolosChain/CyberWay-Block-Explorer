@@ -6,6 +6,7 @@ export type State = {
   isLoading: boolean;
   isEnd: boolean;
   filters: FiltersType;
+  currentFilters: FiltersType;
   queueId: number;
   blocks: {
     [key: string]: [TransactionType];
@@ -16,13 +17,14 @@ const initialState: State = {
   isLoading: false,
   isEnd: false,
   filters: {},
+  currentFilters: {},
   queueId: 1,
   blocks: {},
 };
 
 export default function(state: State = initialState, { type, payload, meta }: Action) {
   switch (type) {
-    case FETCH_TRANSACTIONS:
+    case FETCH_TRANSACTIONS: {
       const filters = { code: meta.code, action: meta.action };
       let { queueId } = state;
 
@@ -36,19 +38,24 @@ export default function(state: State = initialState, { type, payload, meta }: Ac
         return {
           ...state,
           queueId,
+          filters,
           isLoading: true,
         };
       } else {
         return {
           ...initialState,
           queueId,
+          filters,
           isLoading: true,
         };
       }
-    case FETCH_TRANSACTIONS_SUCCESS:
+    }
+    case FETCH_TRANSACTIONS_SUCCESS: {
       if (meta.queueId !== state.queueId) {
         return state;
       }
+
+      const currentFilters = { code: meta.code, action: meta.action };
 
       let transactions;
 
@@ -62,11 +69,13 @@ export default function(state: State = initialState, { type, payload, meta }: Ac
         ...state,
         isLoading: false,
         isEnd: payload.transactions.length < meta.limit,
+        currentFilters,
         blocks: {
           ...state.blocks,
           [meta.blockId]: transactions,
         },
       };
+    }
     default:
       return state;
   }

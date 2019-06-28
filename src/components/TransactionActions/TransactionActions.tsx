@@ -3,10 +3,14 @@ import styled from 'styled-components';
 import JSONPretty from 'react-json-pretty';
 
 import { FiltersType, TransactionAction } from '../../types';
+import CurrentFilters from '../CurrentFilters';
 
 const Wrapper = styled.div`
+  display: flex;
   margin-top: 20px;
 `;
+
+const Container = styled.div``;
 
 const SubTitle = styled.h2``;
 
@@ -54,8 +58,11 @@ export default class TransactionActions extends PureComponent<Props> {
 
     return (
       <Wrapper>
-        <SubTitle>Actions ({actions.length})</SubTitle>
-        <List>{resultActions.map(this.renderAction)}</List>
+        <Container>
+          <SubTitle>Actions ({actions.length})</SubTitle>
+          <CurrentFilters filters={filters} />
+          <List>{resultActions.map(this.renderAction)}</List>
+        </Container>
       </Wrapper>
     );
   }
