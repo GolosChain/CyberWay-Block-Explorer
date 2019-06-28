@@ -66,7 +66,7 @@ export default class BlockChainStatus extends PureComponent<Props> {
       <Wrapper>
         <Title>Blockchain status:</Title>
         <Line>
-          <Label>Last block: </Label>
+          <Label>Last processed block: </Label>
           <Value>
             <Link to={`/block/${info.lastBlockId}`} keepHash>
               #{info.lastBlockNum}
