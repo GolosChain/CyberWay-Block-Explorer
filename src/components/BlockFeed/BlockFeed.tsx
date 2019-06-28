@@ -38,7 +38,7 @@ const Block = styled.li``;
 
 const LinkStyled = styled(Link)`
   display: block;
-  margin: 4px 0;
+  padding: 3px 0;
   font-size: 14px;
   color: unset;
   text-decoration: none;
@@ -48,6 +48,14 @@ const BlockNum = styled.span``;
 
 const BlockId = styled.span`
   font-family: monospace;
+`;
+
+const Time = styled.span`
+  color: #6a6a6a;
+
+  &:hover {
+    color: #000;
+  }
 `;
 
 type Props = {
@@ -187,8 +195,8 @@ export default class BlockFeed extends PureComponent<Props, State> {
     return (
       <Block key={block.id}>
         <LinkStyled to={`/block/${block.id}`} keepHash>
-          <BlockNum>({block.blockNum})</BlockNum> <BlockId>{block.id}</BlockId> (txs:{' '}
-          {block.counters.transactions.total})
+          <Time>{block.blockTime.substr(11, 8)}</Time> <BlockNum>({block.blockNum})</BlockNum>{' '}
+          <BlockId>{block.id}</BlockId> (txs: {block.counters.transactions.total})
         </LinkStyled>
       </Block>
     );

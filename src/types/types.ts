@@ -9,7 +9,7 @@ export type BlockSummary = {
   id: string;
   parentId: string;
   blockNum: number;
-  blockTime: Date;
+  blockTime: string;
   counters: {
     transactions: {
       [key: string]: number;
