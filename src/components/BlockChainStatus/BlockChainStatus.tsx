@@ -2,14 +2,25 @@ import React, { PureComponent } from 'react';
 import styled from 'styled-components';
 
 import { State as BlockchainState } from '../../store/reducers/blockchain';
+import Chart from '../Chart';
 import Link from '../Link';
 
 const REFRESH_EVERY = 3000;
 
 const Wrapper = styled.div`
+  display: flex;
   padding: 16px;
   border-radius: 8px;
   background: #f6f6f6;
+`;
+
+const TextPanel = styled.div`
+  min-width: 240px;
+  margin-right: 20px;
+`;
+
+const ChartPanel = styled.div`
+  margin: -8px 0;
 `;
 
 const Title = styled.div`
@@ -55,6 +66,7 @@ export default class BlockChainStatus extends PureComponent<Props> {
     clearInterval(this._updateInterval);
 
     if (!document.hidden) {
+      this.load();
       this._updateInterval = setInterval(this.load, REFRESH_EVERY);
     }
   };
@@ -64,21 +76,26 @@ export default class BlockChainStatus extends PureComponent<Props> {
 
     return (
       <Wrapper>
-        <Title>Blockchain status:</Title>
-        <Line>
-          <Label>Last processed block: </Label>
-          <Value>
-            <Link to={`/block/${info.lastBlockId}`} keepHash>
-              #{info.lastBlockNum}
-            </Link>
-          </Value>
-        </Line>
-        <Line>
-          <Label>Irreversible block: </Label> <Value>#{info.irreversibleBlockNum}</Value>
-        </Line>
-        <Line>
-          <Label>Total transactions:</Label> <Value>{info.totalTransactions}</Value>
-        </Line>
+        <TextPanel>
+          <Title>Blockchain status:</Title>
+          <Line>
+            <Label>Last processed block: </Label>
+            <Value>
+              <Link to={`/block/${info.lastBlockId}`} keepHash>
+                #{info.lastBlockNum}
+              </Link>
+            </Value>
+          </Line>
+          <Line>
+            <Label>Irreversible block: </Label> <Value>#{info.irreversibleBlockNum}</Value>
+          </Line>
+          <Line>
+            <Label>Total transactions:</Label> <Value>{info.totalTransactions}</Value>
+          </Line>
+        </TextPanel>
+        <ChartPanel>
+          <Chart method="graphs.getLastHourGraph" />
+        </ChartPanel>
       </Wrapper>
     );
   }

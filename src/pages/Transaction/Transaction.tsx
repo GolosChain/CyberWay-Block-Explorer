@@ -53,7 +53,7 @@ export default class Transaction extends PureComponent<Props> {
           items={[
             {
               text: 'Feed',
-              url: '/',
+              url: '/feed/',
             },
             {
               text: `Block${transaction ? ` (${transaction.blockNum})` : ''}`,

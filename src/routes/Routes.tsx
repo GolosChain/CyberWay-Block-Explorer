@@ -1,7 +1,8 @@
 import React from 'react';
 import { Route } from 'react-router-dom';
 
-import BlockFeed from '../pages/BlockFeed';
+import Home from '../pages/Home';
+import Feed from '../pages/Feed';
 import Block from '../pages/Block';
 import Transaction from '../pages/Transaction';
 
@@ -16,7 +17,8 @@ export type TransactionRouteParams = {
 export default function() {
   return (
     <>
-      <Route path="/" exact component={BlockFeed} />
+      <Route path="/" exact component={Home} />
+      <Route path="/feed" exact component={Feed} />
       <Route path="/block/:blockId" exact component={Block} />
       <Route path="/trx/:transactionId" exact component={Transaction} />
     </>

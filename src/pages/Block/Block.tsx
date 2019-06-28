@@ -47,7 +47,7 @@ export default class Block extends PureComponent<Props> {
           items={[
             {
               text: 'Feed',
-              url: '/',
+              url: '/feed/',
             },
             {
               text: `Block${block ? ` (${block.blockNum})` : ''}`,

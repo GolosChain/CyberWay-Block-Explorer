@@ -12,11 +12,11 @@ import {
   CLEAR_FEED_BLOCKS,
   FETCH_NEW_BLOCKS,
 } from '../../store/constants';
+import { FiltersType } from '../../types';
 import { State } from '../../store';
 import Connection from '../../utils/Connection';
 
 import BlockFeed from './BlockFeed';
-import { FiltersType } from '../../types';
 
 export default connect(
   (state: State) => {
@@ -45,7 +45,7 @@ export default connect(
       code?: string;
       action?: string;
       nonEmpty?: boolean;
-    } = {}) => async (dispatch: Function) => {
+    } = {}) => async (dispatch: Dispatch) => {
       const params = {
         fromBlockNum,
         code,

@@ -5,16 +5,13 @@ import InfiniteScroll from 'react-infinite-scroller';
 import ToastsManager from 'toasts-manager';
 
 import { BlockSummary, FiltersType } from '../../types';
-import Link from '../../components/Link';
-import CurrentFilters from '../../components/CurrentFilters';
-import BlockChainStatus from '../../components/BlockChainStatus';
-import LoaderIndicator from '../../components/LoaderIndicator';
+import Link from '../Link';
+import CurrentFilters from '../CurrentFilters';
+import LoaderIndicator from '../LoaderIndicator';
 
 const CHECK_NEW_BLOCKS_EVERY = 3000;
 
-const Wrapper = styled.div`
-  margin: 16px;
-`;
+const Wrapper = styled.div``;
 
 const TitleLine = styled.div`
   display: flex;
@@ -203,7 +200,6 @@ export default class BlockFeed extends PureComponent<Props, State> {
 
     return (
       <Wrapper>
-        <BlockChainStatus />
         <TitleLine>
           <Title>Block feed:</Title> {isAutoRefresh ? <LoaderIndicatorStyled /> : null}
         </TitleLine>

@@ -5,12 +5,7 @@ import { getHash, parseFilters } from '../utils/filters';
 
 const middlewares = [thunkMiddleware];
 
-if (
-  process.env.NODE_ENV !== 'production' &&
-  // @ts-ignore
-  (process.env.REDUX_LOGGER || process.browser)
-) {
-  // eslint-disable-next-line
+if (process.env.NODE_ENV !== 'production' && localStorage.getItem('reduxlogger') !== '0') {
   const { createLogger } = require('redux-logger');
   middlewares.push(createLogger());
 }
