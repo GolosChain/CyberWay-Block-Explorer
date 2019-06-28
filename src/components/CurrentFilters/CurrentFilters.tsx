@@ -20,7 +20,7 @@ const Item = styled.span`
 `;
 
 type Props = {
-  filters: FiltersType;
+  filters: FiltersType | null;
 };
 
 export default class CurrentFilters extends PureComponent<Props> {
@@ -39,6 +39,12 @@ export default class CurrentFilters extends PureComponent<Props> {
   };
 
   render() {
+    const { filters } = this.props;
+
+    if (!filters) {
+      return null;
+    }
+
     const items = FILTERS.map(this.renderItem);
 
     if (!items.some(Boolean)) {

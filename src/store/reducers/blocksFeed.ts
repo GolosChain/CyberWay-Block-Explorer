@@ -15,7 +15,7 @@ export type State = {
   isLoading: boolean;
   isEnd: boolean;
   filters: FiltersType;
-  currentFilters: FiltersType;
+  currentFilters: FiltersType | null;
   queueId: number;
   items: BlockSummary[];
 };
@@ -24,7 +24,7 @@ const initialState: State = {
   isLoading: false,
   isEnd: false,
   filters: {},
-  currentFilters: {},
+  currentFilters: null,
   queueId: 1,
   items: [],
 };
@@ -61,7 +61,11 @@ export default function(state: State = initialState, { type, payload, meta }: Ac
         return state;
       }
 
-      const currentFilters = { code: meta.code, action: meta.action };
+      let currentFilters = null;
+
+      if (meta.code || meta.action) {
+        currentFilters = { code: meta.code, action: meta.action };
+      }
 
       return {
         ...state,
@@ -76,7 +80,11 @@ export default function(state: State = initialState, { type, payload, meta }: Ac
         return state;
       }
 
-      const currentFilters = { code: meta.code, action: meta.action };
+      let currentFilters = null;
+
+      if (meta.code || meta.action) {
+        currentFilters = { code: meta.code, action: meta.action };
+      }
 
       return {
         ...state,

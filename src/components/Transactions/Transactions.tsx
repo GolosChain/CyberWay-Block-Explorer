@@ -61,7 +61,7 @@ type Props = {
   isLoading: boolean;
   isEnd: boolean;
   filters: FiltersType;
-  currentFilters: FiltersType;
+  currentFilters: FiltersType | null;
   transactions: TransactionType[];
   loadTransactions: (arg: LoadTransactionsParams) => void;
 };
@@ -162,7 +162,11 @@ export default class Transactions extends PureComponent<Props, State> {
               <InfiniteScroll hasMore={!isEnd} loadMore={this.onLoadMore}>
                 <List>{transactions.map(this.renderTransactionLine)}</List>
               </InfiniteScroll>
-            ) : isLoading ? null : (
+            ) : isLoading ? (
+              'Loading ...'
+            ) : currentFilters ? (
+              'Nothing is found'
+            ) : (
               'No transactions'
             )}
           </ListWrapper>

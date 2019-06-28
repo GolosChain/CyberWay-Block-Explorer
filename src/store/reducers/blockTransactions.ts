@@ -6,7 +6,7 @@ export type State = {
   isLoading: boolean;
   isEnd: boolean;
   filters: FiltersType;
-  currentFilters: FiltersType;
+  currentFilters: FiltersType | null;
   queueId: number;
   blocks: {
     [key: string]: [TransactionType];
@@ -17,7 +17,7 @@ const initialState: State = {
   isLoading: false,
   isEnd: false,
   filters: {},
-  currentFilters: {},
+  currentFilters: null,
   queueId: 1,
   blocks: {},
 };
@@ -55,7 +55,11 @@ export default function(state: State = initialState, { type, payload, meta }: Ac
         return state;
       }
 
-      const currentFilters = { code: meta.code, action: meta.action };
+      let currentFilters = null;
+
+      if (meta.code || meta.action) {
+        currentFilters = { code: meta.code, action: meta.action };
+      }
 
       let transactions;
 

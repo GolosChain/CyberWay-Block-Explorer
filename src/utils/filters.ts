@@ -37,7 +37,9 @@ export function parseFilters(text: string): FiltersType {
     }
   }
 
-  filters.nonEmpty = /\bnon?-?Empty\b/i.test(text);
+  if (/\bnon?-?Empty\b/i.test(text)) {
+    filters.nonEmpty = true;
+  }
 
   return filters;
 }

@@ -48,7 +48,7 @@ type Props = {
   lastBlockNum: number;
   blocks: BlockSummary[];
   filters: FiltersType;
-  currentFilters: FiltersType;
+  currentFilters: FiltersType | null;
   loadBlocks: Function;
   loadNewBlocks: Function;
   clearData: Function;
@@ -182,7 +182,11 @@ export default class BlockFeed extends PureComponent<Props, State> {
             <InfiniteScroll hasMore={!isEnd} loadMore={this.onLoadMore}>
               {blocks.length ? (
                 <List onMouseMove={this.onMouseMove}>{blocks.map(this.renderBlockLine)}</List>
-              ) : isLoading ? null : (
+              ) : isLoading ? (
+                'Loading ...'
+              ) : currentFilters ? (
+                'Nothing is found'
+              ) : (
                 'No blocks'
               )}
             </InfiniteScroll>
