@@ -7,6 +7,8 @@ import ToastsManager from 'toasts-manager';
 import { BlockSummary, FiltersType } from '../../types';
 import Link from '../../components/Link';
 import CurrentFilters from '../../components/CurrentFilters';
+import BlockChainStatus from '../../components/BlockChainStatus';
+import LoaderIndicator from '../../components/LoaderIndicator';
 
 const CHECK_NEW_BLOCKS_EVERY = 3000;
 
@@ -14,8 +16,17 @@ const Wrapper = styled.div`
   margin: 16px;
 `;
 
+const TitleLine = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
 const Title = styled.h1`
-  margin: 12px 0;
+  margin: 12px 10px 12px 0;
+`;
+
+const LoaderIndicatorStyled = styled(LoaderIndicator)`
+  margin-bottom: -2px;
 `;
 
 const ListContainer = styled.div`
@@ -56,11 +67,13 @@ type Props = {
 
 type State = {
   stopNewBlockUpdating: boolean;
+  isAutoRefresh: boolean;
 };
 
 export default class BlockFeed extends PureComponent<Props, State> {
   state = {
     stopNewBlockUpdating: false,
+    isAutoRefresh: true,
   };
 
   private _resumeUpdateTimeout: number | undefined;
@@ -91,6 +104,10 @@ export default class BlockFeed extends PureComponent<Props, State> {
   componentWillUnmount() {
     clearInterval(this._refreshInterval);
     clearTimeout(this._resumeUpdateTimeout);
+
+    this.setState({
+      isAutoRefresh: false,
+    });
   }
 
   onVisibilityChange = () => {
@@ -107,10 +124,18 @@ export default class BlockFeed extends PureComponent<Props, State> {
   startAutoUpdating() {
     clearTimeout(this._resumeUpdateTimeout);
     this._refreshInterval = setInterval(this.checkNewBlocks, CHECK_NEW_BLOCKS_EVERY);
+
+    this.setState({
+      isAutoRefresh: true,
+    });
   }
 
   stopAutoUpdating() {
     clearInterval(this._refreshInterval);
+
+    this.setState({
+      isAutoRefresh: false,
+    });
   }
 
   checkNewBlocks = () => {
@@ -172,10 +197,14 @@ export default class BlockFeed extends PureComponent<Props, State> {
 
   render() {
     const { blocks, isLoading, isEnd, currentFilters } = this.props;
+    const { isAutoRefresh } = this.state;
 
     return (
       <Wrapper>
-        <Title>Block feed:</Title>
+        <BlockChainStatus />
+        <TitleLine>
+          <Title>Block feed:</Title> {isAutoRefresh ? <LoaderIndicatorStyled /> : null}
+        </TitleLine>
         <ListContainer>
           <ListWrapper>
             <CurrentFilters filters={currentFilters} />
