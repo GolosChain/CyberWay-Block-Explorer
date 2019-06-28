@@ -109,7 +109,7 @@ export default class Chart extends PureComponent<Props> {
       options: {
         title: {
           display: true,
-          text: 'Transactions/minute',
+          text: 'Transactions/minute (last hour)',
         },
         legend: {
           display: false,
