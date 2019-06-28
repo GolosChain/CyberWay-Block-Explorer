@@ -1,8 +1,8 @@
 import React, { PureComponent, createRef, RefObject } from 'react';
-import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { Suggest } from '../../types';
+import Link from '../Link';
 
 const SYMBOLS_BY_TYPE = {
   block: 'Block',

@@ -2,8 +2,9 @@ import React, { PureComponent, ChangeEvent, FormEvent } from 'react';
 import styled from 'styled-components';
 import throttle from 'lodash.throttle';
 
-import { FiltersType, Suggest } from '../../types';
+import { Suggest } from '../../types';
 import SuggestPanel from '../SuggestPanel';
+import { getHash, parseFilters, setHash } from '../../utils/filters';
 
 const SearchForm = styled.form`
   display: flex;
@@ -41,33 +42,60 @@ export default class SearchPanel extends PureComponent<Props, State> {
   requestCompleteIndex = 0;
 
   state = {
-    searchText: '',
+    searchText: getHash(),
     isSuggestClosed: true,
     result: null,
   };
 
+  componentDidMount() {
+    window.addEventListener('hashchange', this.onHashChange);
+  }
+
   componentWillUnmount() {
     this.searchLazy.cancel();
+    window.removeEventListener('hashchange', this.onHashChange);
   }
 
   onSearchTextChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const text = e.target.value;
+    this.changeSearchText(e.target.value);
+  };
 
+  changeSearchText = (
+    text: string,
+    { isSubmit, dontUpdateHash }: { isSubmit?: boolean; dontUpdateHash?: boolean } = {}
+  ) => {
     this.setState({
       searchText: text,
     });
 
-    if (text.trim() === '') {
+    const query = text.trim();
+
+    if (query === '') {
       this.applyFilters('');
     }
 
-    if (text.length >= 2) {
-      this.searchLazy();
+    if (query.length >= 2) {
+      if (isSubmit) {
+        this.search({ isSubmit: true, dontUpdateHash });
+      } else {
+        this.searchLazy({ dontUpdateHash });
+      }
     } else {
+      if (!dontUpdateHash) {
+        setHash(text);
+      }
+
       this.setState({
         result: null,
       });
+      this.searchLazy.cancel();
     }
+  };
+
+  onHashChange = () => {
+    this.changeSearchText(getHash(), {
+      dontUpdateHash: true,
+    });
   };
 
   onSearchTextFocus = () => {
@@ -76,12 +104,25 @@ export default class SearchPanel extends PureComponent<Props, State> {
     });
   };
 
-  search = async (isSubmit?: boolean) => {
+  search = async ({
+    isSubmit,
+    dontUpdateHash,
+  }: { isSubmit?: boolean; dontUpdateHash?: boolean } = {}) => {
     const { search } = this.props;
     const { searchText } = this.state;
 
+    if (!dontUpdateHash) {
+      setHash(searchText);
+    }
+
+    const query = searchText.trim();
+
     if (isSubmit) {
       this.applyFilters(searchText);
+    }
+
+    if (query.length < 2) {
+      return;
     }
 
     const startIndex = ++this.requestStartIndex;
@@ -116,7 +157,7 @@ export default class SearchPanel extends PureComponent<Props, State> {
 
   onSearchSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    this.search(true);
+    this.search({ isSubmit: true });
   };
 
   onSuggestClose = () => {
@@ -128,31 +169,7 @@ export default class SearchPanel extends PureComponent<Props, State> {
   applyFilters(searchText: string) {
     const { applyFilter } = this.props;
 
-    const filters: FiltersType = {};
-
-    const matches = searchText.match(/\b(?:action|code)\s*:\s*[\w\d.]+\b/g);
-
-    if (matches) {
-      for (const subString of matches) {
-        const pair = subString.match(/^(\w+)\s*:\s*([\w\d.]+)$/);
-
-        if (!pair) {
-          continue;
-        }
-
-        const [, type, value] = pair;
-
-        if (type === 'action') {
-          filters.action = value;
-        } else if (type === 'code') {
-          filters.code = value;
-        }
-      }
-    }
-
-    filters.nonEmpty = /\bnon?-?Empty\b/i.test(searchText);
-
-    applyFilter(filters);
+    applyFilter(parseFilters(searchText));
   }
 
   render() {

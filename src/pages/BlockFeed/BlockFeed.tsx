@@ -1,11 +1,11 @@
 import React, { PureComponent } from 'react';
 import styled from 'styled-components';
-import { Link } from 'react-router-dom';
 import InfiniteScroll from 'react-infinite-scroller';
 // @ts-ignore
 import ToastsManager from 'toasts-manager';
 
 import { BlockSummary, FiltersType } from '../../types';
+import Link from '../../components/Link';
 
 const CHECK_NEW_BLOCKS_EVERY = 3000;
 
@@ -158,7 +158,7 @@ export default class BlockFeed extends PureComponent<Props, State> {
   renderBlockLine = (block: BlockSummary) => {
     return (
       <Block key={block.id}>
-        <LinkStyled to={`/block/${block.id}`}>
+        <LinkStyled to={`/block/${block.id}`} keepHash>
           <BlockNum>({block.blockNum})</BlockNum> <BlockId>{block.id}</BlockId> (txs:{' '}
           {block.counters.transactions.total})
         </LinkStyled>

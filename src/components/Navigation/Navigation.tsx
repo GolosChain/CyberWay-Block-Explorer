@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import styled from 'styled-components';
-import { Link } from 'react-router-dom';
+import Link from '../Link';
 
 const Wrapper = styled.nav``;
 
@@ -18,15 +18,30 @@ const Item = styled.li`
   }
 `;
 
-export default class Navigation extends PureComponent {
+type Props = {
+  items: {
+    text: string;
+    url?: string | null;
+  }[];
+};
+
+export default class Navigation extends PureComponent<Props> {
   render() {
     const { items } = this.props;
 
     return (
       <Wrapper>
         <List>
-          {items.map(({ url, text }, i) => (
-            <Item key={i}>{url ? <Link to={url}>{text}</Link> : text}</Item>
+          {items.map(({ text, url }, i) => (
+            <Item key={i}>
+              {url ? (
+                <Link to={url} keepHash>
+                  {text}
+                </Link>
+              ) : (
+                text
+              )}
+            </Item>
           ))}
         </List>
       </Wrapper>

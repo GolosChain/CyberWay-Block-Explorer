@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import styled from 'styled-components';
-import { Link } from 'react-router-dom';
 
+import Link from '../Link';
 import SearchPanel from '../SearchPanel';
 
 const Wrapper = styled.header`

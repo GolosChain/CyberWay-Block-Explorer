@@ -2,13 +2,13 @@ import React, { PureComponent } from 'react';
 import styled from 'styled-components';
 // @ts-ignore
 import is from 'styled-is';
-import { Link } from 'react-router-dom';
 
 import { FiltersType, TransactionType } from '../../types';
 
 import Navigation from '../../components/Navigation';
 import { Field, FieldTitle, FieldValue, Id } from '../../components/Form';
 import TransactionActions from '../../components/TransactionActions';
+import Link from '../../components/Link';
 
 const Wrapper = styled.div`
   margin: 16px;
@@ -22,10 +22,6 @@ const Status = styled.span<{ expired: boolean }>`
   ${is('expired')`
     color: #f00;
   `}
-`;
-
-const LinkStyled = styled(Link)`
-  color: #000;
 `;
 
 type Props = {
@@ -80,17 +76,17 @@ export default class Transaction extends PureComponent<Props> {
             <Field>
               <FieldTitle>Block id:</FieldTitle>
               <FieldValue>
-                <LinkStyled to={`/block/${transaction.blockId}`}>
+                <Link to={`/block/${transaction.blockId}`} keepHash>
                   <Id>{transaction.blockId}</Id>
-                </LinkStyled>
+                </Link>
               </FieldValue>
             </Field>
             <Field>
               <FieldTitle>Block num:</FieldTitle>
               <FieldValue>
-                <LinkStyled to={`/block/${transaction.blockId}`}>
+                <Link to={`/block/${transaction.blockId}`} keepHash>
                   <Id>{transaction.blockNum}</Id>
-                </LinkStyled>
+                </Link>
               </FieldValue>
             </Field>
             <Field>

@@ -2,12 +2,12 @@ import React, { PureComponent } from 'react';
 import styled from 'styled-components';
 // @ts-ignore
 import is from 'styled-is';
-import { Link } from 'react-router-dom';
 
 import { BlockSummary } from '../../types';
 import { Field, FieldTitle, FieldValue, Id } from '../../components/Form';
 import Transactions from '../../components/Transactions';
 import Navigation from '../../components/Navigation';
+import Link from '../../components/Link';
 
 const Wrapper = styled.div`
   margin: 16px;
@@ -23,10 +23,6 @@ const Colored = styled.span<{ bad?: boolean }>`
   ${is('bad')`
     color: #f00;
   `};
-`;
-
-const LinkStyled = styled(Link)`
-  color: #000;
 `;
 
 type Props = {
@@ -70,9 +66,9 @@ export default class Block extends PureComponent<Props> {
             <Field>
               <FieldTitle>Parent id:</FieldTitle>
               <FieldValue>
-                <LinkStyled to={`/block/${block.parentId}`}>
+                <Link to={`/block/${block.parentId}`} keepHash>
                   <Id>{block.parentId}</Id>
-                </LinkStyled>
+                </Link>
               </FieldValue>
             </Field>
             <Field>
