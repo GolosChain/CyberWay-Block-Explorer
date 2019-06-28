@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import styled, { keyframes, css } from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 
 const SIZE = 36;
 
@@ -12,15 +12,6 @@ const fadeIn = keyframes`
   }
 `;
 
-const Wrapper = styled.div`
-  display: inline-block;
-  width: ${SIZE}px;
-  height: ${SIZE}px;
-  overflow: hidden;
-  pointer-events: none;
-  animation: ${fadeIn} 0.3s;
-`;
-
 const rotate = keyframes`
   from {
     transform: rotate(0);
@@ -30,18 +21,45 @@ const rotate = keyframes`
   }
 `;
 
-const Inner = styled.div<{ paused?: boolean }>`
-  position: absolute;
+const pulse = keyframes`
+  from {
+    transform: scale(1);
+  }
+  80% {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(0.8);
+  }
+`;
+
+const Wrapper = styled.div`
+  position: relative;
+  display: inline-block;
   width: ${SIZE}px;
   height: ${SIZE}px;
-  transform-origin: center;
+  overflow: hidden;
+  pointer-events: none;
+  animation: ${fadeIn} 0.3s;
+`;
 
-  ${({ paused }) =>
-    paused
-      ? null
-      : css`
-          animation: ${rotate} 2s linear infinite;
-        `}
+const PulseGroup = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  animation: ${pulse} alternate 1.5s infinite;
+`;
+
+const RotationGroup = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  transform-origin: center;
+  animation: ${rotate} 2s linear infinite;
 `;
 
 const Dot = styled.div`
@@ -54,21 +72,22 @@ const Dot = styled.div`
 `;
 
 type Props = {
-  paused?: boolean;
   className?: string;
 };
 
 export default class LoaderIndicator extends PureComponent<Props> {
   render() {
-    const { paused, className } = this.props;
+    const { className } = this.props;
 
     return (
       <Wrapper className={className}>
-        <Inner paused={paused}>
-          <Dot style={{ transform: `translate(${SIZE / 2}px, 6px)` }} />
-          <Dot style={{ transform: 'translate(7px, 25px)' }} />
-          <Dot style={{ transform: `translate(${SIZE - 7}px, 25px)` }} />
-        </Inner>
+        <PulseGroup>
+          <RotationGroup>
+            <Dot style={{ transform: `translate(${SIZE / 2}px, 6px)` }} />
+            <Dot style={{ transform: 'translate(7px, 25px)' }} />
+            <Dot style={{ transform: `translate(${SIZE - 7}px, 25px)` }} />
+          </RotationGroup>
+        </PulseGroup>
       </Wrapper>
     );
   }
