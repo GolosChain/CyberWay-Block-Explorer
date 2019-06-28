@@ -1,1 +1,1 @@
-export { default } from './BlockChainStatus';
+export { default } from './BlockChainStatus.connect';

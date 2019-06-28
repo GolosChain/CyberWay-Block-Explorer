@@ -102,6 +102,8 @@ export default class BlockFeed extends PureComponent<Props, State> {
   }
 
   componentWillUnmount() {
+    document.removeEventListener('visibilitychange', this.onVisibilityChange);
+
     clearInterval(this._refreshInterval);
     clearTimeout(this._resumeUpdateTimeout);
 

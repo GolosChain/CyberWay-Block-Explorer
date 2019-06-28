@@ -84,7 +84,7 @@ export default class Block extends PureComponent<Props> {
               <FieldValue>
                 {block.counters.transactions.total}/
                 <Colored>{block.counters.transactions.executed}</Colored>/
-                <Colored bad>{block.counters.transactions.expired}</Colored>
+                <Colored bad>{block.counters.transactions.expired || 0}</Colored>
               </FieldValue>
             </Field>
           </>
