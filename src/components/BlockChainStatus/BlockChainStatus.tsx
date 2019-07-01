@@ -90,7 +90,10 @@ export default class BlockChainStatus extends PureComponent<Props> {
             <Label>Irreversible block: </Label> <Value>#{info.irreversibleBlockNum}</Value>
           </Line>
           <Line>
-            <Label>Total transactions:</Label> <Value>{info.totalTransactions}</Value>
+            <Label>Accounts:</Label> <Value>{info.accountsCount}</Value>
+          </Line>
+          <Line>
+            <Label>Transactions:</Label> <Value>{info.transactionsCount}</Value>
           </Line>
         </TextPanel>
         <ChartPanel>

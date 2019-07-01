@@ -5,7 +5,8 @@ export type State = {
   lastBlockId: string | null;
   lastBlockNum: number | null;
   irreversibleBlockNum: number | null;
-  totalTransactions: number | null;
+  transactionsCount: number | null;
+  accountsCount: number | null;
   blockchainHost: string | null;
 };
 
@@ -13,7 +14,8 @@ const initialState: State = {
   lastBlockId: null,
   lastBlockNum: null,
   irreversibleBlockNum: null,
-  totalTransactions: 0,
+  accountsCount: 0,
+  transactionsCount: 0,
   blockchainHost: null,
 };
 
@@ -24,7 +26,8 @@ export default function(state = initialState, { type, payload }: Action) {
         lastBlockId: payload.lastBlockId,
         lastBlockNum: payload.lastBlockNum,
         irreversibleBlockNum: payload.irreversibleBlockNum,
-        totalTransactions: payload.totalTransactions,
+        accountsCount: payload.accountsCount,
+        transactionsCount: payload.transactionsCount,
         blockchainHost: payload.blockchainHost,
       };
     default:
