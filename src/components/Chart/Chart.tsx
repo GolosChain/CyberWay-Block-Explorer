@@ -99,7 +99,7 @@ export default class Chart extends PureComponent<Props> {
         labels,
         datasets: [
           {
-            label: 'tps',
+            label: 'tpm',
             data: series,
             backgroundColor: 'rgba(24,144,255, 0.7)',
             borderWidth: 1,

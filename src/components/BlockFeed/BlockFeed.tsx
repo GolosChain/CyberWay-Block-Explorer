@@ -192,12 +192,14 @@ export default class BlockFeed extends PureComponent<Props, State> {
   };
 
   renderBlockLine = (block: BlockSummary) => {
+    const date = new Date(block.blockTime);
+
     return (
       <Block key={block.id}>
         <LinkStyled to={`/block/${block.id}`} keepHash>
-          <Time>{block.blockTime.substr(11, 8)}</Time> <BlockNum>({block.blockNum})</BlockNum>{' '}
-          <BlockId>{block.id}</BlockId> (txs: {block.counters.transactions.total}, actions:{' '}
-          {block.counters.actions.count})
+          <Time title={date.toLocaleString()}>{formatTime(date)}</Time>{' '}
+          <BlockNum>({block.blockNum})</BlockNum> <BlockId>{block.id}</BlockId> (txs:{' '}
+          {block.counters.transactions.total}, actions: {block.counters.actions.count})
         </LinkStyled>
       </Block>
     );
@@ -231,4 +233,16 @@ export default class BlockFeed extends PureComponent<Props, State> {
       </Wrapper>
     );
   }
+}
+
+function formatTime(date: Date) {
+  return `${nn(date.getHours())}:${nn(date.getMinutes())}:${nn(date.getSeconds())}`;
+}
+
+function nn(value: number) {
+  if (value < 10) {
+    return `0${value}`;
+  }
+
+  return String(value);
 }
