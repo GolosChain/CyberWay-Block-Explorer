@@ -14,6 +14,9 @@ export type BlockSummary = {
     transactions: {
       [key: string]: number;
     };
+    actions: {
+      [key: string]: number;
+    };
   };
 };
 

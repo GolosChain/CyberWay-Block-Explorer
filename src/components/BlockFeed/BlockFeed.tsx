@@ -196,7 +196,8 @@ export default class BlockFeed extends PureComponent<Props, State> {
       <Block key={block.id}>
         <LinkStyled to={`/block/${block.id}`} keepHash>
           <Time>{block.blockTime.substr(11, 8)}</Time> <BlockNum>({block.blockNum})</BlockNum>{' '}
-          <BlockId>{block.id}</BlockId> (txs: {block.counters.transactions.total})
+          <BlockId>{block.id}</BlockId> (txs: {block.counters.transactions.total}, actions:{' '}
+          {block.counters.actions.count})
         </LinkStyled>
       </Block>
     );

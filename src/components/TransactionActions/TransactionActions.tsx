@@ -32,7 +32,7 @@ export default class TransactionActions extends PureComponent<Props> {
     return (
       <Action key={action.index}>
         <ActionIndex>Action ({action.index}):</ActionIndex>
-        <JSONPretty json={action} />
+        <JSONPretty json={{ ...action, index: undefined }} />
       </Action>
     );
   };
