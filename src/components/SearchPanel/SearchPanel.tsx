@@ -15,7 +15,7 @@ const SearchForm = styled.form`
 
 const Hint = styled.span`
   margin-right: 10px;
-  cursor: pointer;
+  cursor: help;
 `;
 
 const SearchInput = styled.input`
@@ -186,7 +186,7 @@ export default class SearchPanel extends PureComponent<Props, State> {
       <SearchForm onSubmit={this.onSearchSubmit}>
         <Hint
           title={
-            'Allowed query: block id, transaction id. Allowed filters: code, action, nonempty, example: "code: gls.publish action: upvote" or simple "nonempty"'
+            'Allowed query: block id, transaction id. Allowed filters: code, action, actor, nonempty, example: "code: gls.publish action: upvote", "actor: gls" or simple "nonempty", also allowed combination of any filters'
           }
         >
           [?]

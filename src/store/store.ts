@@ -2,6 +2,8 @@ import { createStore, applyMiddleware } from 'redux';
 import thunkMiddleware from 'redux-thunk';
 import reducer from './reducers';
 import { getHash, parseFilters } from '../utils/filters';
+import { TransactionStatus } from '../types';
+import { FILTER_STORAGE_KEY } from '../constants';
 
 const middlewares = [thunkMiddleware];
 
@@ -11,7 +13,10 @@ if (process.env.NODE_ENV !== 'production' && localStorage.getItem('reduxlogger')
 }
 
 const initialState = {
-  filters: parseFilters(getHash()),
+  filters: {
+    ...parseFilters(getHash()),
+    status: (localStorage.getItem(FILTER_STORAGE_KEY) || 'executed') as TransactionStatus,
+  },
 };
 
 const store = createStore(reducer, initialState, applyMiddleware(...middlewares));

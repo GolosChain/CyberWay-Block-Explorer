@@ -16,11 +16,12 @@ export default connect(
 
       return await Connection.get().callApi('blocks.findEntity', params);
     },
-    applyFilter: ({ code, action, nonEmpty }: FiltersType) => ({
+    applyFilter: ({ code, action, actor, nonEmpty }: FiltersType) => ({
       type: SET_FILTERS,
       payload: {
         code,
         action,
+        actor,
         nonEmpty,
       },
     }),

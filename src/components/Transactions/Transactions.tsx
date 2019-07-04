@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import styled from 'styled-components';
 // @ts-ignore
 import is from 'styled-is';
-import { last } from 'ramda';
+import { last, equals } from 'ramda';
 import InfiniteScroll from 'react-infinite-scroller';
 
 import { FiltersType, TransactionStatus, TransactionType } from '../../types';
@@ -11,8 +11,6 @@ import InlineSwitch from '../InlineSwitch';
 import CurrentFilters from '../CurrentFilters';
 
 import { LoadTransactionsParams } from './Transactions.connect';
-
-const FILTER_STORAGE_KEY: TransactionStatus = 'executed';
 
 const Wrapper = styled.div`
   margin-top: 40px;
@@ -61,22 +59,13 @@ type Props = {
   isLoading: boolean;
   isEnd: boolean;
   filters: FiltersType;
-  currentFilters: FiltersType | null;
+  currentFilters: FiltersType;
   transactions: TransactionType[];
+  setStatusFilter: Function;
   loadTransactions: (arg: LoadTransactionsParams) => void;
 };
 
-type State = {
-  showOnlyExecuted: boolean;
-  filter: TransactionStatus;
-};
-
-export default class Transactions extends PureComponent<Props, State> {
-  state = {
-    showOnlyExecuted: true,
-    filter: (localStorage.getItem(FILTER_STORAGE_KEY) || 'executed') as TransactionStatus,
-  };
-
+export default class Transactions extends PureComponent<Props> {
   componentDidMount() {
     this.loadData();
   }
@@ -84,7 +73,7 @@ export default class Transactions extends PureComponent<Props, State> {
   componentWillReceiveProps(nextProps: Readonly<Props>) {
     const props = this.props;
 
-    if (props.filters !== nextProps.filters) {
+    if (!equals(props.filters, nextProps.filters)) {
       setTimeout(() => {
         this.loadData();
       });
@@ -93,9 +82,7 @@ export default class Transactions extends PureComponent<Props, State> {
 
   loadData(isMore = false) {
     const { blockId, filters, transactions, loadTransactions } = this.props;
-    const { filter } = this.state;
-
-    const query: LoadTransactionsParams = { blockId, status: filter, ...filters };
+    const query: LoadTransactionsParams = { blockId, ...filters };
 
     if (isMore) {
       const { index } = last(transactions) as TransactionType;
@@ -117,16 +104,8 @@ export default class Transactions extends PureComponent<Props, State> {
   };
 
   onFilterChange = (value: TransactionStatus) => {
-    this.setState(
-      {
-        filter: value,
-      },
-      () => {
-        this.loadData();
-      }
-    );
-
-    localStorage.setItem(FILTER_STORAGE_KEY, value);
+    const { setStatusFilter } = this.props;
+    setStatusFilter(value);
   };
 
   renderTransactionLine = (transaction: TransactionType) => {
@@ -143,14 +122,13 @@ export default class Transactions extends PureComponent<Props, State> {
 
   render() {
     const { transactions, isLoading, isEnd, currentFilters } = this.props;
-    const { filter } = this.state;
 
     return (
       <Wrapper>
         <SubTitle>
           Transactions{' '}
           <InlineSwitch
-            value={filter}
+            value={currentFilters.status || 'all'}
             options={['all', 'executed', 'expired']}
             onChange={this.onFilterChange}
           />

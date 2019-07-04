@@ -39,22 +39,25 @@ export default connect(
       fromBlockNum = undefined,
       code,
       action,
+      actor,
       nonEmpty,
     }: {
       fromBlockNum?: number;
       code?: string;
       action?: string;
+      actor?: string;
       nonEmpty?: boolean;
     } = {}) => async (dispatch: Dispatch) => {
-      const params = {
+      const meta = {
         fromBlockNum,
-        code,
-        action,
         limit: 20,
-        nonEmpty,
+        filters: {
+          code,
+          action,
+          actor,
+          nonEmpty,
+        },
       };
-
-      const meta = { ...params };
 
       dispatch({
         type: FETCH_BLOCKS,
@@ -64,7 +67,11 @@ export default connect(
       let results;
 
       try {
-        results = await Connection.get().callApi('blocks.getBlockList', params);
+        results = await Connection.get().callApi('blocks.getBlockList', {
+          fromBlockNum,
+          limit: 20,
+          ...meta.filters,
+        });
       } catch (err) {
         console.error(err);
         ToastsManager.error(`Request failed: ${err.message}`);
@@ -84,22 +91,28 @@ export default connect(
         meta,
       });
     },
-    loadNewBlocks: ({ code, action, nonEmpty }: FiltersType) => async (dispatch: Dispatch) => {
-      const params = {
-        code,
-        action,
+    loadNewBlocks: ({ code, action, actor, nonEmpty }: FiltersType) => async (
+      dispatch: Dispatch
+    ) => {
+      const meta = {
         limit: 5,
-        nonEmpty,
+        filters: {
+          code,
+          action,
+          actor,
+          nonEmpty,
+        },
       };
-
-      const meta = { ...params };
 
       dispatch({
         type: FETCH_NEW_BLOCKS,
         meta,
       });
 
-      const { blocks } = await Connection.get().callApi('blocks.getBlockList', params);
+      const { blocks } = await Connection.get().callApi('blocks.getBlockList', {
+        limit: 5,
+        ...meta.filters,
+      });
 
       dispatch({
         type: FETCH_NEW_BLOCKS_SUCCESS,

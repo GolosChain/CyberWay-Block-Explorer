@@ -1,4 +1,4 @@
-import { uniqBy, last } from 'ramda';
+import { uniqBy, last, equals } from 'ramda';
 
 import { Action, BlockSummary, FiltersType } from '../../types';
 
@@ -15,7 +15,7 @@ export type State = {
   isLoading: boolean;
   isEnd: boolean;
   filters: FiltersType;
-  currentFilters: FiltersType | null;
+  currentFilters: FiltersType;
   queueId: number;
   items: BlockSummary[];
 };
@@ -24,7 +24,7 @@ const initialState: State = {
   isLoading: false,
   isEnd: false,
   filters: {},
-  currentFilters: null,
+  currentFilters: {},
   queueId: 1,
   items: [],
 };
@@ -32,10 +32,9 @@ const initialState: State = {
 export default function(state: State = initialState, { type, payload, meta }: Action) {
   switch (type) {
     case FETCH_BLOCKS:
-      const filters = { code: meta.code, action: meta.action };
       let { queueId } = state;
 
-      if (state.filters.code !== filters.code || state.filters.action !== filters.action) {
+      if (!equals(state.filters, meta.filters)) {
         queueId++;
       }
 
@@ -44,14 +43,14 @@ export default function(state: State = initialState, { type, payload, meta }: Ac
       if (meta.fromBlockNum) {
         return {
           ...state,
-          filters,
+          filters: meta.filters,
           queueId,
           isLoading: true,
         };
       } else {
         return {
           ...initialState,
-          filters,
+          filters: meta.filters,
           queueId,
           isLoading: true,
         };
@@ -61,16 +60,10 @@ export default function(state: State = initialState, { type, payload, meta }: Ac
         return state;
       }
 
-      let currentFilters = null;
-
-      if (meta.code || meta.action) {
-        currentFilters = { code: meta.code, action: meta.action };
-      }
-
       return {
         ...state,
         isLoading: false,
-        currentFilters,
+        currentFilters: meta.filters,
         isEnd: payload.blocks.length < meta.limit,
         items: state.items.concat(payload.blocks),
       };
@@ -80,16 +73,10 @@ export default function(state: State = initialState, { type, payload, meta }: Ac
         return state;
       }
 
-      let currentFilters = null;
-
-      if (meta.code || meta.action) {
-        currentFilters = { code: meta.code, action: meta.action };
-      }
-
       return {
         ...state,
         isLoading: false,
-        currentFilters,
+        currentFilters: meta.filters,
       };
     }
     case FETCH_NEW_BLOCKS:

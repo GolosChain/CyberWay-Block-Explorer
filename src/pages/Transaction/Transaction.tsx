@@ -91,9 +91,7 @@ export default class Transaction extends PureComponent<Props> {
             </Field>
             <Field>
               <FieldTitle>Block time:</FieldTitle>
-              <FieldValue>
-                <Id>{transaction.blockTime}</Id>
-              </FieldValue>
+              <FieldValue>{new Date(transaction.blockTime).toLocaleString()}</FieldValue>
             </Field>
             <Field>
               <FieldTitle>Transaction status:</FieldTitle>

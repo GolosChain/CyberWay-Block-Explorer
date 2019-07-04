@@ -44,13 +44,16 @@ const LinkStyled = styled(Link)`
   text-decoration: none;
 `;
 
-const BlockNum = styled.span``;
+const BlockNum = styled.span`
+  font-family: monospace;
+`;
 
 const BlockId = styled.span`
   font-family: monospace;
 `;
 
 const Time = styled.span`
+  font-family: monospace;
   color: #6a6a6a;
 
   &:hover {
@@ -64,7 +67,7 @@ type Props = {
   lastBlockNum: number;
   blocks: BlockSummary[];
   filters: FiltersType;
-  currentFilters: FiltersType | null;
+  currentFilters: FiltersType;
   loadBlocks: Function;
   loadNewBlocks: Function;
   clearData: Function;

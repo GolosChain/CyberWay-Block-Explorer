@@ -50,6 +50,19 @@ export default class TransactionActions extends PureComponent<Props> {
           return action.code === filters.code;
         } else if (filters.action) {
           return action.action === filters.action;
+        } else if (filters.actor) {
+          const { auth } = action;
+
+          if (!auth) {
+            return false;
+          }
+
+          if (filters.actor.includes('/')) {
+            const [actorId, permission] = filters.actor.split('/');
+            return actorId === auth.actor && permission === auth.permission;
+          } else {
+            return auth.actor === filters.actor;
+          }
         }
 
         return false;

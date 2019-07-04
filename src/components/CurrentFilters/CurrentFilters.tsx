@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import styled from 'styled-components';
 import { FiltersType } from '../../types';
 
-const FILTERS = ['code', 'action', 'nonempty'];
+const FILTERS = ['code', 'action', 'actor', 'nonempty'];
 
 const Wrapper = styled.div`
   padding: 8px 12px;

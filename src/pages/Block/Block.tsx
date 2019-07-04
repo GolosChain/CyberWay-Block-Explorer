@@ -77,7 +77,7 @@ export default class Block extends PureComponent<Props> {
             </Field>
             <Field>
               <FieldTitle>Block time:</FieldTitle>
-              <FieldValue>{block.blockTime}</FieldValue>
+              <FieldValue>{new Date(block.blockTime).toLocaleString()}</FieldValue>
             </Field>
             <Field>
               <FieldTitle>Transactions (total/executed/expired) count:</FieldTitle>

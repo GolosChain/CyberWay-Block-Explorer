@@ -1,3 +1,5 @@
+import { equals } from 'ramda';
+
 import { Action, FiltersType, TransactionType } from '../../types';
 
 import { FETCH_TRANSACTIONS, FETCH_TRANSACTIONS_SUCCESS } from '../constants';
@@ -6,7 +8,7 @@ export type State = {
   isLoading: boolean;
   isEnd: boolean;
   filters: FiltersType;
-  currentFilters: FiltersType | null;
+  currentFilters: FiltersType;
   queueId: number;
   blocks: {
     [key: string]: [TransactionType];
@@ -17,7 +19,7 @@ const initialState: State = {
   isLoading: false,
   isEnd: false,
   filters: {},
-  currentFilters: null,
+  currentFilters: {},
   queueId: 1,
   blocks: {},
 };
@@ -25,10 +27,9 @@ const initialState: State = {
 export default function(state: State = initialState, { type, payload, meta }: Action) {
   switch (type) {
     case FETCH_TRANSACTIONS: {
-      const filters = { code: meta.code, action: meta.action };
       let { queueId } = state;
 
-      if (state.filters.code !== filters.code || state.filters.action !== filters.action) {
+      if (!equals(state.filters, meta.filters)) {
         queueId++;
       }
 
@@ -38,14 +39,14 @@ export default function(state: State = initialState, { type, payload, meta }: Ac
         return {
           ...state,
           queueId,
-          filters,
+          filters: meta.filters,
           isLoading: true,
         };
       } else {
         return {
           ...initialState,
           queueId,
-          filters,
+          filters: meta.filters,
           isLoading: true,
         };
       }
@@ -53,12 +54,6 @@ export default function(state: State = initialState, { type, payload, meta }: Ac
     case FETCH_TRANSACTIONS_SUCCESS: {
       if (meta.queueId !== state.queueId) {
         return state;
-      }
-
-      let currentFilters = null;
-
-      if (meta.code || meta.action) {
-        currentFilters = { code: meta.code, action: meta.action };
       }
 
       let transactions;
@@ -73,7 +68,7 @@ export default function(state: State = initialState, { type, payload, meta }: Ac
         ...state,
         isLoading: false,
         isEnd: payload.transactions.length < meta.limit,
-        currentFilters,
+        currentFilters: meta.filters,
         blocks: {
           ...state.blocks,
           [meta.blockId]: transactions,

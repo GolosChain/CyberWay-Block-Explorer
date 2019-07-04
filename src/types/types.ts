@@ -53,10 +53,16 @@ export type TransactionAction = {
   index: number;
   code: string;
   action: string;
+  auth: {
+    actor: string;
+    permission: string;
+  };
 };
 
 export type FiltersType = {
   code?: string;
   action?: string;
+  actor?: string;
   nonEmpty?: boolean;
+  status?: TransactionStatus;
 };
