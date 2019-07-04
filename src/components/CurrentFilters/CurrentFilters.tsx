@@ -2,7 +2,21 @@ import React, { PureComponent } from 'react';
 import styled from 'styled-components';
 import { FiltersType } from '../../types';
 
-const FILTERS = ['code', 'action', 'actor', 'nonempty'];
+const FILTERS = [
+  {
+    id: 'code',
+  },
+  {
+    id: 'action',
+  },
+  {
+    id: 'actor',
+  },
+  {
+    id: 'nonEmpty',
+    text: 'Non empty',
+  },
+];
 
 const Wrapper = styled.div`
   padding: 8px 12px;
@@ -24,17 +38,15 @@ type Props = {
 };
 
 export default class CurrentFilters extends PureComponent<Props> {
-  renderItem = (filterName: string) => {
+  renderItem = ({ id, text }: { id: string; text?: string }) => {
     const { filters } = this.props;
 
-    const value: string | undefined = (filters as any)[filterName];
+    const value: string | boolean | undefined = (filters as any)[id];
+
+    const label = text || id;
 
     if (value) {
-      return (
-        <Item key={filterName}>
-          {filterName}: {value}
-        </Item>
-      );
+      return <Item key={id}>{value === true ? label : `${label}: ${value}`}</Item>;
     }
   };
 
