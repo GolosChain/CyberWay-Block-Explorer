@@ -50,6 +50,8 @@ export default class TransactionActions extends PureComponent<Props> {
           return action.code === filters.code;
         } else if (filters.action) {
           return action.action === filters.action;
+        } else if (filters.event) {
+          return action.events && action.events.some(event => event.event === filters.event);
         } else if (filters.actor) {
           const { auth } = action;
 

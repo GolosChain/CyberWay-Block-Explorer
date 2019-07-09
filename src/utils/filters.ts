@@ -17,7 +17,7 @@ export function setHash(text: string): void {
 export function parseFilters(text: string): FiltersType {
   const filters: FiltersType = {};
 
-  const matches = text.match(/\b(?:action|code|actor)\s*:\s*[\w\d\\.]+\b/g);
+  const matches = text.match(/\b(?:action|code|actor|event)\s*:\s*[\w\d\\.]+\b/g);
 
   if (matches) {
     for (const subString of matches) {
@@ -35,6 +35,8 @@ export function parseFilters(text: string): FiltersType {
         filters.code = value;
       } else if (type === 'actor') {
         filters.actor = value;
+      } else if (type === 'event') {
+        filters.event = value;
       }
     }
   }

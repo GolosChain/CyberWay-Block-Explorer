@@ -49,6 +49,11 @@ export type TransactionType = {
   actions: TransactionAction[];
 };
 
+export type ActionEvent = {
+  code: string;
+  event: string;
+};
+
 export type TransactionAction = {
   index: number;
   code: string;
@@ -57,12 +62,14 @@ export type TransactionAction = {
     actor: string;
     permission: string;
   };
+  events: ActionEvent[];
 };
 
 export type FiltersType = {
   code?: string;
   action?: string;
   actor?: string;
+  event?: string;
   nonEmpty?: boolean;
   status?: TransactionStatus;
 };

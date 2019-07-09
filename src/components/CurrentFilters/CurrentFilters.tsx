@@ -13,6 +13,9 @@ const FILTERS = [
     id: 'actor',
   },
   {
+    id: 'event',
+  },
+  {
     id: 'nonEmpty',
     text: 'Non empty',
   },
