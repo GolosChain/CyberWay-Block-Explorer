@@ -169,7 +169,7 @@ export default class BlockFeed extends PureComponent<Props, State> {
     const { lastBlockNum, filters, loadBlocks } = this.props;
 
     try {
-      const query: { fromBlockNum?: number; code?: string; action?: string; nonEmpty?: boolean } = {
+      const query: FiltersType & { fromBlockNum?: number } = {
         ...filters,
       };
 

@@ -40,9 +40,11 @@ export default class TransactionActions extends PureComponent<Props> {
   render() {
     const { actions, filters } = this.props;
 
+    console.log('render', filters);
+
     let resultActions = actions;
 
-    if (filters.code || filters.action) {
+    if ([...Object.keys(filters)].some(key => key !== 'status' && (filters as any)[key])) {
       resultActions = resultActions.filter(action => {
         if (filters.code && filters.action) {
           return action.code === filters.code && action.action === filters.action;

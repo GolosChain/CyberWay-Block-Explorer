@@ -14,6 +14,7 @@ export default function(state: State = initialState, { type, payload, meta }: Ac
         code: payload.code,
         action: payload.action,
         actor: payload.actor,
+        event: payload.event,
         nonEmpty: payload.nonEmpty,
       };
     case SET_STATUS_FILTER:

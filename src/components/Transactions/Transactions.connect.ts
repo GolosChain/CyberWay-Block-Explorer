@@ -19,6 +19,7 @@ export type LoadTransactionsParams = {
   code?: string;
   action?: string;
   actor?: string;
+  event?: string;
   status?: TransactionStatus;
 };
 
@@ -49,6 +50,7 @@ export default connect(
       code,
       action,
       actor,
+      event,
       status,
     }: LoadTransactionsParams) => async (dispatch: Dispatch) => {
       const meta = {
@@ -59,6 +61,7 @@ export default connect(
           code,
           action,
           actor,
+          event,
           status,
         },
       };

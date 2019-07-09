@@ -39,14 +39,9 @@ export default connect(
       code,
       action,
       actor,
+      event,
       nonEmpty,
-    }: {
-      fromBlockNum?: number;
-      code?: string;
-      action?: string;
-      actor?: string;
-      nonEmpty?: boolean;
-    } = {}) => async (dispatch: Dispatch) => {
+    }: FiltersType & { fromBlockNum?: number } = {}) => async (dispatch: Dispatch) => {
       const meta = {
         fromBlockNum,
         limit: 20,
@@ -54,6 +49,7 @@ export default connect(
           code,
           action,
           actor,
+          event,
           nonEmpty,
         },
       };
@@ -90,7 +86,7 @@ export default connect(
         meta,
       });
     },
-    loadNewBlocks: ({ code, action, actor, nonEmpty }: FiltersType) => async (
+    loadNewBlocks: ({ code, action, actor, event, nonEmpty }: FiltersType) => async (
       dispatch: Dispatch
     ) => {
       const meta = {
@@ -99,6 +95,7 @@ export default connect(
           code,
           action,
           actor,
+          event,
           nonEmpty,
         },
       };
