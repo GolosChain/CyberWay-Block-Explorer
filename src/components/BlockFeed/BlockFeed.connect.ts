@@ -1,7 +1,6 @@
 import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
 import { last } from 'ramda';
-// @ts-ignore
 import ToastsManager from 'toasts-manager';
 
 import {

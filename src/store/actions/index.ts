@@ -1,5 +1,4 @@
 import { Dispatch } from 'redux';
-// @ts-ignore
 import ToastsManager from 'toasts-manager';
 
 import Connection from '../../utils/Connection';

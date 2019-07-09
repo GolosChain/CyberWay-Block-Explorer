@@ -1,7 +1,6 @@
 import React, { PureComponent, createRef, RefObject } from 'react';
 import styled from 'styled-components';
 import ChartJs from 'chart.js';
-// @ts-ignore
 import ToastsManager from 'toasts-manager';
 
 const Wrapper = styled.div`

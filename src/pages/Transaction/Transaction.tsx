@@ -1,6 +1,5 @@
 import React, { PureComponent } from 'react';
 import styled from 'styled-components';
-// @ts-ignore
 import is from 'styled-is';
 
 import { FiltersType, TransactionType } from '../../types';

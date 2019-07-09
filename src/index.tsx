@@ -1,6 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-// @ts-ignore
 import ToastsManager from 'toasts-manager';
 
 import 'normalize.css/normalize.css';

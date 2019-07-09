@@ -1,6 +1,5 @@
 import React from 'react';
 import { Provider } from 'react-redux';
-// @ts-ignore
 import ToastsManager from 'toasts-manager';
 import styled from 'styled-components';
 import { BrowserRouter as Router } from 'react-router-dom';

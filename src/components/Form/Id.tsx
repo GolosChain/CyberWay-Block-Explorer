@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-// @ts-ignore
 import is from 'styled-is';
 
 export default styled.span<{ bold?: boolean }>`
