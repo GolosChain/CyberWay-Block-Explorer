@@ -14,7 +14,7 @@ type Props = {
 export default function Link({ to, keepHash, ...props }: Props) {
   let finalTo = to;
 
-  if (!finalTo.includes('#')) {
+  if (keepHash && !finalTo.includes('#')) {
     finalTo += window.location.hash;
   }
 
