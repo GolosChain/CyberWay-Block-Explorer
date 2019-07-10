@@ -1,10 +1,9 @@
-import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
 
+import { CALL_API } from '../../store/middlewares/callApi';
 import { State } from '../../store';
 import { TransactionRouteParams } from '../../routes/Routes';
 import { FETCH_TRANSACTION_SUCCESS } from '../../store/constants';
-import Connection from '../../utils/Connection';
 
 import Transaction from './Transaction';
 
@@ -25,17 +24,13 @@ export default connect(
     };
   },
   {
-    loadTransaction: ({ transactionId }: { transactionId: string }) => async (
-      dispatch: Dispatch
-    ) => {
-      const result = await Connection.get().callApi('blocks.getTransaction', {
+    loadTransaction: ({ transactionId }: { transactionId: string }) => ({
+      type: CALL_API,
+      method: 'blocks.getTransaction',
+      params: {
         transactionId,
-      });
-
-      dispatch({
-        type: FETCH_TRANSACTION_SUCCESS,
-        payload: result,
-      });
-    },
+      },
+      types: [null, FETCH_TRANSACTION_SUCCESS, null],
+    }),
   }
 )(Transaction);

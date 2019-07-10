@@ -1,5 +1,12 @@
 import { Action as ReduxAction } from 'redux';
 
+export type CallApiType = {
+  method: string;
+  params?: object;
+  types?: string[];
+  meta?: any;
+};
+
 export type Action = ReduxAction & {
   payload?: any;
   meta?: any;
