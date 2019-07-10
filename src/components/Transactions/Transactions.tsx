@@ -50,7 +50,7 @@ const StatusText = styled.span<{ expired: boolean }>`
 
   ${is('expired')`
     color: #f00;
-  `}
+  `};
 `;
 
 type Props = {

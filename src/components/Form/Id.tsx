@@ -6,5 +6,5 @@ export default styled.span<{ bold?: boolean }>`
 
   ${is('bold')`
     font-weight: 600;
-  `}
+  `};
 `;

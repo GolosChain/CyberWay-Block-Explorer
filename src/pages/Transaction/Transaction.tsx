@@ -20,7 +20,7 @@ const Title = styled.h1`
 const Status = styled.span<{ expired: boolean }>`
   ${is('expired')`
     color: #f00;
-  `}
+  `};
 `;
 
 type Props = {
