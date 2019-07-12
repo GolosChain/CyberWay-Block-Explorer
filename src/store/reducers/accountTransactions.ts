@@ -1,50 +1,74 @@
-import { Action, AccountType } from '../../types';
+import { Action, FiltersType, TransactionType } from '../../types';
 
 import { FETCH_ACCOUNT_TRANSACTIONS, FETCH_ACCOUNT_TRANSACTIONS_SUCCESS } from '../constants';
+import { equals } from 'ramda';
 
 export type State = {
   isLoading: boolean;
-  isEnd: boolean;
-  account: AccountType | null;
+  filters: FiltersType;
+  currentFilters: FiltersType;
+  queueId: number;
+  accountId: string | null;
+  sequenceKey: string | null;
+  items: TransactionType[];
 };
 
 const initialState: State = {
   isLoading: false,
-  isEnd: false,
-  account: null,
+  filters: {},
+  currentFilters: {},
+  queueId: 1,
+  accountId: null,
+  sequenceKey: null,
+  items: [],
 };
 
-export default function(state: State = initialState, { type, payload, meta }: Action) {
+export default function(state: State = initialState, { type, payload, meta }: Action): State {
   switch (type) {
     case FETCH_ACCOUNT_TRANSACTIONS:
-      if (meta.afterTrxId) {
+      let { queueId } = state;
+
+      if (!equals(state.filters, meta.filters) || state.accountId !== meta.accountId) {
+        queueId++;
+      }
+
+      meta.queueId = queueId;
+
+      if (meta.sequenceKey && meta.accountId === state.accountId) {
         return {
           ...state,
+          filters: meta.filters,
+          queueId,
           isLoading: true,
         };
       }
 
       return {
+        ...initialState,
+        queueId,
+        filters: meta.filters,
         isLoading: true,
-        isEnd: false,
-        account: null,
       };
     case FETCH_ACCOUNT_TRANSACTIONS_SUCCESS:
-      let transactions;
+      if (meta.queueId !== state.queueId) {
+        return state;
+      }
 
-      if (meta.afterTrxId && state.account) {
-        transactions = state.account.transactions.concat(payload.transactions);
+      let items;
+
+      if (meta.sequenceKey) {
+        items = state.items.concat(payload.transactions);
       } else {
-        transactions = payload.transactions;
+        items = payload.transactions;
       }
 
       return {
+        ...state,
+        currentFilters: meta.filters,
         isLoading: false,
-        isEnd: payload.transactions.length < meta.limit,
-        account: {
-          id: payload.id,
-          transactions,
-        },
+        accountId: payload.id,
+        sequenceKey: payload.sequenceKey,
+        items,
       };
     default:
       return state;

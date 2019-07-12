@@ -13,7 +13,7 @@ type Props = {
   };
 };
 
-export type LoadAccountParams = { accountId: string; afterTrxId?: string };
+export type LoadAccountParams = { accountId: string };
 
 export default connect(
   (state: State, props: Props) => {

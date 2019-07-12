@@ -7,7 +7,7 @@ import {
   SET_TYPE_FILTER,
 } from '../../store/constants';
 import { TYPE_STORAGE_KEY } from '../../constants';
-import { AccountTransactionsType } from '../../types';
+import { AccountTransactionsType, FiltersType } from '../../types';
 import { CALL_API } from '../../store/middlewares/callApi';
 import { State } from '../../store';
 
@@ -19,24 +19,26 @@ type Props = {
 
 export type LOAD_TRANSACTIONS_PARAMS_TYPE = {
   accountId: string;
-  type?: AccountTransactionsType;
-  afterTrxId?: string;
-};
+  sequenceKey?: string | null;
+} & FiltersType;
 
 export default connect(
   ({ accountTransactions, filters }: State, props: Props) => {
     const { accountId } = props;
 
-    let account = null;
+    let transactions = null;
+    let currentFilters = {};
 
-    if (accountTransactions.account && accountTransactions.account.id === accountId) {
-      account = accountTransactions.account;
+    if (accountTransactions.accountId === accountId) {
+      transactions = accountTransactions.items;
+      currentFilters = accountTransactions.currentFilters;
     }
 
     return {
       filters,
-      transactions: account ? account.transactions : null,
-      isEnd: accountTransactions.isEnd,
+      currentFilters,
+      transactions,
+      sequenceKey: accountTransactions.sequenceKey,
       isLoading: accountTransactions.isLoading,
     };
   },
@@ -51,19 +53,34 @@ export default connect(
         },
       });
     },
-    loadAccountTransactions: ({ accountId, type, afterTrxId }: LOAD_TRANSACTIONS_PARAMS_TYPE) => {
-      const params = {
-        accountId,
+    loadAccountTransactions: ({
+      accountId,
+      type,
+      code,
+      action,
+      actor,
+      event,
+      sequenceKey,
+    }: LOAD_TRANSACTIONS_PARAMS_TYPE) => {
+      const filters = {
+        code,
+        action,
+        actor,
+        event,
         type: type || 'all',
-        afterTrxId,
       };
 
       return {
         type: CALL_API,
         method: 'blocks.getAccountTransactions',
-        params,
+        params: {
+          accountId,
+          sequenceKey,
+          limit: 5,
+          ...filters,
+        },
         types: [FETCH_ACCOUNT_TRANSACTIONS, FETCH_ACCOUNT_TRANSACTIONS_SUCCESS, null],
-        meta: { ...params },
+        meta: { accountId, sequenceKey, limit: 5, filters },
       };
     },
   }

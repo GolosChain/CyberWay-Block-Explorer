@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import styled from 'styled-components';
-import { equals, last } from 'ramda';
+import { equals } from 'ramda';
 import InfiniteScroll from 'react-infinite-scroller';
 import ToastsManager from 'toasts-manager';
 
@@ -14,6 +14,7 @@ import ActionBody from '../ActionBody';
 import Link from '../Link';
 import { Id } from '../Form';
 import InlineSwitch from '../InlineSwitch';
+import CurrentFilters from '../CurrentFilters';
 import { LOAD_TRANSACTIONS_PARAMS_TYPE } from './AccountTransactions.connect';
 
 const Wrapper = styled.div``;
@@ -32,7 +33,7 @@ const Item = styled.li``;
 
 const Transaction = styled.div`
   padding: 10px 16px;
-  margin-bottom: 5px;
+  margin-bottom: 10px;
   border: 1px solid #999;
 `;
 
@@ -44,9 +45,10 @@ const Line = styled.div`
 
 type Props = {
   filters: FiltersType;
+  currentFilters: FiltersType;
   accountId: string;
   transactions: TransactionType[] | null;
-  isEnd: boolean;
+  sequenceKey: string | null;
   isLoading: boolean;
   changeType: Function;
   loadAccountTransactions: (params: LOAD_TRANSACTIONS_PARAMS_TYPE) => any;
@@ -67,10 +69,10 @@ export default class AccountTransactions extends PureComponent<Props> {
     }
   }
 
-  loadData() {
+  loadData(sequenceKey?: string) {
     const { accountId, filters, loadAccountTransactions } = this.props;
 
-    loadAccountTransactions({ accountId, type: filters.type }).catch((err: Error) => {
+    loadAccountTransactions({ accountId, sequenceKey, ...filters }).catch((err: Error) => {
       ToastsManager.error(`Account transactions loading failed: ${err.message}`);
     });
   }
@@ -81,17 +83,8 @@ export default class AccountTransactions extends PureComponent<Props> {
   };
 
   onNeedLoadMore = () => {
-    const { accountId, transactions, loadAccountTransactions } = this.props;
-
-    if (!transactions || transactions.length === 0) {
-      return;
-    }
-
-    const lastTrx = last(transactions);
-
-    loadAccountTransactions({ accountId, afterTrxId: lastTrx.id }).catch((err: Error) => {
-      ToastsManager.error(`Failed: ${err.message}`);
-    });
+    const { sequenceKey } = this.props;
+    this.loadData(sequenceKey || undefined);
   };
 
   renderTransaction(transaction: TransactionType) {
@@ -136,7 +129,7 @@ export default class AccountTransactions extends PureComponent<Props> {
   }
 
   render() {
-    const { transactions, filters, isEnd, isLoading } = this.props;
+    const { transactions, filters, currentFilters, sequenceKey, isLoading } = this.props;
 
     return (
       <Wrapper>
@@ -148,13 +141,21 @@ export default class AccountTransactions extends PureComponent<Props> {
             onChange={this.onTypeChange}
           />
         </ListTitle>
+        <CurrentFilters filters={currentFilters} />
         <ListWrapper>
-          {transactions ? (
-            <InfiniteScroll hasMore={!isEnd && !isLoading} loadMore={this.onNeedLoadMore}>
+          {transactions && transactions.length ? (
+            <InfiniteScroll
+              hasMore={Boolean(sequenceKey) && !isLoading}
+              loadMore={this.onNeedLoadMore}
+            >
               <List>{transactions.map(transaction => this.renderTransaction(transaction))}</List>
             </InfiniteScroll>
-          ) : (
+          ) : isLoading ? (
             'Loading ...'
+          ) : currentFilters ? (
+            'Nothing is found'
+          ) : (
+            'No transactions'
           )}
         </ListWrapper>
       </Wrapper>

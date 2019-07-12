@@ -19,7 +19,7 @@ const initialState: State = {
   blockchainHost: null,
 };
 
-export default function(state = initialState, { type, payload }: Action) {
+export default function(state = initialState, { type, payload }: Action): State {
   switch (type) {
     case FETCH_BLOCK_CHAIN_INFO_SUCCESS:
       return {

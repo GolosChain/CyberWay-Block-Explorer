@@ -24,7 +24,7 @@ const initialState: State = {
   blocks: {},
 };
 
-export default function(state: State = initialState, { type, payload, meta }: Action) {
+export default function(state: State = initialState, { type, payload, meta }: Action): State {
   switch (type) {
     case FETCH_TRANSACTIONS: {
       let { queueId } = state;

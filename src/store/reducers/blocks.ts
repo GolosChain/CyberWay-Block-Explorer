@@ -7,7 +7,7 @@ export type State = {
 
 const initialState: State = {};
 
-export default function(state = initialState, { type, payload }: Action) {
+export default function(state = initialState, { type, payload }: Action): State {
   switch (type) {
     case FETCH_BLOCK_SUCCESS:
       return {
