@@ -1,6 +1,6 @@
 import { Action, AccountType } from '../../types';
 
-import { FETCH_ACCOUNT, FETCH_ACCOUNT_SUCCESS } from '../constants';
+import { FETCH_ACCOUNT_TRANSACTIONS, FETCH_ACCOUNT_TRANSACTIONS_SUCCESS } from '../constants';
 
 export type State = {
   isLoading: boolean;
@@ -16,7 +16,7 @@ const initialState: State = {
 
 export default function(state: State = initialState, { type, payload, meta }: Action) {
   switch (type) {
-    case FETCH_ACCOUNT:
+    case FETCH_ACCOUNT_TRANSACTIONS:
       if (meta.afterTrxId) {
         return {
           ...state,
@@ -29,7 +29,7 @@ export default function(state: State = initialState, { type, payload, meta }: Ac
         isEnd: false,
         account: null,
       };
-    case FETCH_ACCOUNT_SUCCESS:
+    case FETCH_ACCOUNT_TRANSACTIONS_SUCCESS:
       let transactions;
 
       if (meta.afterTrxId && state.account) {

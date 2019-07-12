@@ -1,10 +1,20 @@
 import React, { PureComponent } from 'react';
 import styled from 'styled-components';
+import { equals, last } from 'ramda';
+import InfiniteScroll from 'react-infinite-scroller';
+import ToastsManager from 'toasts-manager';
 
-import { TransactionType, TransactionAction } from '../../types';
+import {
+  TransactionType,
+  TransactionAction,
+  AccountTransactionsType,
+  FiltersType,
+} from '../../types';
 import ActionBody from '../ActionBody';
 import Link from '../Link';
 import { Id } from '../Form';
+import InlineSwitch from '../InlineSwitch';
+import { LOAD_TRANSACTIONS_PARAMS_TYPE } from './AccountTransactions.connect';
 
 const Wrapper = styled.div``;
 const ListTitle = styled.h2``;
@@ -33,11 +43,57 @@ const Line = styled.div`
 `;
 
 type Props = {
+  filters: FiltersType;
   accountId: string;
-  transactions: TransactionType[];
+  transactions: TransactionType[] | null;
+  isEnd: boolean;
+  isLoading: boolean;
+  changeType: Function;
+  loadAccountTransactions: (params: LOAD_TRANSACTIONS_PARAMS_TYPE) => any;
 };
 
 export default class AccountTransactions extends PureComponent<Props> {
+  componentDidMount() {
+    this.loadData();
+  }
+
+  componentWillReceiveProps(nextProps: Readonly<Props>) {
+    const props = this.props;
+
+    if (!equals(props.filters, nextProps.filters)) {
+      setTimeout(() => {
+        this.loadData();
+      });
+    }
+  }
+
+  loadData() {
+    const { accountId, filters, loadAccountTransactions } = this.props;
+
+    loadAccountTransactions({ accountId, type: filters.type }).catch((err: Error) => {
+      ToastsManager.error(`Account transactions loading failed: ${err.message}`);
+    });
+  }
+
+  onTypeChange = (type: AccountTransactionsType) => {
+    const { changeType } = this.props;
+    changeType(type);
+  };
+
+  onNeedLoadMore = () => {
+    const { accountId, transactions, loadAccountTransactions } = this.props;
+
+    if (!transactions || transactions.length === 0) {
+      return;
+    }
+
+    const lastTrx = last(transactions);
+
+    loadAccountTransactions({ accountId, afterTrxId: lastTrx.id }).catch((err: Error) => {
+      ToastsManager.error(`Failed: ${err.message}`);
+    });
+  };
+
   renderTransaction(transaction: TransactionType) {
     const { accountId } = this.props;
 
@@ -80,13 +136,26 @@ export default class AccountTransactions extends PureComponent<Props> {
   }
 
   render() {
-    const { transactions } = this.props;
+    const { transactions, filters, isEnd, isLoading } = this.props;
 
     return (
       <Wrapper>
-        <ListTitle>Actions history:</ListTitle>
+        <ListTitle>
+          Actions history:{' '}
+          <InlineSwitch
+            value={filters.type || 'all'}
+            options={['all', 'actor', 'mention']}
+            onChange={this.onTypeChange}
+          />
+        </ListTitle>
         <ListWrapper>
-          <List>{transactions.map(transaction => this.renderTransaction(transaction))}</List>
+          {transactions ? (
+            <InfiniteScroll hasMore={!isEnd && !isLoading} loadMore={this.onNeedLoadMore}>
+              <List>{transactions.map(transaction => this.renderTransaction(transaction))}</List>
+            </InfiniteScroll>
+          ) : (
+            'Loading ...'
+          )}
         </ListWrapper>
       </Wrapper>
     );

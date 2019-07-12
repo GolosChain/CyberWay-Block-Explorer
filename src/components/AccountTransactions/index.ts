@@ -1,1 +1,1 @@
-export { default } from './AccountTransactions';
+export { default } from './AccountTransactions.connect';

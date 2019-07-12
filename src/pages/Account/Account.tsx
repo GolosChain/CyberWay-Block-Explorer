@@ -1,13 +1,10 @@
 import React, { PureComponent } from 'react';
 import styled from 'styled-components';
-import { last } from 'ramda';
-import InfiniteScroll from 'react-infinite-scroller';
 import ToastsManager from 'toasts-manager';
 
 import { AccountType } from '../../types';
 import { Field, FieldTitle, FieldValue } from '../../components/Form';
 import AccountTransactions from '../../components/AccountTransactions';
-import { LoadAccountParams } from './Account.connect';
 
 const Wrapper = styled.div`
   margin: 16px;
@@ -23,37 +20,21 @@ const Info = styled.div`
 
 export type Props = {
   accountId: string;
-  isLoading: boolean;
-  isEnd: boolean;
   account: AccountType | null;
-  loadAccount: (params: LoadAccountParams) => any;
+  loadAccount: (accountId: string) => any;
 };
 
 export default class Account extends PureComponent<Props> {
   componentDidMount() {
     const { accountId, loadAccount } = this.props;
 
-    loadAccount({ accountId }).catch((err: Error) => {
-      ToastsManager.error(`Failed: ${err.message}`);
+    loadAccount(accountId).catch((err: Error) => {
+      ToastsManager.error(`Account loading failed: ${err.message}`);
     });
   }
 
-  onNeedLoadMore = () => {
-    const { accountId, loadAccount, account } = this.props;
-
-    if (!account || account.transactions.length === 0) {
-      return;
-    }
-
-    const lastTrx = last(account.transactions);
-
-    loadAccount({ accountId, afterTrxId: lastTrx.id }).catch((err: Error) => {
-      ToastsManager.error(`Failed: ${err.message}`);
-    });
-  };
-
   render() {
-    const { accountId, account, isLoading, isEnd } = this.props;
+    const { accountId } = this.props;
 
     return (
       <Wrapper>
@@ -64,13 +45,7 @@ export default class Account extends PureComponent<Props> {
             <FieldValue>{accountId}</FieldValue>
           </Field>
         </Info>
-        {account ? (
-          <InfiniteScroll hasMore={!isEnd && !isLoading} loadMore={this.onNeedLoadMore}>
-            <AccountTransactions accountId={accountId} transactions={account.transactions} />
-          </InfiniteScroll>
-        ) : (
-          'Loading ...'
-        )}
+        <AccountTransactions accountId={accountId} />
       </Wrapper>
     );
   }

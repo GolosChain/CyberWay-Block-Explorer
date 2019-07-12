@@ -38,6 +38,8 @@ export type Suggest = {
 
 export type TransactionStatus = 'all' | 'executed' | 'expired' | 'soft_fail';
 
+export type AccountTransactionsType = 'all' | 'actor' | 'mention';
+
 type TransactionStats = {
   cpu_usage_us: number;
   net_usage_words: number;
@@ -80,6 +82,7 @@ export type FiltersType = {
   event?: string;
   nonEmpty?: boolean;
   status?: TransactionStatus;
+  type?: AccountTransactionsType;
 };
 
 export type AccountType = {

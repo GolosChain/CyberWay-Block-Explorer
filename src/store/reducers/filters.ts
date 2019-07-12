@@ -1,6 +1,6 @@
 import { Action, FiltersType } from '../../types';
 
-import { SET_FILTERS, SET_STATUS_FILTER } from '../constants';
+import { SET_FILTERS, SET_STATUS_FILTER, SET_TYPE_FILTER } from '../constants';
 
 export type State = FiltersType;
 
@@ -21,6 +21,11 @@ export default function(state: State = initialState, { type, payload, meta }: Ac
       return {
         ...state,
         status: payload.status,
+      };
+    case SET_TYPE_FILTER:
+      return {
+        ...state,
+        type: payload.type,
       };
     default:
       return state;

@@ -16,33 +16,24 @@ type Props = {
 export type LoadAccountParams = { accountId: string; afterTrxId?: string };
 
 export default connect(
-  ({ accountTransactions }: State, props: Props) => {
+  (state: State, props: Props) => {
     const { accountId } = props.match.params;
-
-    let account = null;
-
-    if (accountTransactions.account && accountTransactions.account.id === accountId) {
-      account = accountTransactions.account;
-    }
 
     return {
       accountId,
-      account,
-      isEnd: accountTransactions.isEnd,
-      isLoading: accountTransactions.isLoading,
     };
   },
   {
-    loadAccount: ({ accountId, afterTrxId }: LoadAccountParams) => {
+    loadAccount: (accountId: string) => {
+      return () => new Promise(() => {}) as any;
+
       const params = {
         accountId,
-        afterTrxId,
-        limit: 5,
       };
 
       return {
         type: CALL_API,
-        method: 'blocks.getAccountTransactions',
+        method: 'blocks.getAccount',
         params,
         types: [FETCH_ACCOUNT, FETCH_ACCOUNT_SUCCESS, null],
         meta: { ...params },
