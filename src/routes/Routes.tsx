@@ -5,6 +5,7 @@ import Home from '../pages/Home';
 import Feed from '../pages/Feed';
 import Block from '../pages/Block';
 import Transaction from '../pages/Transaction';
+import Account from '../pages/Account';
 
 export type BlockRouteParams = {
   blockId: string;
@@ -14,6 +15,10 @@ export type TransactionRouteParams = {
   transactionId: string;
 };
 
+export type AccountRouteParams = {
+  accountId: string;
+};
+
 export default function() {
   return (
     <>
@@ -21,6 +26,7 @@ export default function() {
       <Route path="/feed" exact component={Feed} />
       <Route path="/block/:blockId" exact component={Block} />
       <Route path="/trx/:transactionId" exact component={Transaction} />
+      <Route path="/account/:accountId" exact component={Account} />
     </>
   );
 }

@@ -50,7 +50,7 @@ export type TransactionType = {
   index: number;
   blockId: string;
   blockNum: number;
-  blockTime: Date;
+  blockTime: string;
   status: TransactionStatus;
   stats: TransactionStats;
   actions: TransactionAction[];
@@ -68,7 +68,8 @@ export type TransactionAction = {
   auth: {
     actor: string;
     permission: string;
-  };
+  }[];
+  accounts: string[];
   events: ActionEvent[];
 };
 
@@ -79,4 +80,9 @@ export type FiltersType = {
   event?: string;
   nonEmpty?: boolean;
   status?: TransactionStatus;
+};
+
+export type AccountType = {
+  id: string;
+  transactions: TransactionType[];
 };

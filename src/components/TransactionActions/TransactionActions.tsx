@@ -1,9 +1,9 @@
 import React, { PureComponent } from 'react';
 import styled from 'styled-components';
-import JSONPretty from 'react-json-pretty';
 
 import { FiltersType, TransactionAction } from '../../types';
 import CurrentFilters from '../CurrentFilters';
+import Action from '../ActionBody';
 
 const Wrapper = styled.div`
   display: flex;
@@ -11,16 +11,9 @@ const Wrapper = styled.div`
 `;
 
 const Container = styled.div``;
-
 const SubTitle = styled.h2``;
-
 const List = styled.ol``;
-
-const Action = styled.li`
-  margin: 8px 0;
-`;
-
-const ActionIndex = styled.span``;
+const Item = styled.li``;
 
 type Props = {
   actions: TransactionAction[];
@@ -28,19 +21,8 @@ type Props = {
 };
 
 export default class TransactionActions extends PureComponent<Props> {
-  renderAction = (action: TransactionAction) => {
-    return (
-      <Action key={action.index}>
-        <ActionIndex>Action ({action.index}):</ActionIndex>
-        <JSONPretty json={{ ...action, index: undefined }} />
-      </Action>
-    );
-  };
-
   render() {
     const { actions, filters } = this.props;
-
-    console.log('render', filters);
 
     let resultActions = actions;
 
@@ -61,12 +43,20 @@ export default class TransactionActions extends PureComponent<Props> {
             return false;
           }
 
+          let actorId = filters.actor;
+          let permission: string | null = null;
+
           if (filters.actor.includes('/')) {
-            const [actorId, permission] = filters.actor.split('/');
-            return actorId === auth.actor && permission === auth.permission;
-          } else {
-            return auth.actor === filters.actor;
+            [actorId, permission] = filters.actor.split('/');
           }
+
+          return auth.some(auth => {
+            if (permission) {
+              return actorId === auth.actor && permission === auth.permission;
+            } else {
+              return actorId === auth.actor;
+            }
+          });
         }
 
         return false;
@@ -78,7 +68,13 @@ export default class TransactionActions extends PureComponent<Props> {
         <Container>
           <SubTitle>Actions ({actions.length})</SubTitle>
           <CurrentFilters filters={filters} />
-          <List>{resultActions.map(this.renderAction)}</List>
+          <List>
+            {resultActions.map(action => (
+              <Item>
+                <Action action={action} />
+              </Item>
+            ))}
+          </List>
         </Container>
       </Wrapper>
     );
