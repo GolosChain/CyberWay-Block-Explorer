@@ -16,20 +16,20 @@ type Props = {
 export type LoadAccountParams = { accountId: string; afterTrxId?: string };
 
 export default connect(
-  (state: State, props: Props) => {
+  ({ accountTransactions }: State, props: Props) => {
     const { accountId } = props.match.params;
 
     let account = null;
 
-    if (state.account.account && state.account.account.id === accountId) {
-      account = state.account.account;
+    if (accountTransactions.account && accountTransactions.account.id === accountId) {
+      account = accountTransactions.account;
     }
 
     return {
       accountId,
       account,
-      isEnd: state.account.isEnd,
-      isLoading: state.account.isLoading,
+      isEnd: accountTransactions.isEnd,
+      isLoading: accountTransactions.isLoading,
     };
   },
   {

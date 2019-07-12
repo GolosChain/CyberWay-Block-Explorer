@@ -6,7 +6,7 @@ import ToastsManager from 'toasts-manager';
 
 import { AccountType } from '../../types';
 import { Field, FieldTitle, FieldValue } from '../../components/Form';
-import AccountActions from '../../components/AccountActions';
+import AccountTransactions from '../../components/AccountTransactions';
 import { LoadAccountParams } from './Account.connect';
 
 const Wrapper = styled.div`
@@ -66,7 +66,7 @@ export default class Account extends PureComponent<Props> {
         </Info>
         {account ? (
           <InfiniteScroll hasMore={!isEnd && !isLoading} loadMore={this.onNeedLoadMore}>
-            <AccountActions accountId={accountId} transactions={account.transactions} />
+            <AccountTransactions accountId={accountId} transactions={account.transactions} />
           </InfiniteScroll>
         ) : (
           'Loading ...'

@@ -35,10 +35,9 @@ const Line = styled.div`
 type Props = {
   accountId: string;
   transactions: TransactionType[];
-  className?: string;
 };
 
-export default class AccountActions extends PureComponent<Props> {
+export default class AccountTransactions extends PureComponent<Props> {
   renderTransaction(transaction: TransactionType) {
     const { accountId } = this.props;
 
@@ -81,10 +80,10 @@ export default class AccountActions extends PureComponent<Props> {
   }
 
   render() {
-    const { transactions, className } = this.props;
+    const { transactions } = this.props;
 
     return (
-      <Wrapper className={className}>
+      <Wrapper>
         <ListTitle>Actions history:</ListTitle>
         <ListWrapper>
           <List>{transactions.map(transaction => this.renderTransaction(transaction))}</List>
