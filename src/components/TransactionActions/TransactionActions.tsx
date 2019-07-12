@@ -29,14 +29,26 @@ export default class TransactionActions extends PureComponent<Props> {
     if ([...Object.keys(filters)].some(key => key !== 'status' && (filters as any)[key])) {
       resultActions = resultActions.filter(action => {
         if (filters.code && filters.action) {
-          return action.code === filters.code && action.action === filters.action;
+          if (action.code !== filters.code || action.action !== filters.action) {
+            return false;
+          }
         } else if (filters.code) {
-          return action.code === filters.code;
+          if (action.code !== filters.code) {
+            return false;
+          }
         } else if (filters.action) {
-          return action.action === filters.action;
-        } else if (filters.event) {
-          return action.events && action.events.some(event => event.event === filters.event);
-        } else if (filters.actor) {
+          if (action.action !== filters.action) {
+            return false;
+          }
+        }
+
+        if (filters.event) {
+          if (!action.events || action.events.every(event => event.event !== filters.event)) {
+            return false;
+          }
+        }
+
+        if (filters.actor) {
           const { auth } = action;
 
           if (!auth) {
@@ -50,16 +62,20 @@ export default class TransactionActions extends PureComponent<Props> {
             [actorId, permission] = filters.actor.split('/');
           }
 
-          return auth.some(auth => {
+          const isActorOk = auth.some(auth => {
             if (permission) {
               return actorId === auth.actor && permission === auth.permission;
             } else {
               return actorId === auth.actor;
             }
           });
+
+          if (!isActorOk) {
+            return false;
+          }
         }
 
-        return false;
+        return true;
       });
     }
 
