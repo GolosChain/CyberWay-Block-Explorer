@@ -7,8 +7,8 @@ import ToastsManager from 'toasts-manager';
 import {
   TransactionType,
   TransactionAction,
-  AccountTransactionsType,
   FiltersType,
+  AccountTransactionsMode,
 } from '../../types';
 import ActionBody from '../ActionBody';
 import Link from '../Link';
@@ -44,13 +44,13 @@ const Line = styled.div`
 `;
 
 type Props = {
+  accountId: string;
+  mode: AccountTransactionsMode;
   filters: FiltersType;
   currentFilters: FiltersType;
-  accountId: string;
   transactions: TransactionType[] | null;
   sequenceKey: string | null;
   isLoading: boolean;
-  changeType: Function;
   loadAccountTransactions: (params: LOAD_TRANSACTIONS_PARAMS_TYPE) => any;
 };
 
@@ -62,7 +62,7 @@ export default class AccountTransactions extends PureComponent<Props> {
   componentWillReceiveProps(nextProps: Readonly<Props>) {
     const props = this.props;
 
-    if (!equals(props.filters, nextProps.filters)) {
+    if (!equals(props.filters, nextProps.filters) || props.mode !== nextProps.mode) {
       setTimeout(() => {
         this.loadData();
       });
@@ -70,17 +70,12 @@ export default class AccountTransactions extends PureComponent<Props> {
   }
 
   loadData(sequenceKey?: string) {
-    const { accountId, filters, loadAccountTransactions } = this.props;
+    const { accountId, mode, filters, loadAccountTransactions } = this.props;
 
-    loadAccountTransactions({ accountId, sequenceKey, ...filters }).catch((err: Error) => {
+    loadAccountTransactions({ accountId, mode, sequenceKey, ...filters }).catch((err: Error) => {
       ToastsManager.error(`Account transactions loading failed: ${err.message}`);
     });
   }
-
-  onTypeChange = (type: AccountTransactionsType) => {
-    const { changeType } = this.props;
-    changeType(type);
-  };
 
   onNeedLoadMore = () => {
     const { sequenceKey } = this.props;
@@ -129,16 +124,27 @@ export default class AccountTransactions extends PureComponent<Props> {
   }
 
   render() {
-    const { transactions, filters, currentFilters, sequenceKey, isLoading } = this.props;
+    const { transactions, currentFilters, sequenceKey, accountId, isLoading } = this.props;
 
     return (
       <Wrapper>
         <ListTitle>
           Actions history:{' '}
           <InlineSwitch
-            value={filters.type || 'all'}
-            options={['all', 'actor', 'mention']}
-            onChange={this.onTypeChange}
+            options={[
+              {
+                to: `/account/${accountId}`,
+                label: 'all',
+              },
+              {
+                to: `/account/${accountId}/actor`,
+                label: 'actor',
+              },
+              {
+                to: `/account/${accountId}/mention`,
+                label: 'mention',
+              },
+            ]}
           />
         </ListTitle>
         <CurrentFilters filters={currentFilters} />

@@ -1,4 +1,4 @@
-import { Action, FiltersType, TransactionType } from '../../types';
+import { AccountTransactionsMode, Action, FiltersType, TransactionType } from '../../types';
 
 import { FETCH_ACCOUNT_TRANSACTIONS, FETCH_ACCOUNT_TRANSACTIONS_SUCCESS } from '../constants';
 import { equals } from 'ramda';
@@ -9,6 +9,7 @@ export type State = {
   currentFilters: FiltersType;
   queueId: number;
   accountId: string | null;
+  mode: AccountTransactionsMode;
   sequenceKey: string | null;
   items: TransactionType[];
 };
@@ -19,6 +20,7 @@ const initialState: State = {
   currentFilters: {},
   queueId: 1,
   accountId: null,
+  mode: 'all',
   sequenceKey: null,
   items: [],
 };
@@ -28,7 +30,11 @@ export default function(state: State = initialState, { type, payload, meta }: Ac
     case FETCH_ACCOUNT_TRANSACTIONS:
       let { queueId } = state;
 
-      if (!equals(state.filters, meta.filters) || state.accountId !== meta.accountId) {
+      if (
+        !equals(state.filters, meta.filters) ||
+        state.accountId !== meta.accountId ||
+        state.mode !== meta.mode
+      ) {
         queueId++;
       }
 
@@ -67,6 +73,7 @@ export default function(state: State = initialState, { type, payload, meta }: Ac
         currentFilters: meta.filters,
         isLoading: false,
         accountId: payload.id,
+        mode: meta.mode,
         sequenceKey: payload.sequenceKey,
         items,
       };

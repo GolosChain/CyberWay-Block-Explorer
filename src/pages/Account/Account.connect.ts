@@ -17,10 +17,11 @@ export type LoadAccountParams = { accountId: string };
 
 export default connect(
   (state: State, props: Props) => {
-    const { accountId } = props.match.params;
+    const { accountId, mode } = props.match.params;
 
     return {
       accountId,
+      mode,
     };
   },
   {

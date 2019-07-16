@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import styled from 'styled-components';
 import ToastsManager from 'toasts-manager';
 
-import { AccountType } from '../../types';
+import { AccountTransactionsMode, AccountType } from '../../types';
 import { Field, FieldTitle, FieldValue } from '../../components/Form';
 import AccountTransactions from '../../components/AccountTransactions';
 
@@ -20,6 +20,7 @@ const Info = styled.div`
 
 export type Props = {
   accountId: string;
+  mode: AccountTransactionsMode | undefined;
   account: AccountType | null;
   loadAccount: (accountId: string) => any;
 };
@@ -34,7 +35,7 @@ export default class Account extends PureComponent<Props> {
   }
 
   render() {
-    const { accountId } = this.props;
+    const { accountId, mode } = this.props;
 
     return (
       <Wrapper>
@@ -45,7 +46,7 @@ export default class Account extends PureComponent<Props> {
             <FieldValue>{accountId}</FieldValue>
           </Field>
         </Info>
-        <AccountTransactions accountId={accountId} />
+        <AccountTransactions accountId={accountId} mode={mode || 'all'} />
       </Wrapper>
     );
   }
