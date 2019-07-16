@@ -1,6 +1,6 @@
 import { Action, FiltersType } from '../../types';
 
-import { SET_FILTERS, SET_STATUS_FILTER, SET_TYPE_FILTER } from '../constants';
+import { SET_FILTERS, SET_TYPE_FILTER } from '../constants';
 
 export type State = FiltersType;
 
@@ -16,11 +16,6 @@ export default function(state: State = initialState, { type, payload, meta }: Ac
         actor: payload.actor,
         event: payload.event,
         nonEmpty: payload.nonEmpty,
-      };
-    case SET_STATUS_FILTER:
-      return {
-        ...state,
-        status: payload.status,
       };
     case SET_TYPE_FILTER:
       return {

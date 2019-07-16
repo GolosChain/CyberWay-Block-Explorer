@@ -1,15 +1,9 @@
 import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
 
-import { FILTER_STORAGE_KEY } from '../../constants';
-import { TransactionStatus } from '../../types';
 import { State } from '../../store';
 
-import {
-  FETCH_TRANSACTIONS,
-  FETCH_TRANSACTIONS_SUCCESS,
-  SET_STATUS_FILTER,
-} from '../../store/constants';
+import { FETCH_TRANSACTIONS, FETCH_TRANSACTIONS_SUCCESS } from '../../store/constants';
 import Connection from '../../utils/Connection';
 import Transactions from './Transactions';
 
@@ -20,7 +14,6 @@ export type LoadTransactionsParams = {
   action?: string;
   actor?: string;
   event?: string;
-  status?: TransactionStatus;
 };
 
 export default connect(
@@ -36,14 +29,6 @@ export default connect(
     };
   },
   {
-    setStatusFilter: (status: TransactionStatus) => (dispatch: Dispatch) => {
-      localStorage.setItem(FILTER_STORAGE_KEY, status);
-
-      dispatch({
-        type: SET_STATUS_FILTER,
-        payload: { status },
-      });
-    },
     loadTransactions: ({
       blockId,
       fromIndex,
@@ -51,7 +36,6 @@ export default connect(
       action,
       actor,
       event,
-      status,
     }: LoadTransactionsParams) => async (dispatch: Dispatch) => {
       const meta = {
         blockId,
@@ -62,7 +46,6 @@ export default connect(
           action,
           actor,
           event,
-          status,
         },
       };
 

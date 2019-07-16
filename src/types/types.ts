@@ -36,7 +36,7 @@ export type Suggest = {
   };
 };
 
-export type TransactionStatus = 'all' | 'executed' | 'expired' | 'soft_fail';
+export type TransactionStatus = 'executed' | 'expired' | 'soft_fail';
 
 export type AccountTransactionsType = 'all' | 'actor' | 'mention';
 
@@ -85,7 +85,6 @@ export type FiltersType = {
   actor?: string;
   event?: string;
   nonEmpty?: boolean;
-  status?: TransactionStatus;
   type?: AccountTransactionsType;
 };
 

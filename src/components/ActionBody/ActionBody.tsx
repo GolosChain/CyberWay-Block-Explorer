@@ -101,7 +101,7 @@ export default class ActionBody extends PureComponent<Props, State> {
 function renderActors(auth: AuthLine[]) {
   return auth.map((auth, index) => (
     <Fragment key={index}>
-      <Link to={`/accounts/${auth.actor}`}>{auth.actor}</Link>@{auth.permission}
+      <Link to={`/account/${auth.actor}`}>{auth.actor}</Link>@{auth.permission}
     </Fragment>
   ));
 }

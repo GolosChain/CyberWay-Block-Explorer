@@ -1,6 +1,5 @@
 import React, { PureComponent } from 'react';
 import styled from 'styled-components';
-import is from 'styled-is';
 
 import { FiltersType, TransactionType } from '../../types';
 
@@ -15,12 +14,6 @@ const Wrapper = styled.div`
 
 const Title = styled.h1`
   margin: 12px 0;
-`;
-
-const Status = styled.span<{ expired: boolean }>`
-  ${is('expired')`
-    color: #f00;
-  `};
 `;
 
 type Props = {
@@ -96,9 +89,7 @@ export default class Transaction extends PureComponent<Props> {
             </Field>
             <Field line>
               <FieldTitle>Transaction status:</FieldTitle>{' '}
-              <FieldValue>
-                <Status expired={transaction.status === 'expired'}>{transaction.status}</Status>
-              </FieldValue>
+              <FieldValue>{transaction.status}</FieldValue>
             </Field>
             <Field line>
               <FieldTitle>Actions count:</FieldTitle>{' '}

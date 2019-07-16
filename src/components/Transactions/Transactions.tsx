@@ -1,12 +1,10 @@
 import React, { PureComponent } from 'react';
 import styled from 'styled-components';
-import is from 'styled-is';
 import { last, equals } from 'ramda';
 import InfiniteScroll from 'react-infinite-scroller';
 
-import { FiltersType, TransactionStatus, TransactionType } from '../../types';
+import { FiltersType, TransactionType } from '../../types';
 import Link from '../Link';
-import InlineSwitch from '../InlineSwitch';
 import CurrentFilters from '../CurrentFilters';
 
 import { LoadTransactionsParams } from './Transactions.connect';
@@ -45,12 +43,8 @@ const TransactionId = styled.span`
   font-family: monospace;
 `;
 
-const StatusText = styled.span<{ expired: boolean }>`
+const StatusText = styled.span`
   color: #24a624;
-
-  ${is('expired')`
-    color: #f00;
-  `};
 `;
 
 type Props = {
@@ -60,7 +54,6 @@ type Props = {
   filters: FiltersType;
   currentFilters: FiltersType;
   transactions: TransactionType[];
-  setStatusFilter: Function;
   loadTransactions: (arg: LoadTransactionsParams) => void;
 };
 
@@ -102,18 +95,13 @@ export default class Transactions extends PureComponent<Props> {
     this.loadData(true);
   };
 
-  onFilterChange = (value: TransactionStatus) => {
-    const { setStatusFilter } = this.props;
-    setStatusFilter(value);
-  };
-
   renderTransactionLine = (transaction: TransactionType) => {
     return (
       <Item key={transaction.id}>
         <LinkStyled to={`/trx/${transaction.id}`} keepHash>
           <TransactionIndex>({transaction.index + 1})</TransactionIndex>{' '}
           <TransactionId>{transaction.id}</TransactionId>{' '}
-          <StatusText expired={transaction.status === 'expired'}>{transaction.status}</StatusText>{' '}
+          <StatusText>{transaction.status}</StatusText>{' '}
         </LinkStyled>
       </Item>
     );
@@ -124,14 +112,7 @@ export default class Transactions extends PureComponent<Props> {
 
     return (
       <Wrapper>
-        <SubTitle>
-          Transactions{' '}
-          <InlineSwitch
-            value={currentFilters.status || 'all'}
-            options={['all', 'executed', 'expired']}
-            onChange={this.onFilterChange}
-          />
-        </SubTitle>
+        <SubTitle>Transactions</SubTitle>
         <ListContainer>
           <ListWrapper>
             <CurrentFilters filters={currentFilters} />

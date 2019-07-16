@@ -26,7 +26,7 @@ export default class TransactionActions extends PureComponent<Props> {
 
     let resultActions = actions;
 
-    if ([...Object.keys(filters)].some(key => key !== 'status' && (filters as any)[key])) {
+    if ([...Object.keys(filters)].some(key => (filters as any)[key])) {
       resultActions = resultActions.filter(action => {
         if (filters.code && filters.action) {
           if (action.code !== filters.code || action.action !== filters.action) {
