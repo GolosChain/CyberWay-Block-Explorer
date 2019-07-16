@@ -79,7 +79,7 @@ export default class BlockChainStatus extends PureComponent<Props> {
         <TextPanel>
           <Title>Blockchain status:</Title>
           <Line>
-            <Label>Last processed block: </Label>
+            <Label>Last block: </Label>
             <Value>
               <Link to={`/block/${info.lastBlockId}`} keepHash>
                 #{info.lastBlockNum}
@@ -93,7 +93,7 @@ export default class BlockChainStatus extends PureComponent<Props> {
             <Label>Accounts:</Label> <Value>{info.accountsCount}</Value>
           </Line>
           <Line>
-            <Label>Transactions:</Label> <Value>{info.transactionsCount}</Value>
+            <Label>Transactions total:</Label> <Value>{info.transactionsCount}</Value>
           </Line>
         </TextPanel>
         <ChartPanel>

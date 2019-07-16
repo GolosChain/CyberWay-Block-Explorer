@@ -1,6 +1,5 @@
 import React, { PureComponent } from 'react';
 import styled from 'styled-components';
-import is from 'styled-is';
 
 import { BlockSummary } from '../../types';
 import { Field, FieldTitle, FieldValue, Id } from '../../components/Form';
@@ -16,14 +15,6 @@ const Title = styled.h1`
   margin: 12px 0;
 `;
 
-const Colored = styled.span<{ bad?: boolean }>`
-  color: #24a624;
-
-  ${is('bad')`
-    color: #f00;
-  `};
-`;
-
 type Props = {
   blockId: string;
   block: BlockSummary | null;
@@ -35,6 +26,26 @@ export default class Block extends PureComponent<Props> {
     const { blockId } = this.props;
 
     this.props.loadBlock({ blockId });
+  }
+
+  renderCounters(counters: { [key: string]: number }) {
+    const parts = [];
+
+    for (const key of Object.keys(counters)) {
+      if (key !== 'executed' && key !== 'total') {
+        parts.push(`, ${key}: ${counters[key]}`);
+      }
+    }
+
+    const executedString = String(counters.executed || 0);
+
+    if (parts.length) {
+      parts.unshift(`executed: ${executedString}`);
+    } else {
+      parts.push(executedString);
+    }
+
+    return parts;
   }
 
   render() {
@@ -79,12 +90,8 @@ export default class Block extends PureComponent<Props> {
               <FieldValue>{new Date(block.blockTime).toLocaleString()}</FieldValue>
             </Field>
             <Field>
-              <FieldTitle>Transactions (total/executed/expired) count:</FieldTitle>
-              <FieldValue>
-                {block.counters.transactions.total}/
-                <Colored>{block.counters.transactions.executed}</Colored>/
-                <Colored bad>{block.counters.transactions.expired || 0}</Colored>
-              </FieldValue>
+              <FieldTitle>Transactions count:</FieldTitle>
+              <FieldValue>{this.renderCounters(block.counters.transactions)}</FieldValue>
             </Field>
           </>
         ) : null}
