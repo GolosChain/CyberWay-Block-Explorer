@@ -63,15 +63,19 @@ export type ActionEvent = {
   event: string;
 };
 
+export type AuthLine = {
+  actor: string;
+  permission: string;
+};
+
 export type TransactionAction = {
   index: number;
   code: string;
   action: string;
-  auth: {
-    actor: string;
-    permission: string;
-  }[];
+  receiver: string;
+  auth: AuthLine[];
   accounts: string[];
+  args: Object;
   events: ActionEvent[];
 };
 
