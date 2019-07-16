@@ -1,10 +1,11 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent, Fragment } from 'react';
 import styled from 'styled-components';
 import JSONPretty from 'react-json-pretty';
 
 import { AuthLine, TransactionAction } from '../../types';
 
 import { Field, FieldTitle, FieldValue } from '../Form';
+import Link from '../Link';
 
 const Wrapper = styled.div`
   padding: 5px 12px 10px;
@@ -85,7 +86,7 @@ export default class ActionBody extends PureComponent<Props, State> {
             {isEventsCollapsed
               ? null
               : action.events.map((event, index) => (
-                  <EventBlock>
+                  <EventBlock key={index}>
                     Event #{index + 1}:
                     <JSONPretty json={event} />
                   </EventBlock>
@@ -98,5 +99,9 @@ export default class ActionBody extends PureComponent<Props, State> {
 }
 
 function renderActors(auth: AuthLine[]) {
-  return auth.map(auth => `${auth.actor}@${auth.permission}`).join(', ');
+  return auth.map((auth, index) => (
+    <Fragment key={index}>
+      <Link to={`/accounts/${auth.actor}`}>{auth.actor}</Link>@{auth.permission}
+    </Fragment>
+  ));
 }

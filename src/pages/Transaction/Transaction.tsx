@@ -46,6 +46,8 @@ export default class Transaction extends PureComponent<Props> {
   render() {
     const { transactionId, transaction, filters } = this.props;
 
+    console.log('A', transaction);
+
     return (
       <Wrapper>
         <Navigation
@@ -80,23 +82,27 @@ export default class Transaction extends PureComponent<Props> {
                 </Link>
               </FieldValue>
             </Field>
-            <Field>
-              <FieldTitle>Block num:</FieldTitle>
+            <Field line>
+              <FieldTitle>Block:</FieldTitle>{' '}
               <FieldValue>
                 <Link to={`/block/${transaction.blockId}`} keepHash>
-                  <Id>{transaction.blockNum}</Id>
+                  <Id>#{transaction.blockNum}</Id>
                 </Link>
               </FieldValue>
             </Field>
-            <Field>
-              <FieldTitle>Block time:</FieldTitle>
+            <Field line>
+              <FieldTitle>Block time:</FieldTitle>{' '}
               <FieldValue>{new Date(transaction.blockTime).toLocaleString()}</FieldValue>
             </Field>
-            <Field>
-              <FieldTitle>Transaction status:</FieldTitle>
+            <Field line>
+              <FieldTitle>Transaction status:</FieldTitle>{' '}
               <FieldValue>
                 <Status expired={transaction.status === 'expired'}>{transaction.status}</Status>
               </FieldValue>
+            </Field>
+            <Field line>
+              <FieldTitle>Actions count:</FieldTitle>{' '}
+              <FieldValue>{transaction.actions.length}</FieldValue>
             </Field>
             <Field>
               <FieldTitle>Statistics:</FieldTitle>
@@ -104,7 +110,9 @@ export default class Transaction extends PureComponent<Props> {
             </Field>
             <TransactionActions actions={transaction.actions} filters={filters} />
           </>
-        ) : null}
+        ) : (
+          'Loading ...'
+        )}
       </Wrapper>
     );
   }

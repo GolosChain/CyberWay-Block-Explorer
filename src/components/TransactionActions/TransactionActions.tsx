@@ -79,18 +79,18 @@ export default class TransactionActions extends PureComponent<Props> {
       });
     }
 
+    const actionsElements = resultActions.map(action => (
+      <Item key={action.index}>
+        <Action action={action} />
+      </Item>
+    ));
+
     return (
       <Wrapper>
         <Container>
-          <SubTitle>Actions ({actions.length})</SubTitle>
+          <SubTitle>Actions ({actionsElements.length})</SubTitle>
           <CurrentFilters filters={filters} />
-          <List>
-            {resultActions.map(action => (
-              <Item>
-                <Action action={action} />
-              </Item>
-            ))}
-          </List>
+          <List>{actionsElements}</List>
         </Container>
       </Wrapper>
     );

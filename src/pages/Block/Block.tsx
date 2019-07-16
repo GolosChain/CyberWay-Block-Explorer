@@ -81,16 +81,15 @@ export default class Block extends PureComponent<Props> {
                 </Link>
               </FieldValue>
             </Field>
-            <Field>
-              <FieldTitle>Block num:</FieldTitle>
-              <FieldValue>{block.blockNum}</FieldValue>
+            <Field line>
+              <FieldTitle>Block:</FieldTitle> <FieldValue>#{block.blockNum}</FieldValue>
             </Field>
-            <Field>
-              <FieldTitle>Block time:</FieldTitle>
+            <Field line>
+              <FieldTitle>Block time:</FieldTitle>{' '}
               <FieldValue>{new Date(block.blockTime).toLocaleString()}</FieldValue>
             </Field>
-            <Field>
-              <FieldTitle>Transactions count:</FieldTitle>
+            <Field line>
+              <FieldTitle>Transactions count:</FieldTitle>{' '}
               <FieldValue>{this.renderCounters(block.counters.transactions)}</FieldValue>
             </Field>
           </>
