@@ -50,7 +50,13 @@ export default class AccountKeys extends PureComponent<Props> {
 
     const keysLines = [];
 
-    for (const keyName of Object.keys(keys)) {
+    const keyTypes = Object.keys(keys);
+
+    if (keyTypes.length === 0) {
+      return `Keys can't be loaded`;
+    }
+
+    for (const keyName of keyTypes) {
       keysLines.push(
         <KeyLine>
           {keyName}: {this.renderKey(keys[keyName])}
