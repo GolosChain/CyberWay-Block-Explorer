@@ -2,9 +2,10 @@ import React, { PureComponent } from 'react';
 import styled from 'styled-components';
 import ToastsManager from 'toasts-manager';
 
-import { AccountTransactionsMode, AccountType } from '../../types';
-import { Field, FieldTitle, FieldValue } from '../../components/Form';
+import { AccountTransactionsMode, AccountType, ApiError } from '../../types';
+import { Field, FieldTitle, FieldValue, ErrorLine } from '../../components/Form';
 import AccountTransactions from '../../components/AccountTransactions';
+import AccountKeys from '../../components/AccountKeys';
 
 const Wrapper = styled.div`
   margin: 16px;
@@ -22,6 +23,7 @@ export type Props = {
   accountId: string;
   mode: AccountTransactionsMode | undefined;
   account: AccountType | null;
+  accountError: ApiError | null;
   loadAccount: (accountId: string) => any;
 };
 
@@ -35,16 +37,27 @@ export default class Account extends PureComponent<Props> {
   }
 
   render() {
-    const { accountId, mode } = this.props;
+    const { accountId, account, accountError, mode } = this.props;
 
     return (
       <Wrapper>
         <Title>Account</Title>
         <Info>
-          <Field>
-            <FieldTitle>Account id:</FieldTitle>
-            <FieldValue>{accountId}</FieldValue>
+          <Field line>
+            <FieldTitle>Account id:</FieldTitle> <FieldValue>{accountId}</FieldValue>
           </Field>
+          {account ? (
+            <>
+              <Field>
+                <FieldTitle>Keys:</FieldTitle>
+                <AccountKeys keys={account.keys} />
+              </Field>
+            </>
+          ) : accountError ? (
+            <ErrorLine>Loading error: {accountError.message}</ErrorLine>
+          ) : (
+            'Loading ...'
+          )}
         </Info>
         <AccountTransactions accountId={accountId} mode={mode || 'all'} />
       </Wrapper>

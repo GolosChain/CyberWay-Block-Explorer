@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
 
 import { CALL_API } from '../../store/middlewares/callApi';
-import { FETCH_ACCOUNT, FETCH_ACCOUNT_SUCCESS } from '../../store/constants';
+import { FETCH_ACCOUNT, FETCH_ACCOUNT_SUCCESS, FETCH_ACCOUNT_ERROR } from '../../store/constants';
 import { State } from '../../store';
 
 import { AccountRouteParams } from '../../routes/Routes';
@@ -16,18 +16,19 @@ type Props = {
 export type LoadAccountParams = { accountId: string };
 
 export default connect(
-  (state: State, props: Props) => {
+  ({ currentAccount }: State, props: Props) => {
     const { accountId, mode } = props.match.params;
+    const { account, error } = currentAccount;
 
     return {
       accountId,
+      account: account && account.id === accountId ? account : null,
+      accountError: error,
       mode,
     };
   },
   {
     loadAccount: (accountId: string) => {
-      return () => new Promise(() => {}) as any;
-
       const params = {
         accountId,
       };
@@ -36,7 +37,7 @@ export default connect(
         type: CALL_API,
         method: 'blocks.getAccount',
         params,
-        types: [FETCH_ACCOUNT, FETCH_ACCOUNT_SUCCESS, null],
+        types: [FETCH_ACCOUNT, FETCH_ACCOUNT_SUCCESS, FETCH_ACCOUNT_ERROR],
         meta: { ...params },
       };
     },

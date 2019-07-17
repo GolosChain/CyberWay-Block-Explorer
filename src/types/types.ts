@@ -9,7 +9,13 @@ export type CallApiType = {
 
 export type Action = ReduxAction & {
   payload?: any;
+  error?: ApiError;
   meta?: any;
+};
+
+export type ApiError = {
+  code: number;
+  message: string;
 };
 
 export type BlockSummary = {
@@ -34,6 +40,25 @@ export type Suggest = {
   data: {
     id: string;
   };
+};
+
+export type AccountType = {
+  id: string;
+  keys: {
+    [keyName: string]: KeyInfo;
+  };
+};
+
+export type KeyInfo = {
+  threshold: number;
+  keys: KeyLine[];
+  accounts: any[]; // -- Структура accounts неизвестна
+  waits: any[]; // -- Структура waits неизвестна
+};
+
+export type KeyLine = {
+  key: string;
+  weight: number;
 };
 
 export type TransactionStatus = 'executed' | 'expired' | 'soft_fail';
@@ -85,9 +110,4 @@ export type FiltersType = {
   actor?: string;
   event?: string;
   nonEmpty?: boolean;
-};
-
-export type AccountType = {
-  id: string;
-  transactions: TransactionType[];
 };
