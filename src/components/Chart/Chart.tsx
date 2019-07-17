@@ -98,7 +98,7 @@ export default class Chart extends PureComponent<Props> {
         labels,
         datasets: [
           {
-            label: 'tpm',
+            label: 'tps',
             data: series,
             backgroundColor: 'rgba(24,144,255, 0.7)',
             borderWidth: 1,
@@ -108,7 +108,7 @@ export default class Chart extends PureComponent<Props> {
       options: {
         title: {
           display: true,
-          text: 'Transactions/minute (last hour)',
+          text: 'Transactions/second (last hour)',
         },
         legend: {
           display: false,
