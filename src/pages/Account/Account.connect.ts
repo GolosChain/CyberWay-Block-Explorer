@@ -35,7 +35,7 @@ export default connect(
 
       return {
         type: CALL_API,
-        method: 'blocks.getAccount',
+        method: 'accounts.getAccount',
         params,
         types: [FETCH_ACCOUNT, FETCH_ACCOUNT_SUCCESS, FETCH_ACCOUNT_ERROR],
         meta: { ...params },

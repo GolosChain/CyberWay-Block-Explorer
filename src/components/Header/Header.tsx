@@ -12,6 +12,14 @@ const Wrapper = styled.header`
   background-color: #eee;
 `;
 
+const Nav = styled.nav``;
+const Ul = styled.ul`
+  display: flex;
+`;
+const Li = styled.li`
+  margin-right: 8px;
+`;
+
 const Info = styled.div`
   margin-left: 40px;
 `;
@@ -26,7 +34,16 @@ export default class Header extends PureComponent<Props> {
 
     return (
       <Wrapper>
-        <Link to="/">Home</Link>
+        <Nav>
+          <Ul>
+            <Li>
+              <Link to="/">Home</Link>
+            </Li>
+            <Li>
+              <Link to="/accounts">Accounts</Link>
+            </Li>
+          </Ul>
+        </Nav>
         <SearchPanel />
         <Info>Blockchain: {blockchainHost || 'N/A'}</Info>
       </Wrapper>

@@ -47,6 +47,12 @@ export type AccountType = {
   keys: {
     [keyName: string]: KeyInfo;
   };
+  registrationTime: Date | null;
+};
+
+export type AccountLine = {
+  id: string;
+  golosId: string | null;
 };
 
 export type KeyInfo = {
