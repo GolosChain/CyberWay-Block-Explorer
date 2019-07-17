@@ -9,13 +9,17 @@ import { getHash, parseFilters, setHash } from '../../utils/filters';
 const SearchForm = styled.form`
   display: flex;
   align-items: center;
-  position: relative;
   margin-left: 40px;
 `;
 
 const Hint = styled.span`
   margin-right: 10px;
   cursor: help;
+`;
+
+const InputWrapper = styled.div`
+  display: inline-block;
+  position: relative;
 `;
 
 const SearchInput = styled.input`
@@ -191,14 +195,16 @@ export default class SearchPanel extends PureComponent<Props, State> {
         >
           [?]
         </Hint>
-        <SearchInput
-          type="search"
-          placeholder="Block id, transaction id or filters (see hint)"
-          value={searchText}
-          onFocus={this.onSearchTextFocus}
-          onChange={this.onSearchTextChange}
-        />
-        {items.length ? <SuggestPanel items={items} close={this.onSuggestClose} /> : null}
+        <InputWrapper>
+          <SearchInput
+            type="search"
+            placeholder="Block id, transaction id or filters (see hint)"
+            value={searchText}
+            onFocus={this.onSearchTextFocus}
+            onChange={this.onSearchTextChange}
+          />
+          {items.length ? <SuggestPanel items={items} close={this.onSuggestClose} /> : null}
+        </InputWrapper>
         <Button>Find</Button>
       </SearchForm>
     );
