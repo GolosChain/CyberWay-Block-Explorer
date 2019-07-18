@@ -53,4 +53,6 @@ export default ({ getState, dispatch }: { getState: GetState; dispatch: Dispatch
       meta,
     });
   }
+
+  return result;
 };

@@ -33,13 +33,15 @@ export type BlockSummary = {
   };
 };
 
-type SuggestType = 'block' | 'transaction';
+type SuggestType = 'block' | 'transaction' | 'account';
 
 export type Suggest = {
   type: SuggestType;
-  data: {
-    id: string;
-  };
+  data:
+    | {
+        id: string;
+      }
+    | AccountLine;
 };
 
 export type AccountType = {

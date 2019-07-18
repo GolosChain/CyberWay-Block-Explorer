@@ -1,12 +1,13 @@
 import React, { PureComponent, createRef, RefObject } from 'react';
 import styled from 'styled-components';
 
-import { Suggest } from '../../types';
+import { AccountLine, Suggest } from '../../types';
 import Link from '../Link';
 
 const SYMBOLS_BY_TYPE = {
   block: 'Block',
   transaction: 'Tx',
+  account: 'Acc',
 };
 
 const Wrapper = styled.div`
@@ -18,6 +19,11 @@ const Wrapper = styled.div`
   border-radius: 4px;
   background-color: #fff;
   box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+  z-index: 1;
+`;
+
+const NoResults = styled.div`
+  padding: 8px;
 `;
 
 const List = styled.ul``;
@@ -76,16 +82,28 @@ export default class SuggestPanel extends PureComponent<Props> {
         return `/block/${data.id}`;
       case 'transaction':
         return `/trx/${data.id}`;
+      case 'account':
+        return `/account/${data.id}`;
       default:
         throw new Error('Unknown type');
     }
   }
 
   renderItem = (item: Suggest, i: number) => {
+    let text = item.data.id;
+
+    if (item.type === 'account') {
+      const account = item.data as AccountLine;
+
+      if (account.golosId) {
+        text += ` (${account.golosId})`;
+      }
+    }
+
     return (
       <Item key={i}>
         <LinkStyled to={this.getRoute(item)} onClick={this.onItemClick}>
-          {SYMBOLS_BY_TYPE[item.type]} {item.data.id}
+          {SYMBOLS_BY_TYPE[item.type]}: {text}
         </LinkStyled>
       </Item>
     );
@@ -96,7 +114,11 @@ export default class SuggestPanel extends PureComponent<Props> {
 
     return (
       <Wrapper ref={this.rootRef}>
-        <List>{items.map(this.renderItem)}</List>
+        {items.length ? (
+          <List>{items.map(this.renderItem)}</List>
+        ) : (
+          <NoResults>Nothing is found</NoResults>
+        )}
       </Wrapper>
     );
   }

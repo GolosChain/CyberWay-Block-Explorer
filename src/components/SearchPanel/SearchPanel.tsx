@@ -38,7 +38,7 @@ type Props = {
 type State = {
   searchText: string;
   isSuggestClosed: boolean;
-  result: Suggest | null;
+  items: Suggest[] | null;
 };
 
 export default class SearchPanel extends PureComponent<Props, State> {
@@ -48,7 +48,7 @@ export default class SearchPanel extends PureComponent<Props, State> {
   state = {
     searchText: getHash(),
     isSuggestClosed: true,
-    result: null,
+    items: null,
   };
 
   componentDidMount() {
@@ -90,7 +90,7 @@ export default class SearchPanel extends PureComponent<Props, State> {
       }
 
       this.setState({
-        result: null,
+        items: null,
       });
       this.searchLazy.cancel();
     }
@@ -131,7 +131,7 @@ export default class SearchPanel extends PureComponent<Props, State> {
 
     const startIndex = ++this.requestStartIndex;
 
-    const { type, data } = await search({
+    const { items } = await search({
       text: searchText.trim(),
     });
 
@@ -142,19 +142,10 @@ export default class SearchPanel extends PureComponent<Props, State> {
 
     this.requestCompleteIndex = startIndex;
 
-    if (type) {
-      this.setState({
-        isSuggestClosed: false,
-        result: {
-          type,
-          data,
-        },
-      });
-    } else {
-      this.setState({
-        result: null,
-      });
-    }
+    this.setState({
+      isSuggestClosed: false,
+      items,
+    });
   };
 
   searchLazy = throttle(this.search, 400, { leading: false, trailing: true });
@@ -177,20 +168,15 @@ export default class SearchPanel extends PureComponent<Props, State> {
   }
 
   render() {
-    const { searchText, result, isSuggestClosed } = this.state;
+    const { searchText, items, isSuggestClosed } = this.state;
 
-    const items: Suggest[] = [];
-
-    if (result && !isSuggestClosed) {
-      // @ts-ignore
-      items.push(result);
-    }
+    const itemsSafe = items || [];
 
     return (
       <SearchForm onSubmit={this.onSearchSubmit}>
         <Hint
           title={
-            'Allowed query: block id, transaction id. Allowed filters: code, action, actor, event, nonempty, example: "code: gls.publish action: upvote", "actor: gls", "event: postreward" or simple "nonempty", also allowed combination of any filters'
+            'Allowed query: block id, transaction id, account id (by prefix). Allowed filters: code, action, actor, event, nonempty, example: "code: gls.publish action: upvote", "actor: gls", "event: postreward" or simple "nonempty", also allowed combination of any filters'
           }
         >
           [?]
@@ -198,12 +184,14 @@ export default class SearchPanel extends PureComponent<Props, State> {
         <InputWrapper>
           <SearchInput
             type="search"
-            placeholder="Block id, transaction id or filters (see hint)"
+            placeholder="Block id, transaction id, account id or filters (see hint)"
             value={searchText}
             onFocus={this.onSearchTextFocus}
             onChange={this.onSearchTextChange}
           />
-          {items.length ? <SuggestPanel items={items} close={this.onSuggestClose} /> : null}
+          {!isSuggestClosed && items ? (
+            <SuggestPanel items={itemsSafe} close={this.onSuggestClose} />
+          ) : null}
         </InputWrapper>
         <Button>Find</Button>
       </SearchForm>
