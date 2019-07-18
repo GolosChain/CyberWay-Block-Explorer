@@ -28,6 +28,11 @@ export default class Connection {
     this.url = url;
     this.queue = [];
     instance = this;
+
+    if (process.env.NODE_ENV !== 'production') {
+      // @ts-ignore
+      window._client = instance;
+    }
   }
 
   connect() {

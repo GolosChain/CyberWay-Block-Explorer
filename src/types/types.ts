@@ -57,6 +57,11 @@ export type AccountLine = {
   golosId: string | null;
 };
 
+export type ProducerType = {
+  id: string;
+  signKey: string;
+};
+
 export type KeyInfo = {
   threshold: number;
   keys: KeyLine[];
