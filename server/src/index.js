@@ -18,7 +18,7 @@ function getTransaction(transactionId) {
       } else if (response.error) {
         reject(response.error);
       } else {
-        resolve(response.body);
+        resolve(response.result);
       }
     });
   });

@@ -39,8 +39,6 @@ export default class Transaction extends PureComponent<Props> {
   render() {
     const { transactionId, transaction, filters } = this.props;
 
-    console.log('A', transaction);
-
     return (
       <Wrapper>
         <Navigation
