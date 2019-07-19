@@ -1,0 +1,84 @@
+version: '2.1'
+services:
+  blocks-mongo:
+    image: mongo
+    container_name: blocks-mongo
+    restart: always
+    healthcheck:
+      test: mongo --eval 'db.getCollectionNames()'
+      interval: 10s
+      timeout: 2s
+      retries: 10
+    volumes:
+      - mongodb-volume:/data/db
+    #ports:
+    #  - 127.0.0.1:27017:27017
+    networks:
+      - services-tier
+
+  blocks-node:
+    image: cyberway/block-service:0.1.0
+    container_name: blocks-node
+    restart: always
+    depends_on:
+      blocks-mongo:
+        condition: service_healthy
+    networks:
+      - services-tier
+    environment:
+      - GLS_MONGO_CONNECT=mongodb://blocks-mongo/admin
+    env_file:
+      - .env
+
+  blocks-api-node:
+    image: cyberway/block-service:0.1.0
+    container_name: blocks-api-node
+    environment:
+      - GLS_API=true
+    restart: always
+    depends_on:
+      blocks-mongo:
+        condition: service_healthy
+    networks:
+      - services-tier
+    env_file:
+      - .env
+
+  facade-node:
+    image: cyberway/block-explorer-service:0.1.0
+    container_name: block-explorer-node
+    restart: always
+    networks:
+      - services-tier
+    environment:
+      - GLS_FRONTEND_GATE_CONNECT=http://date-node:3000/
+      - GLS_BLOCKS_CONNECT=http://blocks-api-node:3000/
+
+  gate-node:
+    image: cyberway/gate-service:2.0.0
+    container_name: gate-node
+    restart: always
+    ports:
+      - 0.0.0.0:8080:8080
+    networks:
+      - services-tier
+    environment:
+      - GLS_FACADE_CONNECT=http://facade-node:3000/
+      - GLS_DISABLE_AUTH=true
+
+  block-explorer:
+    image: cyberway/block-explorer:0.2.9
+    container_name: block-explorer
+    restart: always
+    ports:
+      - 0.0.0.0:8000:3000
+    networks:
+      - services-tier
+    environment:
+      - GLS_BLOCKS_CONNECT=http://blocks-api-node:3000/
+
+networks:
+  services-tier:
+
+volumes:
+  mongodb-volume:
