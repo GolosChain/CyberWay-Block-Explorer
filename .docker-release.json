@@ -1,4 +1,4 @@
 {
-  "dockerUser": "cyberway",
+  "user": "cyberway",
   "imageName": "block-explorer"
 }
