@@ -18,7 +18,14 @@ function getTransaction(transactionId) {
       } else if (response.error) {
         reject(response.error);
       } else {
-        resolve(response.result);
+        const transaction = response.result;
+
+        // Это нужно чтобы переместить actions в конец объекта
+        const { actions } = transaction;
+        delete transaction.actions;
+        transaction.actions = actions;
+
+        resolve(transaction);
       }
     });
   });
