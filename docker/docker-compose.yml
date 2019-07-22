@@ -34,6 +34,7 @@ services:
     image: cyberway/block-service:0.1.0
     container_name: blocks-api-node
     environment:
+      - GLS_MONGO_CONNECT=mongodb://blocks-mongo/admin
       - GLS_API=true
     restart: always
     depends_on:
