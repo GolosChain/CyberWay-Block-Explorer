@@ -72,8 +72,17 @@ export default class ActionBody extends PureComponent<Props, State> {
           <FieldTitle>Authorization:</FieldTitle> {renderActors(action.auth)}
         </Field>
         <ArgsBlock>
-          <FieldTitle>Arguments:</FieldTitle>
-          {action.args ? <JSONPretty json={action.args} /> : null}
+          {action.args ? (
+            <>
+              <FieldTitle>Arguments:</FieldTitle>
+              <JSONPretty json={action.args} />
+            </>
+          ) : action.data ? (
+            <>
+              <FieldTitle>Data:</FieldTitle>
+              <div>{action.data}</div>
+            </>
+          ) : null}
         </ArgsBlock>
         {action.events && action.events.length ? (
           <EventsBlock>

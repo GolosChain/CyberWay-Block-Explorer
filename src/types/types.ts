@@ -113,7 +113,8 @@ export type TransactionAction = {
   receiver: string;
   auth: AuthLine[];
   accounts: string[];
-  args: Object;
+  args: Object | null;
+  data?: string;
   events: ActionEvent[];
 };
 
