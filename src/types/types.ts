@@ -60,6 +60,16 @@ export type AccountLine = {
 export type ProducerType = {
   id: string;
   signKey: string;
+  username: string | null;
+};
+export type ValidatorType = {
+  account: string;
+  enabled: boolean;
+  latestPick: Date;
+  signKey: string;
+  votes: number;
+  username: string | null;
+  percent: number;
 };
 
 export type KeyInfo = {
