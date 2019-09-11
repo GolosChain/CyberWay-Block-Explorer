@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
 import styled from 'styled-components';
+import is from 'styled-is';
 import ToastsManager from 'toasts-manager';
 
 import { LoadValidatorsParams } from './Validators.connect';
@@ -7,35 +8,42 @@ import { ValidatorType } from '../../types';
 import Link from '../../components/Link';
 
 const EMPTY_KEY = 'GLS1111111111111111111111111111111114T1Anm';
-const NEVER_PICK_TIME = new Date('2019-08-15T14:00:00.000').getTime()
+const NEVER_PICK_TIME = new Date('2019-08-15T14:00:00.000').getTime();
 
 const Wrapper = styled.div`
   margin: 16px;
 `;
+
 const Title = styled.h1`
   margin: 12px 0;
 `;
+
 const UpdateTime = styled.div`
   margin: 0 0 16px;
 `;
+
 const List = styled.ol`
   margin: 0 0 40px 24px;
 `;
-const AccountItem = styled.li<{paused: boolean}>`
+
+const AccountItem = styled.li<{ paused: boolean }>`
   margin: 4px 0 8px;
   list-style: decimal;
   clear: both;
-  ${props => props.paused && ({
-    opacity: 0.5
-  })}
+
+  ${is('paused')`
+    opacity: 0.5;
+  `};
 `;
+
 // TODO: fix
 const AccountName = styled.div`
   width: 160px;
-  float: left
+  float: left;
 `;
+
 const Username = styled.small`
-  color:#888
+  color: #888;
 `;
 
 export type Props = {
@@ -77,23 +85,22 @@ export default class Validators extends PureComponent<Props, State> {
   }
 
   formatCyber(x: number) {
-    return (x/10000).toFixed(4) + ' CYBER';
+    return (x / 10000).toFixed(4) + ' CYBER';
   }
 
   renderLine({ account, signKey, username, latestPick, votes, percent }: ValidatorType) {
     const paused = signKey === EMPTY_KEY;
     const pickDate = new Date(latestPick);
+
     return (
       <AccountItem key={account} paused={paused}>
         <AccountName>
           <Link to={`/account/${account}`}>{account}</Link>
-          <br/>
-          {typeof username === "string" ? (
-            <Username>{username}@@gls</Username>
-          ) : null}
+          <br />
+          {typeof username === 'string' ? <Username>{username}@@gls</Username> : null}
         </AccountName>
-        Votes: {this.formatCyber(votes)} ({percent.toFixed(3)}%);
-        Latest pick: {pickDate.getTime() === NEVER_PICK_TIME ? 'never' : pickDate.toLocaleString()}
+        Votes: {this.formatCyber(votes)} ({percent.toFixed(3)}%); Latest pick:{' '}
+        {pickDate.getTime() === NEVER_PICK_TIME ? 'never' : pickDate.toLocaleString()}
         <br />
         <small>(signing key: {signKey})</small>
       </AccountItem>
@@ -102,6 +109,7 @@ export default class Validators extends PureComponent<Props, State> {
 
   render() {
     const { validators, updateTime, totalStaked, totalVotes } = this.state;
+
     return (
       <Wrapper>
         {totalStaked ? (

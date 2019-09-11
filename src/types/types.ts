@@ -62,6 +62,7 @@ export type ProducerType = {
   signKey: string;
   username: string | null;
 };
+
 export type ValidatorType = {
   account: string;
   enabled: boolean;
