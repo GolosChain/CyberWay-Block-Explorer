@@ -8,6 +8,7 @@ import Block from '../pages/Block';
 import Transaction from '../pages/Transaction';
 import Account from '../pages/Account';
 import Producers from '../pages/Producers';
+import Validators from '../pages/Validators';
 
 export type BlockRouteParams = {
   blockId: string;
@@ -30,6 +31,7 @@ export default function() {
       <Route path="/block/:blockId" exact component={Block} />
       <Route path="/trx/:transactionId" exact component={Transaction} />
       <Route path="/producers" exact component={Producers} />
+      <Route path="/validators" exact component={Validators} />
       <Route path="/account/:accountId/:mode(actor|mention)?" exact component={Account} />
     </>
   );

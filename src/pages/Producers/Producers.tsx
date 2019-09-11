@@ -75,6 +75,7 @@ export default class Producers extends PureComponent<Props, State> {
     return (
       <Wrapper>
         <Title>Block producers:</Title>
+        <h2>Active schedule:</h2>
         {producers ? (
           <>
             {updateTime ? (
