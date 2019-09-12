@@ -4,6 +4,7 @@ import is from 'styled-is';
 import Modal from 'react-responsive-modal';
 
 import { AuthType } from '../../types';
+import { getKey } from '../../utils/password';
 import { Field, FieldTitle } from '../Form';
 
 type Props = {
@@ -88,7 +89,15 @@ export default class LoginDialog extends PureComponent<Props> {
     const { onLogin } = this.props;
     const { accountId, password } = this.state;
 
-    onLogin({ accountId, key: password });
+    const normalizedAccountId = accountId
+      .trim()
+      .toLowerCase()
+      .replace(/@.*$/, '');
+
+    onLogin({
+      accountId: normalizedAccountId,
+      key: getKey(normalizedAccountId, password.trim()),
+    });
   };
 
   render() {
@@ -110,7 +119,7 @@ export default class LoginDialog extends PureComponent<Props> {
               />
             </FieldStyled>
             <FieldStyled>
-              <FieldTitleStyled>Master password or key (active/owner):</FieldTitleStyled>
+              <FieldTitleStyled>Master password or active key:</FieldTitleStyled>
               <Input
                 type="password"
                 value={password}
