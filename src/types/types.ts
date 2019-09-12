@@ -47,6 +47,7 @@ export type Suggest = {
 export type GrantInfoType = {
   accountId: string;
   username: string;
+  isCanceled?: boolean;
 };
 
 export type GrantsInfoType = {
@@ -146,4 +147,9 @@ export type FiltersType = {
   actor?: string;
   event?: string;
   nonEmpty?: boolean;
+};
+
+export type AuthType = {
+  accountId: string;
+  key: string;
 };

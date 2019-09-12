@@ -1,6 +1,11 @@
 import { Action, AccountType, ApiError } from '../../types';
 
-import { FETCH_ACCOUNT, FETCH_ACCOUNT_ERROR, FETCH_ACCOUNT_SUCCESS } from '../constants';
+import {
+  FETCH_ACCOUNT,
+  FETCH_ACCOUNT_ERROR,
+  FETCH_ACCOUNT_SUCCESS,
+  MARK_GRANT_AS_CANCELED,
+} from '../constants';
 
 export type State = {
   account: AccountType | null;
@@ -44,6 +49,25 @@ export default function(
         account: payload,
         loadingAccountId: null,
         error: error || null,
+      };
+
+    case MARK_GRANT_AS_CANCELED:
+      if (!state.account || !state.account.grants || state.account.id !== payload.accountId) {
+        return state;
+      }
+
+      return {
+        ...state,
+        account: {
+          ...state.account,
+          grants: {
+            ...state.account.grants,
+            items: state.account.grants.items.map(grant => ({
+              ...grant,
+              isCanceled: grant.isCanceled || grant.accountId === payload.recipientId,
+            })),
+          },
+        },
       };
 
     default:

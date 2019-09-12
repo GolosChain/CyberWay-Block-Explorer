@@ -1,12 +1,20 @@
 import React, { PureComponent } from 'react';
 import styled from 'styled-components';
+import is from 'styled-is';
 import ToastsManager from 'toasts-manager';
 
-import { AccountTransactionsMode, AccountType, ApiError, GrantInfoType } from '../../types';
+import {
+  AccountTransactionsMode,
+  AccountType,
+  ApiError,
+  GrantInfoType,
+  AuthType,
+} from '../../types';
 import { Field, FieldTitle, FieldValue, ErrorLine } from '../../components/Form';
 import AccountTransactions from '../../components/AccountTransactions';
 import AccountKeys from '../../components/AccountKeys';
-import LoginDialog, { LoginAction } from '../../components/LoginDialog';
+import LoginDialog from '../../components/LoginDialog';
+import { recall } from '../../utils/cyberway';
 
 const Wrapper = styled.div`
   margin: 16px;
@@ -24,7 +32,11 @@ const GrantItem = styled.li`
   margin: 3px 0;
 `;
 
-const GrantRecipient = styled.span``;
+const GrantRecipient = styled.span<{ strike?: boolean }>`
+  ${is('strike')`
+    text-decoration: line-through;
+  `};
+`;
 
 const Username = styled.span`
   color: #888;
@@ -51,6 +63,7 @@ export type Props = {
   account: AccountType | null;
   accountError: ApiError | null;
   loadAccount: (accountId: string) => any;
+  markGrantAsCanceled: (params: any) => void;
 };
 
 export default class Account extends PureComponent<Props> {
@@ -78,21 +91,35 @@ export default class Account extends PureComponent<Props> {
   renderGrants(grants: GrantInfoType[]) {
     return (
       <ul>
-        {grants.map(({ accountId, username }) => (
+        {grants.map(({ accountId, username, isCanceled }) => (
           <GrantItem key={accountId}>
-            <GrantRecipient>
+            <GrantRecipient strike={isCanceled}>
               {accountId}
               {username ? <Username> ({username}@@gls)</Username> : null}
             </GrantRecipient>
-            <RecallButton onClick={() => this.onRecallClick(accountId)}>Recall</RecallButton>
+            {isCanceled ? null : (
+              <RecallButton onClick={() => this.onRecallClick(accountId)}>Recall</RecallButton>
+            )}
           </GrantItem>
         ))}
       </ul>
     );
   }
 
-  onLogin = ({ accountId, password }: LoginAction) => {
-    console.log('login:', accountId, password);
+  onLogin = async (auth: AuthType) => {
+    const { markGrantAsCanceled } = this.props;
+    const { recallingForAccountId } = this.state;
+
+    try {
+      await recall({ auth, recipientId: recallingForAccountId as any });
+      ToastsManager.log('Success');
+
+      this.onLoginClose();
+
+      markGrantAsCanceled({ accountId: auth.accountId, recipientId: recallingForAccountId });
+    } catch (err) {
+      ToastsManager.error(err.message);
+    }
   };
 
   onLoginClose = () => {
@@ -123,7 +150,7 @@ export default class Account extends PureComponent<Props> {
                 </Field>
               ) : null}
               {account.grants ? (
-                <Field>
+                <Field as="div">
                   <FieldTitle>Grants:</FieldTitle>
                   {account.grants.items.length ? (
                     this.renderGrants(account.grants.items)

@@ -3,17 +3,13 @@ import styled from 'styled-components';
 import is from 'styled-is';
 import Modal from 'react-responsive-modal';
 
+import { AuthType } from '../../types';
 import { Field, FieldTitle } from '../Form';
-
-export type LoginAction = {
-  accountId: string;
-  password: string;
-};
 
 type Props = {
   accountId?: string;
   lockAccountId?: boolean;
-  onLogin: (auth: LoginAction) => void;
+  onLogin: (auth: AuthType) => void;
   onClose: () => void;
 };
 
@@ -62,6 +58,7 @@ const Button = styled.button<{ primary?: boolean }>`
   border: 1px solid #777;
   border-radius: 4px;
   background: #fff;
+  cursor: pointer;
 
   &:not(:last-child) {
     margin-right: 10px;
@@ -91,7 +88,7 @@ export default class LoginDialog extends PureComponent<Props> {
     const { onLogin } = this.props;
     const { accountId, password } = this.state;
 
-    onLogin({ accountId, password });
+    onLogin({ accountId, key: password });
   };
 
   render() {
@@ -119,7 +116,9 @@ export default class LoginDialog extends PureComponent<Props> {
           </Fields>
           <Buttons>
             <Button primary>Authorize</Button>
-            <Button>Cancel</Button>
+            <Button type="button" onClick={onClose}>
+              Cancel
+            </Button>
           </Buttons>
         </Form>
       </Modal>
