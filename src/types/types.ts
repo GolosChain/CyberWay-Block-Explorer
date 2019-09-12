@@ -45,12 +45,12 @@ export type Suggest = {
 };
 
 export type GrantInfoType = {
-  grantor_name: String;
-  recipient_name: String;
+  accountId: string;
+  username: string;
 };
 
 export type GrantsInfoType = {
-  updateTime: Date;
+  updateTime: string;
   items: GrantInfoType[];
 };
 
@@ -60,7 +60,7 @@ export type AccountType = {
     [keyName: string]: KeyInfo;
   };
   grants: GrantsInfoType | null;
-  registrationTime: Date | null;
+  registrationTime: string | null;
 };
 
 export type AccountLine = {
