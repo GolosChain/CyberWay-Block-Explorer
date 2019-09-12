@@ -112,7 +112,7 @@ export default class Account extends PureComponent<Props> {
 
     try {
       await recall({ auth, recipientId: recallingForAccountId as any });
-      ToastsManager.log('Success');
+      ToastsManager.info('Success');
 
       this.onLoginClose();
 

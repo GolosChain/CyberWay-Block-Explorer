@@ -4,7 +4,7 @@ import JsSignatureProvider from 'cyberwayjs/dist/eosjs-jssig';
 
 import { AuthType } from '../types';
 
-const HOST = 'https://node-cyberway.golos.io';
+const HOST = process.env.GLS_NODE_HOST || 'https://node-cyberway.golos.io';
 
 const rpc = new JsonRpc(HOST);
 

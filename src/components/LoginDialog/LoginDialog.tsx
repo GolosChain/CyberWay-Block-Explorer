@@ -32,7 +32,7 @@ const FieldTitleStyled = styled(FieldTitle)`
   margin-bottom: 8px;
 `;
 
-const Input = styled.input`
+const Input = styled.input<{ autocomplete?: string }>`
   appearance: none;
   padding: 6px 10px;
   border: 1px solid #777;
@@ -111,7 +111,13 @@ export default class LoginDialog extends PureComponent<Props> {
             </FieldStyled>
             <FieldStyled>
               <FieldTitleStyled>Master password or key (active/owner):</FieldTitleStyled>
-              <Input type="password" value={password} required onChange={this.onPasswordChange} />
+              <Input
+                type="password"
+                value={password}
+                required
+                autocomplete="current-password"
+                onChange={this.onPasswordChange}
+              />
             </FieldStyled>
           </Fields>
           <Buttons>
