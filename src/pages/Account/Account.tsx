@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import styled from 'styled-components';
 import ToastsManager from 'toasts-manager';
 
-import { AccountTransactionsMode, AccountType, ApiError } from '../../types';
+import { AccountTransactionsMode, AccountType, ApiError, GrantInfoType } from '../../types';
 import { Field, FieldTitle, FieldValue, ErrorLine } from '../../components/Form';
 import AccountTransactions from '../../components/AccountTransactions';
 import AccountKeys from '../../components/AccountKeys';
@@ -36,6 +36,17 @@ export default class Account extends PureComponent<Props> {
     });
   }
 
+  renderGrants(grants: GrantInfoType[]) {
+    const grantItems = [];
+    for (const grant of grants) {
+      // TODO: recall button
+      grantItems.push(
+        <li>{grant.recipient_name}</li>
+      );
+    }
+    return <ul>{grantItems}</ul>;
+  }
+
   render() {
     const { accountId, account, accountError, mode } = this.props;
 
@@ -48,10 +59,20 @@ export default class Account extends PureComponent<Props> {
           </Field>
           {account ? (
             <>
+            {account.keys ? (
               <Field>
                 <FieldTitle>Keys:</FieldTitle>
                 <AccountKeys keys={account.keys} />
               </Field>
+            ) : null}
+            {account.grants ? (
+              <Field>
+                <FieldTitle>Grants:</FieldTitle>
+                {account.grants.items.length ? this.renderGrants(account.grants.items) : <span>none</span>}
+                <br/>
+                <small>Updated: {new Date(account.grants.updateTime).toLocaleString()}</small>
+              </Field>
+            ) : null}
             </>
           ) : accountError ? (
             <ErrorLine>Loading error: {accountError.message}</ErrorLine>

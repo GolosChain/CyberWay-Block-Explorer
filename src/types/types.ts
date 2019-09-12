@@ -44,11 +44,22 @@ export type Suggest = {
     | AccountLine;
 };
 
+export type GrantInfoType = {
+  grantor_name: String;
+  recipient_name: String;
+};
+
+export type GrantsInfoType = {
+  updateTime: Date;
+  items: GrantInfoType[];
+};
+
 export type AccountType = {
   id: string;
   keys: {
     [keyName: string]: KeyInfo;
   };
+  grants: GrantsInfoType | null;
   registrationTime: Date | null;
 };
 
