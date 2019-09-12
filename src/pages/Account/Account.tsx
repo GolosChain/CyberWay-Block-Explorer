@@ -6,6 +6,7 @@ import { AccountTransactionsMode, AccountType, ApiError, GrantInfoType } from '.
 import { Field, FieldTitle, FieldValue, ErrorLine } from '../../components/Form';
 import AccountTransactions from '../../components/AccountTransactions';
 import AccountKeys from '../../components/AccountKeys';
+import LoginDialog, { LoginAction } from '../../components/LoginDialog';
 
 const Wrapper = styled.div`
   margin: 16px;
@@ -53,6 +54,12 @@ export type Props = {
 };
 
 export default class Account extends PureComponent<Props> {
+  state = {
+    password: '',
+    isLoginOpen: false,
+    recallingForAccountId: null,
+  };
+
   componentDidMount() {
     const { accountId, loadAccount } = this.props;
 
@@ -62,7 +69,10 @@ export default class Account extends PureComponent<Props> {
   }
 
   onRecallClick(accountId: string) {
-    console.log('A', accountId);
+    this.setState({
+      isLoginOpen: true,
+      recallingForAccountId: accountId,
+    });
   }
 
   renderGrants(grants: GrantInfoType[]) {
@@ -81,8 +91,21 @@ export default class Account extends PureComponent<Props> {
     );
   }
 
+  onLogin = ({ accountId, password }: LoginAction) => {
+    console.log('login:', accountId, password);
+  };
+
+  onLoginClose = () => {
+    this.setState({
+      isLoginOpen: false,
+      password: '',
+      recallingForAccountId: null,
+    });
+  };
+
   render() {
     const { accountId, account, accountError, mode } = this.props;
+    const { isLoginOpen } = this.state;
 
     return (
       <Wrapper>
@@ -120,6 +143,14 @@ export default class Account extends PureComponent<Props> {
           )}
         </Info>
         <AccountTransactions accountId={accountId} mode={mode || 'all'} />
+        {isLoginOpen ? (
+          <LoginDialog
+            accountId={accountId}
+            lockAccountId
+            onLogin={this.onLogin}
+            onClose={this.onLoginClose}
+          />
+        ) : null}
       </Wrapper>
     );
   }
