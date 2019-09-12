@@ -44,12 +44,24 @@ export type Suggest = {
     | AccountLine;
 };
 
+export type GrantInfoType = {
+  accountId: string;
+  username: string;
+  isCanceled?: boolean;
+};
+
+export type GrantsInfoType = {
+  updateTime: string;
+  items: GrantInfoType[];
+};
+
 export type AccountType = {
   id: string;
   keys: {
     [keyName: string]: KeyInfo;
   };
-  registrationTime: Date | null;
+  grants: GrantsInfoType | null;
+  registrationTime: string | null;
 };
 
 export type AccountLine = {
@@ -135,4 +147,9 @@ export type FiltersType = {
   actor?: string;
   event?: string;
   nonEmpty?: boolean;
+};
+
+export type AuthType = {
+  accountId: string;
+  key: string;
 };
