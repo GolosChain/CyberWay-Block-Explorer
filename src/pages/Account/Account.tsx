@@ -15,6 +15,7 @@ import AccountTransactions from '../../components/AccountTransactions';
 import AccountKeys from '../../components/AccountKeys';
 import LoginDialog from '../../components/LoginDialog';
 import { recall } from '../../utils/cyberway';
+import { markGrantAsCanceledArg } from './Account.connect';
 
 const Wrapper = styled.div`
   margin: 16px;
@@ -63,7 +64,7 @@ export type Props = {
   account: AccountType | null;
   accountError: ApiError | null;
   loadAccount: (accountId: string) => any;
-  markGrantAsCanceled: (params: any) => void;
+  markGrantAsCanceled: (params: markGrantAsCanceledArg) => void;
 };
 
 export default class Account extends PureComponent<Props> {
@@ -110,13 +111,15 @@ export default class Account extends PureComponent<Props> {
     const { markGrantAsCanceled } = this.props;
     const { recallingForAccountId } = this.state;
 
+    const recipientId = recallingForAccountId as any;
+
     try {
-      await recall({ auth, recipientId: recallingForAccountId as any });
+      await recall({ auth, recipientId });
       ToastsManager.info('Success');
 
       this.onLoginClose();
 
-      markGrantAsCanceled({ accountId: auth.accountId, recipientId: recallingForAccountId });
+      markGrantAsCanceled({ accountId: auth.accountId, recipientId });
     } catch (err) {
       ToastsManager.error(err.message);
     }
