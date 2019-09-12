@@ -57,6 +57,7 @@ export type GrantsInfoType = {
 
 export type AccountType = {
   id: string;
+  golosId?: string;
   keys: {
     [keyName: string]: KeyInfo;
   };

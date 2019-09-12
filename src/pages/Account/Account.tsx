@@ -146,6 +146,11 @@ export default class Account extends PureComponent<Props> {
           </Field>
           {account ? (
             <>
+              {account.golosId ? (
+                <Field line>
+                  <FieldTitle>Golos id:</FieldTitle> <FieldValue>{account.golosId}</FieldValue>
+                </Field>
+              ) : null}
               {account.keys ? (
                 <Field>
                   <FieldTitle>Keys:</FieldTitle>
@@ -176,6 +181,7 @@ export default class Account extends PureComponent<Props> {
         {isLoginOpen ? (
           <LoginDialog
             accountId={accountId}
+            golosId={account ? account.golosId : null}
             lockAccountId
             onLogin={this.onLogin}
             onClose={this.onLoginClose}
