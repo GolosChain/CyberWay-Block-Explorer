@@ -56,7 +56,7 @@ app.get('/trx/:trxId.json', async (req, res) => {
 
 // Отдаем index.html на все запросы за text/html
 app.use('/*', (req, res, next) => {
-  if (req.method === 'GET' && req.headers.accept.startsWith('text/html')) {
+  if (req.method === 'GET' && req.headers.accept && req.headers.accept.startsWith('text/html')) {
     res.sendFile(path.join(BUILD_DIR, 'index.html'));
   } else {
     next();
