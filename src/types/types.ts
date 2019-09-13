@@ -157,3 +157,5 @@ export type AuthType = {
   accountId: string;
   key: string;
 };
+
+export type KeyRole = 'owner' | 'active' | 'posting';

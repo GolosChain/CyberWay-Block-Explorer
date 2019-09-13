@@ -1,26 +1,36 @@
 // @ts-ignore
 import ecc from 'eosjs-ecc';
-import { AccountType } from '../types';
+
+import { KeyRole } from '../types';
 
 type GetKeyParams = {
   accountId: string;
   userInput: string;
-  account?: AccountType | null;
-  keyRole?: 'active' | 'owner' | 'posting';
+  publicKey: string | null;
+  golosId?: string | null;
+  keyRole?: KeyRole;
 };
 
-export function getKey({ accountId, account, userInput, keyRole = 'active' }: GetKeyParams) {
-  // const needPublicKey = account && account.keys ? account.keys[keyRole] : null;
-
+export function getKey({
+  accountId,
+  golosId,
+  publicKey,
+  userInput,
+  keyRole = 'active',
+}: GetKeyParams) {
   try {
-    // If key could be converted into public key it means key is valid
+    // If key could be converted into public key without error it means key is valid
     ecc.privateToPublic(userInput, 'GLS');
     return userInput;
   } catch {
     // If it's not a key try extract key from seed
 
-    if (account && account.golosId) {
-      return ecc.seedPrivate(`${account.golosId}${keyRole}${userInput}`);
+    if (golosId && publicKey) {
+      const key = ecc.seedPrivate(`${golosId}${keyRole}${userInput}`);
+
+      if (ecc.privateToPublic(key, 'GLS') === publicKey) {
+        return key;
+      }
     }
 
     return ecc.seedPrivate(`${accountId}${keyRole}${userInput}`);

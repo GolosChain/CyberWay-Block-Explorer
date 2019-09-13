@@ -5,6 +5,7 @@ import Modal from 'react-responsive-modal';
 
 import { AccountType, AuthType } from '../../types';
 import { getKey } from '../../utils/password';
+import { getAccountPublicKey } from '../../utils/cyberway';
 import { Field, FieldTitle } from '../Form';
 
 const Form = styled.form``;
@@ -83,16 +84,16 @@ export default class LoginDialog extends PureComponent<Props> {
     });
   };
 
-  onSubmit = (e: FormEvent) => {
+  onSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
     const { account, onLogin } = this.props;
     const { accountId, password } = this.state;
 
-    let passAccountInfo = null;
+    let golosId = null;
 
     if (account && account.id === accountId) {
-      passAccountInfo = account;
+      golosId = account.golosId;
     }
 
     const normalizedAccountId = accountId
@@ -100,11 +101,14 @@ export default class LoginDialog extends PureComponent<Props> {
       .toLowerCase()
       .replace(/@.*$/, '');
 
+    const key = await getAccountPublicKey(normalizedAccountId, 'active');
+
     onLogin({
       accountId: normalizedAccountId,
       key: getKey({
         accountId: normalizedAccountId,
-        account: passAccountInfo,
+        golosId,
+        publicKey: key,
         userInput: password.trim(),
       }),
     });
