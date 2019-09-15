@@ -9,6 +9,7 @@ import {
   GrantInfoType,
   AuthType,
   ExtendedAccountType,
+  TokenBalanceType,
 } from '../../types';
 import { Field, FieldTitle, FieldValue, ErrorLine } from '../../components/Form';
 import AccountTransactions from '../../components/AccountTransactions';
@@ -58,6 +59,10 @@ const UpdatedAt = styled.div`
   font-size: 13px;
 `;
 
+const TokenItem = styled.li`
+  margin: 3px 0;
+`;
+
 export type Props = {
   accountId: string;
   mode: AccountTransactionsMode | undefined;
@@ -102,6 +107,20 @@ export default class Account extends PureComponent<Props> {
               <RecallButton onClick={() => this.onRecallClick(accountId)}>Recall</RecallButton>
             )}
           </GrantItem>
+        ))}
+      </ul>
+    );
+  }
+
+  renderTokens(tokens: TokenBalanceType[]) {
+    return (
+      <ul>
+        {tokens.map(({ balance, payments }) => (
+          <TokenItem key={balance.split(' ')[1]}>
+            {balance}
+            {parseFloat(payments.split(' ')[0]) !== 0 ? (` + payments: ${payments}`) : null}
+            ;
+          </TokenItem>
         ))}
       </ul>
     );
@@ -168,6 +187,12 @@ export default class Account extends PureComponent<Props> {
                   <UpdatedAt>
                     Updated: {new Date(account.grants.updateTime).toLocaleString()}
                   </UpdatedAt>
+                </Field>
+              ) : null}
+              {account.tokens && account.tokens.length ? (
+                <Field as="div">
+                  <FieldTitle>Balances:</FieldTitle>
+                  {this.renderTokens(account.tokens)}
                 </Field>
               ) : null}
             </>
