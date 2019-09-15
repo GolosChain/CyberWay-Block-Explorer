@@ -76,7 +76,7 @@ function MinOwnStaked({ value, systemMin, ...props }: MinStakedProps) {
   const color = value < systemMin ? 'darkred' : value > systemMin ? 'darkgreen' : 'default';
   return (
     <MinOwnStakedStyled {...props}>
-      Min own staked: <b style={{color:color}}>{formatCyber(value || 0)}</b>
+      Min own staked: <b style={{ color: color }}>{formatCyber(value || 0)}</b>
     </MinOwnStakedStyled>
   );
 }
@@ -122,7 +122,7 @@ export default class Validators extends PureComponent<Props, State> {
   renderLine({ account, signKey, username, latestPick, votes, percent, props }: ValidatorType) {
     const paused = signKey === EMPTY_KEY;
     const pickDate = new Date(latestPick);
-    const votesStyle = votes < SYSTEM_MIN_OWN_STAKED ? {color:'darkred'} : {};
+    const votesStyle = votes < SYSTEM_MIN_OWN_STAKED ? { color: 'darkred' } : {};
     const fee = (props && props.fee) ? props.fee / 100 : 100;
 
     return (
