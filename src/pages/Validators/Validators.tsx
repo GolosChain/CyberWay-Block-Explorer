@@ -33,7 +33,7 @@ const AccountItem = styled.li<{ paused: boolean }>`
   clear: both;
 
   &:hover {
-    background: #FFD;
+    background: #ffd;
   }
 
   ${is('paused')`
@@ -74,6 +74,7 @@ function MinOwnStaked({ value, systemMin, ...props }: MinStakedProps) {
     systemMin = SYSTEM_MIN_OWN_STAKED;
   }
   const color = value < systemMin ? 'darkred' : value > systemMin ? 'darkgreen' : 'default';
+
   return (
     <MinOwnStakedStyled {...props}>
       Min own staked: <b style={{ color: color }}>{formatCyber(value || 0)}</b>
@@ -123,7 +124,7 @@ export default class Validators extends PureComponent<Props, State> {
     const paused = signKey === EMPTY_KEY;
     const pickDate = new Date(latestPick);
     const votesStyle = votes < SYSTEM_MIN_OWN_STAKED ? { color: 'darkred' } : {};
-    const fee = (props && props.fee) ? props.fee / 100 : 100;
+    const fee = props && props.fee ? props.fee / 100 : 100;
 
     return (
       <AccountItem key={account} paused={paused}>
@@ -133,7 +134,8 @@ export default class Validators extends PureComponent<Props, State> {
           {typeof username === 'string' ? <Username>{username}@@gls</Username> : null}
         </AccountName>
         Votes: <span style={votesStyle}>{formatCyber(votes)}</span> ({percent.toFixed(3)}%);{' '}
-        <span title="Time when validator appeared in block producing schedule">Latest pick:{' '}
+        <span title="Time when validator appeared in block producing schedule">
+          Latest pick:{' '}
           {pickDate.getTime() === NEVER_PICK_TIME ? 'never' : pickDate.toLocaleString()}
         </span>
         <br />
@@ -148,7 +150,7 @@ export default class Validators extends PureComponent<Props, State> {
             />
           </>
         ) : null}
-        <br/>
+        <br />
         <small>(signing key: {signKey})</small>
       </AccountItem>
     );
