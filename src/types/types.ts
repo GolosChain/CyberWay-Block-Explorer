@@ -60,7 +60,10 @@ export type AccountType = {
   golosId?: string;
   keys: {
     [keyName: string]: KeyInfo;
-  };
+  } | null;
+};
+
+export type ExtendedAccountType = AccountType & {
   grants: GrantsInfoType | null;
   registrationTime: string | null;
 };
@@ -154,3 +157,5 @@ export type AuthType = {
   accountId: string;
   key: string;
 };
+
+export type KeyRole = 'owner' | 'active' | 'posting';

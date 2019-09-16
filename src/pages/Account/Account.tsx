@@ -5,10 +5,10 @@ import ToastsManager from 'toasts-manager';
 
 import {
   AccountTransactionsMode,
-  AccountType,
   ApiError,
   GrantInfoType,
   AuthType,
+  ExtendedAccountType,
 } from '../../types';
 import { Field, FieldTitle, FieldValue, ErrorLine } from '../../components/Form';
 import AccountTransactions from '../../components/AccountTransactions';
@@ -61,7 +61,7 @@ const UpdatedAt = styled.div`
 export type Props = {
   accountId: string;
   mode: AccountTransactionsMode | undefined;
-  account: AccountType | null;
+  account: ExtendedAccountType | null;
   accountError: ApiError | null;
   loadAccount: (accountId: string) => any;
   markGrantAsCanceled: (params: markGrantAsCanceledArg) => void;
@@ -180,8 +180,7 @@ export default class Account extends PureComponent<Props> {
         <AccountTransactions accountId={accountId} mode={mode || 'all'} />
         {isLoginOpen ? (
           <LoginDialog
-            accountId={accountId}
-            golosId={account ? account.golosId : null}
+            account={account || { id: accountId, keys: null }}
             lockAccountId
             onLogin={this.onLogin}
             onClose={this.onLoginClose}

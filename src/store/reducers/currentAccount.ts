@@ -1,4 +1,4 @@
-import { Action, AccountType, ApiError } from '../../types';
+import { Action, ExtendedAccountType, ApiError } from '../../types';
 
 import {
   FETCH_ACCOUNT,
@@ -8,7 +8,7 @@ import {
 } from '../constants';
 
 export type State = {
-  account: AccountType | null;
+  account: ExtendedAccountType | null;
   loadingAccountId: string | null;
   error: ApiError | null;
 };
