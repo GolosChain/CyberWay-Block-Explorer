@@ -55,6 +55,11 @@ export type GrantsInfoType = {
   items: GrantInfoType[];
 };
 
+export type TokenBalanceType = {
+  balance: string;
+  payments: string;
+};
+
 export type AccountType = {
   id: string;
   golosId?: string;
@@ -65,6 +70,7 @@ export type AccountType = {
 
 export type ExtendedAccountType = AccountType & {
   grants: GrantsInfoType | null;
+  tokens: TokenBalanceType[] | null;
   registrationTime: string | null;
 };
 
@@ -87,6 +93,11 @@ export type ValidatorType = {
   votes: number;
   username: string | null;
   percent: number;
+  props: {
+    fee: number | null;
+    proxyLevel: number | null;
+    minStake: number | null;
+  } | null;
 };
 
 export type KeyInfo = {

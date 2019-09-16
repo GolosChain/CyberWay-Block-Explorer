@@ -8,7 +8,8 @@ import { ValidatorType } from '../../types';
 import Link from '../../components/Link';
 
 const EMPTY_KEY = 'GLS1111111111111111111111111111111114T1Anm';
-const NEVER_PICK_TIME = new Date('2019-08-15T14:00:00.000').getTime();
+const NEVER_PICK_TIME = new Date('2019-08-15T14:00:00.000Z').getTime();
+const SYSTEM_MIN_OWN_STAKED = 500000000;
 
 const Wrapper = styled.div`
   margin: 16px;
@@ -31,6 +32,10 @@ const AccountItem = styled.li<{ paused: boolean }>`
   list-style: decimal;
   clear: both;
 
+  &:hover {
+    background: #ffd;
+  }
+
   ${is('paused')`
     opacity: 0.5;
   `};
@@ -39,12 +44,43 @@ const AccountItem = styled.li<{ paused: boolean }>`
 // TODO: fix
 const AccountName = styled.div`
   width: 160px;
+  height: 40px;
   float: left;
 `;
 
 const Username = styled.small`
   color: #888;
 `;
+
+const RewardFee = styled.span`
+  padding-right: 6px;
+`;
+
+const MinOwnStakedStyled = styled.span`
+  padding-right: 6px;
+`;
+
+function formatCyber(x: number) {
+  return (x / 10000).toFixed(4) + ' CYBER';
+}
+
+type MinStakedProps = {
+  value: number;
+  systemMin?: number;
+} & React.ComponentProps<any>;
+
+function MinOwnStaked({ value, systemMin, ...props }: MinStakedProps) {
+  if (!systemMin) {
+    systemMin = SYSTEM_MIN_OWN_STAKED;
+  }
+  const color = value < systemMin ? 'darkred' : value > systemMin ? 'darkgreen' : 'default';
+
+  return (
+    <MinOwnStakedStyled {...props}>
+      Min own staked: <b style={{ color: color }}>{formatCyber(value || 0)}</b>
+    </MinOwnStakedStyled>
+  );
+}
 
 export type Props = {
   loadValidators: (params: LoadValidatorsParams) => any;
@@ -84,13 +120,11 @@ export default class Validators extends PureComponent<Props, State> {
     }
   }
 
-  formatCyber(x: number) {
-    return (x / 10000).toFixed(4) + ' CYBER';
-  }
-
-  renderLine({ account, signKey, username, latestPick, votes, percent }: ValidatorType) {
+  renderLine({ account, signKey, username, latestPick, votes, percent, props }: ValidatorType) {
     const paused = signKey === EMPTY_KEY;
     const pickDate = new Date(latestPick);
+    const votesStyle = votes < SYSTEM_MIN_OWN_STAKED ? { color: 'darkred' } : {};
+    const fee = props && props.fee ? props.fee / 100 : 100;
 
     return (
       <AccountItem key={account} paused={paused}>
@@ -99,8 +133,23 @@ export default class Validators extends PureComponent<Props, State> {
           <br />
           {typeof username === 'string' ? <Username>{username}@@gls</Username> : null}
         </AccountName>
-        Votes: {this.formatCyber(votes)} ({percent.toFixed(3)}%); Latest pick:{' '}
-        {pickDate.getTime() === NEVER_PICK_TIME ? 'never' : pickDate.toLocaleString()}
+        Votes: <span style={votesStyle}>{formatCyber(votes)}</span> ({percent.toFixed(3)}%);{' '}
+        <span title="Time when validator appeared in block producing schedule">
+          Latest pick:{' '}
+          {pickDate.getTime() === NEVER_PICK_TIME ? 'never' : pickDate.toLocaleString()}
+        </span>
+        <br />
+        {props ? (
+          <>
+            <RewardFee title={`Validator gives ${(100 - fee).toFixed(2)}% of reward to voters`}>
+              Reward fee: <b>{fee.toFixed(0)}%</b>;
+            </RewardFee>
+            <MinOwnStaked
+              value={props.minStake}
+              title="Validator declares he staked at least this amount"
+            />
+          </>
+        ) : null}
         <br />
         <small>(signing key: {signKey})</small>
       </AccountItem>
@@ -114,8 +163,8 @@ export default class Validators extends PureComponent<Props, State> {
       <Wrapper>
         {totalStaked ? (
           <ul>
-            <li>Total staked: {this.formatCyber(totalStaked)}</li>
-            <li>Total votes: {this.formatCyber(totalVotes)}</li>
+            <li>Total staked: {formatCyber(totalStaked)}</li>
+            <li>Total votes: {formatCyber(totalVotes)}</li>
           </ul>
         ) : null}
         <Title>Validators:</Title>
