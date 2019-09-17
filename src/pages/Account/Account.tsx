@@ -118,7 +118,7 @@ export default class Account extends PureComponent<Props> {
         {tokens.map(({ balance, payments }) => (
           <TokenItem key={balance.split(' ')[1]}>
             {balance}
-            {parseFloat(payments.split(' ')[0]) !== 0 ? ` + payments: ${payments}` : null};
+            {payments && parseFloat(payments.split(' ')[0]) !== 0 ? ` + payments: ${payments}` : null};
           </TokenItem>
         ))}
       </ul>

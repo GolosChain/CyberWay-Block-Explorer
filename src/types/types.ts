@@ -57,7 +57,7 @@ export type GrantsInfoType = {
 
 export type TokenBalanceType = {
   balance: string;
-  payments: string;
+  payments?: string;
 };
 
 export type AccountType = {
