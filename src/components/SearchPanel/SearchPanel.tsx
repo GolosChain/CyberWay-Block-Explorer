@@ -9,12 +9,15 @@ import { getHash, parseFilters, setHash } from '../../utils/filters';
 const SearchForm = styled.form`
   display: flex;
   align-items: center;
-  margin-left: 40px;
 `;
 
 const Hint = styled.span`
   margin-right: 10px;
   cursor: help;
+
+  @media (max-width: 600px) {
+    display: none;
+  }
 `;
 
 const InputWrapper = styled.div`
@@ -24,6 +27,10 @@ const InputWrapper = styled.div`
 
 const SearchInput = styled.input`
   width: 500px;
+
+  @media (max-width: 600px) {
+    width: 100%;
+  }
 `;
 
 const Button = styled.button`

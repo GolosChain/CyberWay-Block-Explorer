@@ -10,19 +10,32 @@ const Wrapper = styled.header`
   flex-shrink: 0;
   padding: 8px 16px;
   background-color: #eee;
+
+  & > :not(:last-child) {
+    margin-right: 40px;
+  }
+
+  @media (max-width: 600px) {
+    display: block;
+
+    & > * {
+      margin-bottom: 8px;
+      margin-right: 40px;
+    }
+  }
 `;
 
 const Nav = styled.nav``;
+
 const Ul = styled.ul`
   display: flex;
 `;
+
 const Li = styled.li`
   margin-right: 8px;
 `;
 
-const Info = styled.div`
-  margin-left: 40px;
-`;
+const Info = styled.div``;
 
 type Props = {
   blockchainHost: string | null;
