@@ -79,12 +79,6 @@ export type AccountLine = {
   golosId: string | null;
 };
 
-export type ProducerType = {
-  id: string;
-  signKey: string;
-  username: string | null;
-};
-
 export type ValidatorType = {
   account: string;
   enabled: boolean;
