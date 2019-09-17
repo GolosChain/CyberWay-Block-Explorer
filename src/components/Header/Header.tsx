@@ -40,9 +40,6 @@ export default class Header extends PureComponent<Props> {
               <Link to="/">Home</Link>
             </Li>
             <Li>
-              <Link to="/producers">Producers</Link>
-            </Li>
-            <Li>
               <Link to="/validators">Validators</Link>
             </Li>
           </Ul>

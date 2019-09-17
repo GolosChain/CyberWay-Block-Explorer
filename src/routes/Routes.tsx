@@ -7,7 +7,6 @@ import Feed from '../pages/Feed';
 import Block from '../pages/Block';
 import Transaction from '../pages/Transaction';
 import Account from '../pages/Account';
-import Producers from '../pages/Producers';
 import Validators from '../pages/Validators';
 
 export type BlockRouteParams = {
@@ -30,7 +29,6 @@ export default function() {
       <Route path="/feed" exact component={Feed} />
       <Route path="/block/:blockId" exact component={Block} />
       <Route path="/trx/:transactionId" exact component={Transaction} />
-      <Route path="/producers" exact component={Producers} />
       <Route path="/validators" exact component={Validators} />
       <Route path="/account/:accountId/:mode(actor|mention)?" exact component={Account} />
     </>
