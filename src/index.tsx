@@ -13,6 +13,12 @@ const connection = new Connection({
 });
 
 function getWebSocketUrl() {
+  const envUrl = process.env.REACT_APP_GATE_URL;
+
+  if (envUrl) {
+    return envUrl;
+  }
+
   const { protocol, hostname } = window.location;
 
   if (protocol === 'https:') {

@@ -5,7 +5,7 @@ import {
   FETCH_ACCOUNT,
   FETCH_ACCOUNT_SUCCESS,
   FETCH_ACCOUNT_ERROR,
-  MARK_GRANT_AS_CANCELED,
+  CHANGE_GRANT_STATE,
 } from '../../store/constants';
 import { State } from '../../store';
 
@@ -20,9 +20,11 @@ type Props = {
 
 export type LoadAccountParams = { accountId: string };
 
-export type markGrantAsCanceledArg = {
+export type changeGrantStateArg = {
   accountId: string;
   recipientId: string;
+  share: number | null;
+  pct: number | null;
 };
 
 export default connect(
@@ -51,8 +53,8 @@ export default connect(
         meta: { ...params },
       };
     },
-    markGrantAsCanceled: (params: markGrantAsCanceledArg) => ({
-      type: MARK_GRANT_AS_CANCELED,
+    changeGrantState: (params: changeGrantStateArg) => ({
+      type: CHANGE_GRANT_STATE,
       payload: params,
     }),
   }

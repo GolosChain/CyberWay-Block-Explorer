@@ -1,7 +1,7 @@
 FROM node:10 as builder
 #frontend dependencies
 WORKDIR /usr/src/app
-COPY ./package.json ./yarn.lock .npmrc ./
+COPY ./package.json ./yarn.lock ./
 RUN yarn install
 
 #backend dependencies

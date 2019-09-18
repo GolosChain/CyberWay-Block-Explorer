@@ -46,7 +46,11 @@ export type Suggest = {
 
 export type GrantInfoType = {
   accountId: string;
-  username: string;
+  username?: string;
+  share: number;
+  pct: number;
+  breakFee: number;
+  breakMinStaked: number;
   isCanceled?: boolean;
 };
 
@@ -60,10 +64,16 @@ export type TokenBalanceType = {
   payments?: string;
 };
 
+export type AgentPropsType = {
+  fee: number | null;
+  proxyLevel: number | null;
+  minStake: number | null;
+};
+
 export type AccountType = {
   id: string;
-  golosId?: string;
-  keys: {
+  golosId?: string | null;
+  keys?: {
     [keyName: string]: KeyInfo;
   } | null;
 };
@@ -71,6 +81,7 @@ export type AccountType = {
 export type ExtendedAccountType = AccountType & {
   grants: GrantsInfoType | null;
   tokens: TokenBalanceType[] | null;
+  agentProps: AgentPropsType | null;
   registrationTime: string | null;
 };
 
@@ -87,11 +98,7 @@ export type ValidatorType = {
   votes: number;
   username: string | null;
   percent: number;
-  props: {
-    fee: number | null;
-    proxyLevel: number | null;
-    minStake: number | null;
-  } | null;
+  props: AgentPropsType | null;
 };
 
 export type KeyInfo = {

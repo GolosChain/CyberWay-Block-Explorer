@@ -1,10 +1,13 @@
-import { Action, ExtendedAccountType, ApiError } from '../../types';
+// @ts-ignore
+import u from 'updeep';
+
+import { Action, ExtendedAccountType, ApiError, GrantInfoType } from '../../types';
 
 import {
   FETCH_ACCOUNT,
   FETCH_ACCOUNT_ERROR,
   FETCH_ACCOUNT_SUCCESS,
-  MARK_GRANT_AS_CANCELED,
+  CHANGE_GRANT_STATE,
 } from '../constants';
 
 export type State = {
@@ -51,24 +54,30 @@ export default function(
         error: error || null,
       };
 
-    case MARK_GRANT_AS_CANCELED:
-      if (!state.account || !state.account.grants || state.account.id !== payload.accountId) {
+    case CHANGE_GRANT_STATE:
+      const { accountId, recipientId, share, pct } = payload;
+
+      if (!state.account || !state.account.grants || state.account.id !== accountId) {
         return state;
       }
 
-      return {
-        ...state,
-        account: {
-          ...state.account,
-          grants: {
-            ...state.account.grants,
-            items: state.account.grants.items.map(grant => ({
+      return u.updateIn(
+        ['account', 'grants', 'items'],
+        (items: GrantInfoType[]) =>
+          items.map(grant => {
+            if (grant.accountId !== recipientId) {
+              return grant;
+            }
+
+            return {
               ...grant,
-              isCanceled: grant.isCanceled || grant.accountId === payload.recipientId,
-            })),
-          },
-        },
-      };
+              isCanceled: true,
+              share: share !== null ? share : grant.share,
+              pct: pct !== null ? pct : grant.pct,
+            };
+          }),
+        state
+      );
 
     default:
       return state;
