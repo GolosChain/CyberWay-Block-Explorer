@@ -61,19 +61,22 @@ export default function(
         return state;
       }
 
-      return u.updateIn(['account', 'grants', 'items'], (items: GrantInfoType[]) =>
-        items.map(grant => {
-          if (grant.accountId !== recipientId) {
-            return grant;
-          }
+      return u.updateIn(
+        ['account', 'grants', 'items'],
+        (items: GrantInfoType[]) =>
+          items.map(grant => {
+            if (grant.accountId !== recipientId) {
+              return grant;
+            }
 
-          return {
-            ...grant,
-            isCanceled: true,
-            share: share !== null ? share : grant.share,
-            pct: share !== null ? pct : grant.pct,
-          };
-        })
+            return {
+              ...grant,
+              isCanceled: true,
+              share: share !== null ? share : grant.share,
+              pct: share !== null ? pct : grant.pct,
+            };
+          }),
+        state
       );
 
     default:
