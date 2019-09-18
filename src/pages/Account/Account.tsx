@@ -2,7 +2,6 @@ import React, { PureComponent } from 'react';
 import styled from 'styled-components';
 import is from 'styled-is';
 import ToastsManager from 'toasts-manager';
-import { formatCyber, formatPct, recall, breakGrant, setProxyLevel } from '../../utils/cyberway';
 
 import {
   AccountTransactionsMode,
@@ -13,6 +12,7 @@ import {
   TokenBalanceType,
   AgentPropsType,
 } from '../../types';
+import { formatCyber, formatPct, recall, breakGrant, setProxyLevel } from '../../utils/cyberway';
 import { Field, FieldTitle, FieldValue, ErrorLine } from '../../components/Form';
 import AccountTransactions from '../../components/AccountTransactions';
 import AccountKeys from '../../components/AccountKeys';
@@ -20,7 +20,7 @@ import AccountName from '../../components/AccountName';
 import LoginDialog from '../../components/LoginDialog';
 import { changeGrantStateArg } from './Account.connect';
 
-const SHOW_BREAKS = 'none'; // hide breaks until imlement ui for change them
+const SHOW_BREAKS = 'none'; // hide breaks until implement ui for change them
 
 const Wrapper = styled.div`
   margin: 16px;

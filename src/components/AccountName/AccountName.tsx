@@ -1,24 +1,33 @@
 import React, { PureComponent } from 'react';
 import styled from 'styled-components';
+import is from 'styled-is';
+
 import Link from '../../components/Link';
 import { AccountType } from '../../types';
 
-const Wrapper = styled.div``;
-
-const Account = styled.span`
-  margin-right: 6px;
+const Wrapper = styled.div<{ twoLines?: boolean }>`
+  ${is('twoLines')`
+    display: flex;
+    flex-direction: column;
+  `};
 `;
 
-const Username = styled.span`
-  margin-right: 4px;
+const Account = styled.span``;
+
+const Username = styled.span<{ twoLines?: boolean }>`
+  margin: 0 0 0 6px;
   font-size: 13px;
   color: #888;
+
+  ${is('twoLines')`
+    margin: 1px 0 0;
+  `};
 `;
 
 type Props = {
   account: AccountType;
   className?: string;
-  twoLines?: boolean; // TODO: implement this in styles instead of adding <br />
+  twoLines?: boolean;
   addLink?: boolean;
 };
 
@@ -33,7 +42,7 @@ export default class AccountName extends PureComponent<Props> {
     const username = account.golosId;
 
     return (
-      <Wrapper className={className}>
+      <Wrapper className={className} twoLines={twoLines}>
         {addLink ? (
           <Account>
             <Link to={`/account/${account.id}`}>{account.id}</Link>
@@ -41,8 +50,7 @@ export default class AccountName extends PureComponent<Props> {
         ) : (
           <Account>{account.id}</Account>
         )}
-        {twoLines ? <br /> : null}
-        {typeof username === 'string' ? <Username>{username}@golos</Username> : null}
+        {username ? <Username twoLines={twoLines}>{username}@golos</Username> : null}
       </Wrapper>
     );
   }

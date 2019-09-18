@@ -129,11 +129,7 @@ export default class Validators extends PureComponent<Props, State> {
 
     return (
       <AccountItem key={account} paused={paused}>
-        <AccountNameStyled
-          account={{ id: account, golosId: username }}
-          addLink={true}
-          twoLines={true}
-        />
+        <AccountNameStyled account={{ id: account, golosId: username }} addLink twoLines />
         Votes: <span style={votesStyle}>{formatCyber(votes, showFullCyber)}</span> (
         {percent.toFixed(3)}%);{' '}
         <span title="Time when validator appeared in block producing schedule">
