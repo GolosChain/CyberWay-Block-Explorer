@@ -107,12 +107,12 @@ export async function pushTransaction({ auth, trx }: { auth: AuthType; trx: any 
     textEncoder: new TextEncoder(),
   });
 
-  const trx_res = await api.transact(trx, {
+  const results = await api.transact(trx, {
     blocksBehind: 5,
     expireSeconds: 3600,
   });
 
-  console.log('Sent transaction:', trx_res);
+  console.log('Sent transaction:', results);
 }
 
 export async function setProxyLevel({ auth, level }: { auth: AuthType; level: number }) {
