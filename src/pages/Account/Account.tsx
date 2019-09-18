@@ -55,6 +55,7 @@ const GrantItem = styled.tr`
 const GrantRecipient = styled.span<{ strike?: boolean }>`
   ${is('strike')`
     text-decoration: line-through;
+    opacity: 0.3;
   `};
 `;
 
