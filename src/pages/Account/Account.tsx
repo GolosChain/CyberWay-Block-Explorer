@@ -214,37 +214,38 @@ export default class Account extends PureComponent<Props> {
   renderAgent(agent: AgentPropsType | null | undefined) {
     const levels = ['Validator', 'Proxy', 'Proxy', 'Proxy', 'Voter', 'Unknown'];
     const votes = [0, 30, 10, 3, 1, '?'];
-    if (agent) {
-      const lvl = agent.proxyLevel !== null ? agent.proxyLevel : levels.length - 1;
-      const voting = lvl ? `up to ${votes[lvl]} votes` : `can't vote for others`;
-      const fee = agent.fee !== null ? agent.fee / 100 : 100;
-      const minStake = agent.minStake || 0;
 
-      return (
-        <AgentInfo>
-          <b>{levels[lvl]}</b>; proxy level: <b>{lvl}</b>, {voting}{' '}
-          {lvl !== 1 && lvl < votes.length - 1 ? (
-            <SetLevelButton onClick={() => this.onSetLevelClick(lvl)}>
-              Change Level to 1
-            </SetLevelButton>
-          ) : null}
-          {lvl === 0 ? (
-            <>
-              <RewardFee>
-                Reward fee: {fee.toFixed(2)}% fee / {(100 - fee).toFixed(2)}% to voters;
-              </RewardFee>
-              <MinOwnStaked>
-                Guarantees to preserve staked at least
-                <span title={formatCyber(minStake, true)}> {formatCyber(minStake)} </span>
-                of own tokens.
-              </MinOwnStaked>
-            </>
-          ) : null}
-        </AgentInfo>
-      );
-    } else {
+    if (!agent) {
       return 'none (no proxy level yet)';
     }
+
+    const lvl = agent.proxyLevel !== null ? agent.proxyLevel : levels.length - 1;
+    const voting = lvl ? `up to ${votes[lvl]} votes` : `can't vote for others`;
+    const fee = agent.fee !== null ? agent.fee / 100 : 100;
+    const minStake = agent.minStake || 0;
+
+    return (
+      <AgentInfo>
+        <b>{levels[lvl]}</b>; proxy level: <b>{lvl}</b>, {voting}{' '}
+        {lvl !== 1 && lvl < votes.length - 1 ? (
+          <SetLevelButton onClick={() => this.onSetLevelClick(lvl)}>
+            Change Level to 1
+          </SetLevelButton>
+        ) : null}
+        {lvl === 0 ? (
+          <>
+            <RewardFee>
+              Reward fee: {fee.toFixed(2)}% fee / {(100 - fee).toFixed(2)}% to voters;
+            </RewardFee>
+            <MinOwnStaked>
+              Guarantees to preserve staked at least
+              <span title={formatCyber(minStake, true)}> {formatCyber(minStake)} </span>
+              of own tokens.
+            </MinOwnStaked>
+          </>
+        ) : null}
+      </AgentInfo>
+    );
   }
 
   onLogin = async (auth: AuthType) => {
