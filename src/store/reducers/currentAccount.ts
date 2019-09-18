@@ -1,4 +1,7 @@
-import { Action, ExtendedAccountType, ApiError } from '../../types';
+// @ts-ignore
+import u from 'updeep';
+
+import { Action, ExtendedAccountType, ApiError, GrantInfoType } from '../../types';
 
 import {
   FETCH_ACCOUNT,
@@ -53,28 +56,25 @@ export default function(
 
     case CHANGE_GRANT_STATE:
       const { accountId, recipientId, share, pct } = payload;
+
       if (!state.account || !state.account.grants || state.account.id !== accountId) {
         return state;
       }
 
-      return {
-        ...state,
-        account: {
-          ...state.account,
-          grants: {
-            ...state.account.grants,
-            items: state.account.grants.items.map(grant => {
-              const isTarget = grant.accountId === recipientId;
-              return {
-                ...grant,
-                isCanceled: grant.isCanceled || isTarget,
-                share: isTarget && share !== null ? share : grant.share,
-                pct: isTarget && share !== null ? pct : grant.pct,
-              };
-            }),
-          },
-        },
-      };
+      return u.updateIn(['account', 'grants', 'items'], (items: GrantInfoType[]) =>
+        items.map(grant => {
+          if (grant.accountId !== recipientId) {
+            return grant;
+          }
+
+          return {
+            ...grant,
+            isCanceled: true,
+            share: share !== null ? share : grant.share,
+            pct: share !== null ? pct : grant.pct,
+          };
+        })
+      );
 
     default:
       return state;

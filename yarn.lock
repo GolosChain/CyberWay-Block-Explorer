@@ -6288,6 +6288,11 @@ lodash.uniq@^4.5.0:
   resolved "https://npm.golos.io/lodash/-/lodash-4.17.14.tgz#9ce487ae66c96254fe20b599f21b6816028078ba"
   integrity sha512-mmKYbW3GLuJeX+iGP+Y7Gp1AiGHGbXHCOh/jZmrawMmsE7MS4znI3RL2FsjbqOyMayHInjOeykW7PEajUk1/xw==
 
+lodash@^4.2.0:
+  version "4.17.15"
+  resolved "https://npm.golos.io/lodash/-/lodash-4.17.15.tgz#b447f6670a0455bbfeedd11392eff330ea097548"
+  integrity sha512-8xOcRHvCjnocdS5cpwXQXVzmmh5e5+saE2QGoeQmbKmRS6J3VQppPOIt0MnmE+4xlZoumy0GPG0D0MVIQbNA1A==
+
 loglevel@^1.4.1:
   version "1.6.3"
   resolved "https://npm.golos.io/loglevel/-/loglevel-1.6.3.tgz#77f2eb64be55a404c9fd04ad16d57c1d6d6b1280"
@@ -10005,6 +10010,13 @@ upath@^1.1.1:
   version "1.1.2"
   resolved "https://npm.golos.io/upath/-/upath-1.1.2.tgz#3db658600edaeeccbe6db5e684d67ee8c2acd068"
   integrity sha512-kXpym8nmDmlCBr7nKdIx8P2jNBa+pBpIUFRnKJ4dr8htyYGJFokkr2ZvERRtUN+9SY+JqXouNgUPtv6JQva/2Q==
+
+updeep@^1.1.0:
+  version "1.1.0"
+  resolved "https://npm.golos.io/updeep/-/updeep-1.1.0.tgz#b2de706d0eb6c3a53503971606f1ca7f2da16ca5"
+  integrity sha512-lxrC/AHYhYs6+d/4uajdP8FjmEcezampFy1c/Ymo6Q23JPcdK1bOD18lnTwbjGagkV2onDhbU4gtM9VV92vF9A==
+  dependencies:
+    lodash "^4.2.0"
 
 upper-case@^1.1.1:
   version "1.1.3"

@@ -42,6 +42,8 @@ const GrantsTHead = styled.thead`
   background: #eee;
 `;
 
+const GrantsTBody = styled.tbody``;
+
 const GrantItem = styled.tr`
   margin: 3px 0;
 
@@ -160,27 +162,35 @@ export default class Account extends PureComponent<Props> {
             </th>
           </tr>
         </GrantsTHead>
-        {grants.map(({ accountId, username, share, pct, breakFee, breakMinStaked, isCanceled }) => (
-          <GrantItem key={accountId}>
-            <td>
-              <GrantRecipient strike={isCanceled && share === 0 && pct === 0}>
-                <AccountNameStyled account={{ id: accountId, golosId: username }} />
-              </GrantRecipient>
-            </td>
-            <td>{share > 0 ? '≥' + formatCyber(share) : 0}</td>
-            <td>{pct > 0 ? formatPct(pct) : '–'}</td>
-            <td style={show}>{breakFee < 10000 ? `>${formatPct(breakFee)}` : 'no'}</td>
-            <td style={show}>{breakMinStaked > 0 ? `<${formatCyber(breakMinStaked)}` : 'no'}</td>
-            <td>
-              {share === 0 ? null : (
-                <RecallButton onClick={() => this.onRecallClick(accountId)}>Recall</RecallButton>
-              )}
-              {share > 0 || pct === 0 ? null : (
-                <BreakButton onClick={() => this.onBreakClick(accountId)}>Break</BreakButton>
-              )}
-            </td>
-          </GrantItem>
-        ))}
+        <GrantsTBody>
+          {grants.map(
+            ({ accountId, username, share, pct, breakFee, breakMinStaked, isCanceled }) => (
+              <GrantItem key={accountId}>
+                <td>
+                  <GrantRecipient strike={isCanceled && share === 0 && pct === 0}>
+                    <AccountNameStyled account={{ id: accountId, golosId: username }} />
+                  </GrantRecipient>
+                </td>
+                <td>{share > 0 ? '≥' + formatCyber(share) : 0}</td>
+                <td>{pct > 0 ? formatPct(pct) : '–'}</td>
+                <td style={show}>{breakFee < 10000 ? `>${formatPct(breakFee)}` : 'no'}</td>
+                <td style={show}>
+                  {breakMinStaked > 0 ? `<${formatCyber(breakMinStaked)}` : 'no'}
+                </td>
+                <td>
+                  {share === 0 ? null : (
+                    <RecallButton onClick={() => this.onRecallClick(accountId)}>
+                      Recall
+                    </RecallButton>
+                  )}
+                  {share > 0 || pct === 0 ? null : (
+                    <BreakButton onClick={() => this.onBreakClick(accountId)}>Break</BreakButton>
+                  )}
+                </td>
+              </GrantItem>
+            )
+          )}
+        </GrantsTBody>
       </GrantsTable>
     );
   }
