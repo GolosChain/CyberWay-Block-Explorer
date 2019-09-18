@@ -2,6 +2,7 @@ import React, { PureComponent } from 'react';
 import styled from 'styled-components';
 import is from 'styled-is';
 import ToastsManager from 'toasts-manager';
+import { formatCyber, formatPct, recall, breakGrant, setProxyLevel } from '../../utils/cyberway';
 
 import {
   AccountTransactionsMode,
@@ -10,13 +11,16 @@ import {
   AuthType,
   ExtendedAccountType,
   TokenBalanceType,
+  AgentPropsType,
 } from '../../types';
 import { Field, FieldTitle, FieldValue, ErrorLine } from '../../components/Form';
 import AccountTransactions from '../../components/AccountTransactions';
 import AccountKeys from '../../components/AccountKeys';
+import AccountName from '../../components/AccountName';
 import LoginDialog from '../../components/LoginDialog';
-import { recall } from '../../utils/cyberway';
-import { markGrantAsCanceledArg } from './Account.connect';
+import { changeGrantStateArg } from './Account.connect';
+
+const SHOW_BREAKS = 'none'; // hide breaks until imlement ui for change them
 
 const Wrapper = styled.div`
   margin: 16px;
@@ -30,8 +34,20 @@ const Info = styled.div`
   margin-bottom: 20px;
 `;
 
-const GrantItem = styled.li`
+const GrantsTable = styled.table`
+  border: 1px solid #ccc;
+`;
+
+const GrantsTHead = styled.thead`
+  background: #eee;
+`;
+
+const GrantItem = styled.tr`
   margin: 3px 0;
+
+  &:hover {
+    background: #ffd;
+  }
 `;
 
 const GrantRecipient = styled.span<{ strike?: boolean }>`
@@ -40,18 +56,23 @@ const GrantRecipient = styled.span<{ strike?: boolean }>`
   `};
 `;
 
-const Username = styled.span`
-  color: #888;
-  font-size: 14px;
+const AccountNameStyled = styled(AccountName)`
+  display: inline-block;
 `;
 
-const RecallButton = styled.button`
+const BaseButton = styled.button`
   margin-left: 10px;
   font-size: 14px;
   border-radius: 4px;
   color: #333;
   background: #eee;
   cursor: pointer;
+`;
+
+const RecallButton = styled(BaseButton)``;
+const SetLevelButton = styled(BaseButton)``;
+const BreakButton = styled(BaseButton)`
+  background: #edd;
 `;
 
 const UpdatedAt = styled.div`
@@ -63,20 +84,26 @@ const TokenItem = styled.li`
   margin: 3px 0;
 `;
 
+const AgentInfo = styled.div``;
+const RewardFee = styled.div``;
+const MinOwnStaked = styled.div``;
+
 export type Props = {
   accountId: string;
   mode: AccountTransactionsMode | undefined;
   account: ExtendedAccountType | null;
   accountError: ApiError | null;
   loadAccount: (accountId: string) => any;
-  markGrantAsCanceled: (params: markGrantAsCanceledArg) => void;
+  changeGrantState: (params: changeGrantStateArg) => void;
 };
 
 export default class Account extends PureComponent<Props> {
   state = {
     password: '',
     isLoginOpen: false,
+    changingProxyLevel: false,
     recallingForAccountId: null,
+    breakingGrantToAccountId: null,
   };
 
   componentDidMount() {
@@ -94,21 +121,67 @@ export default class Account extends PureComponent<Props> {
     });
   }
 
+  onBreakClick(accountId: string) {
+    this.setState({
+      isLoginOpen: true,
+      breakingGrantToAccountId: accountId,
+    });
+  }
+
+  onSetLevelClick(currentLevel: number) {
+    this.setState({
+      isLoginOpen: true,
+      changingProxyLevel: true,
+    });
+  }
+
   renderGrants(grants: GrantInfoType[]) {
+    const show = { display: SHOW_BREAKS };
     return (
-      <ul>
-        {grants.map(({ accountId, username, isCanceled }) => (
+      <GrantsTable>
+        <GrantsTHead>
+          <tr>
+            <th>
+              <AccountNameStyled account={{ id: 'Validator/proxy', golosId: 'username' }} />
+            </th>
+            <th title="Amount of staking voted for validator/proxy">Voted amount</th>
+            <th title="When increase staking, will auto-vote this % to validator/proxy">Auto %</th>
+            <th style={show} title="Remove vote if validator increases fee above this %">
+              Break on fee >
+            </th>
+            <th
+              style={show}
+              title="Remove vote if validator decreases min own staked below this amount"
+            >
+              Break on own staked &lt;
+            </th>
+            <th title="`Recall` to get votes back; `Break` to remove zero-voted grant with auto-%">
+              Actions
+            </th>
+          </tr>
+        </GrantsTHead>
+        {grants.map(({ accountId, username, share, pct, breakFee, breakMinStaked, isCanceled }) => (
           <GrantItem key={accountId}>
-            <GrantRecipient strike={isCanceled}>
-              {accountId}
-              {username ? <Username> ({username}@@gls)</Username> : null}
-            </GrantRecipient>
-            {isCanceled ? null : (
-              <RecallButton onClick={() => this.onRecallClick(accountId)}>Recall</RecallButton>
-            )}
+            <td>
+              <GrantRecipient strike={isCanceled && share === 0 && pct === 0}>
+                <AccountNameStyled account={{ id: accountId, golosId: username }} />
+              </GrantRecipient>
+            </td>
+            <td>{share > 0 ? '≥' + formatCyber(share) : 0}</td>
+            <td>{pct > 0 ? formatPct(pct) : '–'}</td>
+            <td style={show}>{breakFee < 10000 ? `>${formatPct(breakFee)}` : 'no'}</td>
+            <td style={show}>{breakMinStaked > 0 ? `<${formatCyber(breakMinStaked)}` : 'no'}</td>
+            <td>
+              {share === 0 ? null : (
+                <RecallButton onClick={() => this.onRecallClick(accountId)}>Recall</RecallButton>
+              )}
+              {share > 0 || pct === 0 ? null : (
+                <BreakButton onClick={() => this.onBreakClick(accountId)}>Break</BreakButton>
+              )}
+            </td>
           </GrantItem>
         ))}
-      </ul>
+      </GrantsTable>
     );
   }
 
@@ -118,26 +191,79 @@ export default class Account extends PureComponent<Props> {
         {tokens.map(({ balance, payments }) => (
           <TokenItem key={balance.split(' ')[1]}>
             {balance}
-            {payments && parseFloat(payments.split(' ')[0]) !== 0 ? ` + payments: ${payments}` : null};
+            {payments && parseFloat(payments.split(' ')[0]) !== 0
+              ? ` + payments: ${payments}`
+              : null}
+            ;
           </TokenItem>
         ))}
       </ul>
     );
   }
 
-  onLogin = async (auth: AuthType) => {
-    const { markGrantAsCanceled } = this.props;
-    const { recallingForAccountId } = this.state;
+  renderAgent(agent: AgentPropsType | null | undefined) {
+    const levels = ['Validator', 'Proxy', 'Proxy', 'Proxy', 'Voter', 'Unknown'];
+    const votes = [0, 30, 10, 3, 1, '?'];
+    if (agent) {
+      const lvl = agent.proxyLevel !== null ? agent.proxyLevel : levels.length - 1;
+      const voting = lvl ? `up to ${votes[lvl]} votes` : `can't vote for others`;
+      const fee = agent.fee !== null ? agent.fee / 100 : 100;
+      const minStake = agent.minStake || 0;
 
-    const recipientId = recallingForAccountId as any;
+      return (
+        <AgentInfo>
+          <b>{levels[lvl]}</b>; proxy level: <b>{lvl}</b>, {voting}{' '}
+          {lvl !== 1 && lvl < votes.length - 1 ? (
+            <SetLevelButton onClick={() => this.onSetLevelClick(lvl)}>
+              Change Level to 1
+            </SetLevelButton>
+          ) : null}
+          {lvl === 0 ? (
+            <>
+              <RewardFee>
+                Reward fee: {fee.toFixed(2)}% fee / {(100 - fee).toFixed(2)}% to voters;
+              </RewardFee>
+              <MinOwnStaked>
+                Guarantees to preserve staked at least
+                <span title={formatCyber(minStake, true)}> {formatCyber(minStake)} </span>
+                of own tokens.
+              </MinOwnStaked>
+            </>
+          ) : null}
+        </AgentInfo>
+      );
+    } else {
+      return 'none (no proxy level yet)';
+    }
+  }
+
+  onLogin = async (auth: AuthType) => {
+    const { changeGrantState } = this.props;
+    const { recallingForAccountId, breakingGrantToAccountId, changingProxyLevel } = this.state;
 
     try {
-      await recall({ auth, recipientId });
+      if (changingProxyLevel) {
+        await setProxyLevel({ auth, level: 1 });
+      } else {
+        const recalling = recallingForAccountId !== null;
+        const recipientId = (recalling ? recallingForAccountId : breakingGrantToAccountId) as any;
+        let share: number | null = null;
+        let pct: number | null = null;
+
+        if (recalling) {
+          await recall({ auth, recipients: [recipientId] });
+          share = 0;
+        } else if (breakingGrantToAccountId !== null) {
+          await breakGrant({ auth, recipients: [recipientId] });
+          pct = 0;
+        } else {
+          throw new Error('bad onLogin state');
+        }
+        changeGrantState({ accountId: auth.accountId, recipientId, share, pct });
+      }
       ToastsManager.info('Success');
 
       this.onLoginClose();
-
-      markGrantAsCanceled({ accountId: auth.accountId, recipientId });
     } catch (err) {
       ToastsManager.error(err.message);
     }
@@ -147,7 +273,9 @@ export default class Account extends PureComponent<Props> {
     this.setState({
       isLoginOpen: false,
       password: '',
+      changingProxyLevel: false,
       recallingForAccountId: null,
+      breakingGrantToAccountId: null,
     });
   };
 
@@ -175,6 +303,10 @@ export default class Account extends PureComponent<Props> {
                   <AccountKeys keys={account.keys} />
                 </Field>
               ) : null}
+              <Field>
+                <FieldTitle>Validation role:</FieldTitle>
+                {this.renderAgent(account.agentProps)}
+              </Field>
               {account.grants ? (
                 <Field as="div">
                   <FieldTitle>Grants:</FieldTitle>

@@ -1,11 +1,12 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent, ChangeEvent } from 'react';
 import styled from 'styled-components';
 import is from 'styled-is';
 import ToastsManager from 'toasts-manager';
 
 import { LoadValidatorsParams } from './Validators.connect';
+import { formatCyber } from '../../utils/cyberway';
 import { ValidatorType } from '../../types';
-import Link from '../../components/Link';
+import AccountName from '../../components/AccountName';
 
 const EMPTY_KEY = 'GLS1111111111111111111111111111111114T1Anm';
 const NEVER_PICK_TIME = new Date('2019-08-15T14:00:00.000Z').getTime();
@@ -42,14 +43,10 @@ const AccountItem = styled.li<{ paused: boolean }>`
 `;
 
 // TODO: fix
-const AccountName = styled.div`
+const AccountNameStyled = styled(AccountName)`
   width: 160px;
   height: 40px;
   float: left;
-`;
-
-const Username = styled.small`
-  color: #888;
 `;
 
 const RewardFee = styled.span`
@@ -60,16 +57,13 @@ const MinOwnStakedStyled = styled.span`
   padding-right: 6px;
 `;
 
-function formatCyber(x: number) {
-  return (x / 10000).toFixed(4) + ' CYBER';
-}
-
 type MinStakedProps = {
   value: number;
   systemMin?: number;
+  cyberFull?: boolean;
 } & React.ComponentProps<any>;
 
-function MinOwnStaked({ value, systemMin, ...props }: MinStakedProps) {
+function MinOwnStaked({ value, systemMin, cyberFull, ...props }: MinStakedProps) {
   if (!systemMin) {
     systemMin = SYSTEM_MIN_OWN_STAKED;
   }
@@ -77,7 +71,7 @@ function MinOwnStaked({ value, systemMin, ...props }: MinStakedProps) {
 
   return (
     <MinOwnStakedStyled {...props}>
-      Min own staked: <b style={{ color: color }}>{formatCyber(value || 0)}</b>
+      Min own staked: <b style={{ color: color }}>{formatCyber(value || 0, cyberFull)}</b>
     </MinOwnStakedStyled>
   );
 }
@@ -91,6 +85,7 @@ export type State = {
   updateTime: Date | null;
   totalStaked: number;
   totalVotes: number;
+  showFullCyber: boolean;
 };
 
 export default class Validators extends PureComponent<Props, State> {
@@ -99,6 +94,7 @@ export default class Validators extends PureComponent<Props, State> {
     updateTime: null,
     totalStaked: 0,
     totalVotes: 0,
+    showFullCyber: false,
   };
 
   componentDidMount() {
@@ -120,20 +116,26 @@ export default class Validators extends PureComponent<Props, State> {
     }
   }
 
+  cyberModeChange = (e: ChangeEvent<HTMLInputElement>) => {
+    this.setState({ showFullCyber: !!e.target.checked });
+  };
+
   renderLine({ account, signKey, username, latestPick, votes, percent, props }: ValidatorType) {
+    const { showFullCyber } = this.state;
     const paused = signKey === EMPTY_KEY;
     const pickDate = new Date(latestPick);
     const votesStyle = votes < SYSTEM_MIN_OWN_STAKED ? { color: 'darkred' } : {};
-    const fee = props && props.fee ? props.fee / 100 : 100;
+    const fee = props && props.fee !== null ? props.fee / 100 : 100;
 
     return (
       <AccountItem key={account} paused={paused}>
-        <AccountName>
-          <Link to={`/account/${account}`}>{account}</Link>
-          <br />
-          {typeof username === 'string' ? <Username>{username}@@gls</Username> : null}
-        </AccountName>
-        Votes: <span style={votesStyle}>{formatCyber(votes)}</span> ({percent.toFixed(3)}%);{' '}
+        <AccountNameStyled
+          account={{ id: account, golosId: username }}
+          addLink={true}
+          twoLines={true}
+        />
+        Votes: <span style={votesStyle}>{formatCyber(votes, showFullCyber)}</span> (
+        {percent.toFixed(3)}%);{' '}
         <span title="Time when validator appeared in block producing schedule">
           Latest pick:{' '}
           {pickDate.getTime() === NEVER_PICK_TIME ? 'never' : pickDate.toLocaleString()}
@@ -147,6 +149,7 @@ export default class Validators extends PureComponent<Props, State> {
             <MinOwnStaked
               value={props.minStake}
               title="Validator declares he staked at least this amount"
+              cyberFull={showFullCyber}
             />
           </>
         ) : null}
@@ -157,14 +160,14 @@ export default class Validators extends PureComponent<Props, State> {
   }
 
   render() {
-    const { validators, updateTime, totalStaked, totalVotes } = this.state;
+    const { validators, updateTime, totalStaked, totalVotes, showFullCyber } = this.state;
 
     return (
       <Wrapper>
         {totalStaked ? (
           <ul>
-            <li>Total staked: {formatCyber(totalStaked)}</li>
-            <li>Total votes: {formatCyber(totalVotes)}</li>
+            <li>Total staked: {formatCyber(totalStaked, true)}</li>
+            <li>Total votes: {formatCyber(totalVotes, true)}</li>
           </ul>
         ) : null}
         <Title>Validators:</Title>
@@ -175,6 +178,11 @@ export default class Validators extends PureComponent<Props, State> {
                 Last updated at {new Date(updateTime as any).toLocaleString()}
               </UpdateTime>
             ) : null}
+            <label>
+              Show full CYBER values:{' '}
+              <input type="checkbox" onChange={this.cyberModeChange} checked={showFullCyber} />
+            </label>
+            <hr />
             <List>{(validators as any).map((item: ValidatorType) => this.renderLine(item))}</List>
           </>
         ) : (
