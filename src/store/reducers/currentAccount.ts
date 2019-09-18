@@ -73,7 +73,7 @@ export default function(
               ...grant,
               isCanceled: true,
               share: share !== null ? share : grant.share,
-              pct: share !== null ? pct : grant.pct,
+              pct: pct !== null ? pct : grant.pct,
             };
           }),
         state
