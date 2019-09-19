@@ -1,5 +1,5 @@
-import React from 'react';
-import { Route } from 'react-router-dom';
+import React, { ComponentType } from 'react';
+import { Route, RouteComponentProps } from 'react-router-dom';
 
 import { AccountTransactionsMode } from '../types';
 import Home from '../pages/Home';
@@ -27,10 +27,22 @@ export default function() {
     <>
       <Route path="/" exact component={Home} />
       <Route path="/feed" exact component={Feed} />
-      <Route path="/block/:blockId" exact component={Block} />
-      <Route path="/trx/:transactionId" exact component={Transaction} />
+      <Route path="/block/:blockId" exact component={wrapKeySetter(Block)} />
+      <Route path="/trx/:transactionId" exact component={wrapKeySetter(Transaction)} />
       <Route path="/validators" exact component={Validators} />
-      <Route path="/account/:accountId/:mode(actor|mention)?" exact component={Account} />
+      <Route
+        path="/account/:accountId/:mode(actor|mention)?"
+        exact
+        component={wrapKeySetter(Account)}
+      />
     </>
+  );
+}
+
+// Key выставляется для того, чтобы при навигации создавался новый компонент.
+// В противном случае компонент продолжает отображать прошлое состояние.
+function wrapKeySetter(Comp: ComponentType<any>) {
+  return (props: RouteComponentProps) => (
+    <Comp key={JSON.stringify(props.match.params)} {...props} />
   );
 }

@@ -62,13 +62,11 @@ export default class Transactions extends PureComponent<Props> {
     this.loadData();
   }
 
-  componentWillReceiveProps(nextProps: Readonly<Props>) {
+  filters(prevProps: Readonly<Props>) {
     const props = this.props;
 
-    if (!equals(props.filters, nextProps.filters)) {
-      setTimeout(() => {
-        this.loadData();
-      });
+    if (!equals(props.filters, prevProps.filters)) {
+      this.loadData();
     }
   }
 
