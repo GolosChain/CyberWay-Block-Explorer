@@ -59,13 +59,11 @@ export default class AccountTransactions extends PureComponent<Props> {
     this.loadData();
   }
 
-  componentWillReceiveProps(nextProps: Readonly<Props>) {
+  componentDidUpdate(prevProps: Readonly<Props>) {
     const props = this.props;
 
-    if (!equals(props.filters, nextProps.filters) || props.mode !== nextProps.mode) {
-      setTimeout(() => {
-        this.loadData();
-      });
+    if (!equals(props.filters, prevProps.filters) || props.mode !== prevProps.mode) {
+      this.loadData();
     }
   }
 

@@ -98,13 +98,11 @@ export default class BlockFeed extends PureComponent<Props, State> {
     document.addEventListener('visibilitychange', this.onVisibilityChange);
   }
 
-  componentWillReceiveProps(nextProps: Readonly<Props>) {
+  componentDidUpdate(prevProps: Readonly<Props>) {
     const props = this.props;
 
-    if (props.filters !== nextProps.filters) {
-      setTimeout(() => {
-        this.load();
-      });
+    if (props.filters !== prevProps.filters) {
+      this.load();
     }
   }
 
