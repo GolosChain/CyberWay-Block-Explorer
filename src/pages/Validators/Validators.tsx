@@ -7,6 +7,7 @@ import { LoadValidatorsParams } from './Validators.connect';
 import { formatCyber } from '../../utils/cyberway';
 import { ValidatorType } from '../../types';
 import AccountName from '../../components/AccountName';
+import EmissionInfo from '../../components/EmissionInfo';
 
 const EMPTY_KEY = 'GLS1111111111111111111111111111111114T1Anm';
 const NEVER_PICK_TIME = new Date('2019-08-15T14:00:00.000Z').getTime();
@@ -83,6 +84,7 @@ export type Props = {
 export type State = {
   validators: ValidatorType[] | null;
   updateTime: Date | null;
+  supply: number;
   totalStaked: number;
   totalVotes: number;
   showFullCyber: boolean;
@@ -92,6 +94,7 @@ export default class Validators extends PureComponent<Props, State> {
   state = {
     validators: null,
     updateTime: null,
+    supply: 0,
     totalStaked: 0,
     totalVotes: 0,
     showFullCyber: false,
@@ -104,10 +107,11 @@ export default class Validators extends PureComponent<Props, State> {
   async loadValidators() {
     const { loadValidators } = this.props;
     try {
-      const { items, updateTime, totalStaked, totalVotes } = await loadValidators({});
+      const { items, updateTime, supply, totalStaked, totalVotes } = await loadValidators({});
       this.setState({
         validators: items,
         updateTime,
+        supply,
         totalStaked,
         totalVotes,
       });
@@ -125,7 +129,7 @@ export default class Validators extends PureComponent<Props, State> {
     const paused = signKey === EMPTY_KEY;
     const pickDate = new Date(latestPick);
     const votesStyle = votes < SYSTEM_MIN_OWN_STAKED ? { color: 'darkred' } : {};
-    const fee = props && props.fee !== null ? props.fee / 100 : 100;
+    const fee = props && props.fee !== null && props.fee !== undefined ? props.fee / 100 : 100;
 
     return (
       <AccountItem key={account} paused={paused}>
@@ -156,16 +160,11 @@ export default class Validators extends PureComponent<Props, State> {
   }
 
   render() {
-    const { validators, updateTime, totalStaked, totalVotes, showFullCyber } = this.state;
+    const { validators, updateTime, supply, totalStaked, totalVotes, showFullCyber } = this.state;
 
     return (
       <Wrapper>
-        {totalStaked ? (
-          <ul>
-            <li>Total staked: {formatCyber(totalStaked, true)}</li>
-            <li>Total votes: {formatCyber(totalVotes, true)}</li>
-          </ul>
-        ) : null}
+        <EmissionInfo supply={supply} staked={totalStaked} voted={totalVotes} />
         <Title>Validators:</Title>
         {validators ? (
           <>

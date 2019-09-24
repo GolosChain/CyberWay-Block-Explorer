@@ -30,6 +30,11 @@ const Title = styled.h1`
   margin: 12px 0;
 `;
 
+const Subtitle = styled.h3`
+  margin: 12px 0 4px;
+  color: #666;
+`;
+
 const Info = styled.div`
   margin-bottom: 20px;
 `;
@@ -213,22 +218,22 @@ export default class Account extends PureComponent<Props> {
   }
 
   renderAgent(agent: AgentPropsType | null | undefined) {
-    const levels = ['Validator', 'Proxy', 'Proxy', 'Proxy', 'Voter', 'Unknown'];
-    const votes = [0, 30, 10, 3, 1, '?'];
+    const levels = ['Validator', 'Proxy', 'Voter', 'Voter', 'Voter', 'Unknown'];
 
     if (!agent) {
       return 'none (no proxy level yet)';
     }
 
     const lvl = agent.proxyLevel !== null ? agent.proxyLevel : levels.length - 1;
-    const voting = lvl ? `up to ${votes[lvl]} votes` : `can't vote for others`;
+    const votes = [0, 30, 1, 1, 1, '?'][lvl];
+    const voting = lvl ? `up to ${votes} vote${votes > 1 ? 's' : ''}` : `can't vote for others`;
     const fee = agent.fee !== null ? agent.fee / 100 : 100;
     const minStake = agent.minStake || 0;
 
     return (
       <AgentInfo>
         <b>{levels[lvl]}</b>; proxy level: <b>{lvl}</b>, {voting}{' '}
-        {lvl !== 1 && lvl < votes.length - 1 ? (
+        {lvl !== 1 && lvl < levels.length - 1 ? (
           <SetLevelButton onClick={() => this.onSetLevelClick(lvl)}>
             Change Level to 1
           </SetLevelButton>
@@ -310,18 +315,18 @@ export default class Account extends PureComponent<Props> {
                 </Field>
               ) : null}
               {account.keys ? (
-                <Field>
-                  <FieldTitle>Keys:</FieldTitle>
+                <>
+                  <Subtitle>Keys:</Subtitle>
                   <AccountKeys keys={account.keys} />
-                </Field>
+                </>
               ) : null}
-              <Field>
-                <FieldTitle>Validation role:</FieldTitle>
-                {this.renderAgent(account.agentProps)}
-              </Field>
+
+              <Subtitle>Validation role:</Subtitle>
+              {this.renderAgent(account.agentProps)}
+
               {account.grants ? (
-                <Field as="div">
-                  <FieldTitle>Grants:</FieldTitle>
+                <>
+                  <Subtitle>Grants:</Subtitle>
                   {account.grants.items.length ? (
                     this.renderGrants(account.grants.items)
                   ) : (
@@ -330,13 +335,13 @@ export default class Account extends PureComponent<Props> {
                   <UpdatedAt>
                     Updated: {new Date(account.grants.updateTime).toLocaleString()}
                   </UpdatedAt>
-                </Field>
+                </>
               ) : null}
               {account.tokens && account.tokens.length ? (
-                <Field as="div">
-                  <FieldTitle>Balances:</FieldTitle>
+                <>
+                  <Subtitle>Balances:</Subtitle>
                   {this.renderTokens(account.tokens)}
-                </Field>
+                </>
               ) : null}
             </>
           ) : accountError ? (
