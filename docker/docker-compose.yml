@@ -17,7 +17,7 @@ services:
       - services-tier
 
   blocks-node:
-    image: cyberway/block-service:latest
+    image: cyberway/block-service:${GLS_BLOCK_SERVICE_VERSION:-latest}
     container_name: blocks-node
     restart: always
     depends_on:
@@ -31,7 +31,7 @@ services:
       - .env
 
   blocks-api-node:
-    image: cyberway/block-service:latest
+    image: cyberway/block-service:${GLS_BLOCK_SERVICE_VERSION:-latest}
     container_name: blocks-api-node
     environment:
       - GLS_MONGO_CONNECT=mongodb://blocks-mongo/admin
@@ -46,7 +46,7 @@ services:
       - .env
 
   facade-node:
-    image: cyberway/block-explorer-service:latest
+    image: cyberway/block-explorer-service:${GLS_FACADE_VERSION:-latest}
     container_name: block-explorer-node
     restart: always
     networks:
@@ -56,7 +56,7 @@ services:
       - GLS_BLOCKS_CONNECT=http://blocks-api-node:3000/
 
   gate-node:
-    image: cyberway/gate-service:latest
+    image: cyberway/gate-service:${GLS_GATE_VERSION:-latest}
     container_name: gate-node
     restart: always
     ports:
@@ -68,7 +68,7 @@ services:
       - GLS_DISABLE_AUTH=true
 
   block-explorer:
-    image: cyberway/block-explorer:latest
+    image: cyberway/block-explorer:${GLS_BLOCK_EXPLORER_VERSION:-latest}
     container_name: block-explorer
     restart: always
     ports:
