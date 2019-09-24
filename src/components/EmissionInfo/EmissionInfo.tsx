@@ -4,6 +4,8 @@ import ChartJs from 'chart.js';
 import { formatCyber } from '../../utils/cyberway';
 
 const BLOCKS_PER_YEAR = (365 * 24 * 60 * 60) / 3;
+const EMISSION_MIN_VOTED = 25;
+const EMISSION_MAX_VOTED = 75;
 const COLORS = {
   blue: 'rgb(54, 162, 235)',
   green: 'rgb(75, 192, 192)',
@@ -98,7 +100,7 @@ export default class EmissionInfo extends PureComponent<Props, State> {
               const idx = item.index;
               const ds = data.datasets[item.datasetIndex].data;
               const total = ds.reduce((previous: number, current: number) => {
-                return 1 * previous + 1 * current; // force numbers
+                return Number(previous) + Number(current);
               });
               const value = ds[idx];
               const pct = ((100 * value) / total).toFixed(2);
@@ -193,8 +195,8 @@ export default class EmissionInfo extends PureComponent<Props, State> {
   // from cyber.govern smart-contract:
   private calculateEmission(supply: number, votesSum: number) {
     const notInvolvedPct = (100 * (supply - votesSum)) / supply;
-    let arg = Math.min(Math.max(notInvolvedPct, 25), 75) - 25;
-    arg = (100 * arg) / 50;
+    const limited = Math.min(Math.max(notInvolvedPct, EMISSION_MIN_VOTED), EMISSION_MAX_VOTED);
+    const arg = (100 * (limited - EMISSION_MIN_VOTED)) / (EMISSION_MAX_VOTED - EMISSION_MIN_VOTED);
     const emissionPerYearPct = (arg * 8.7) / 100 + 9.53;
     const emissionPerYear = (emissionPerYearPct * supply) / 100;
     return {
