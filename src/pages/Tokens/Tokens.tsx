@@ -89,7 +89,7 @@ export default class Tokens extends PureComponent<Props, State> {
         </Field>
         <Field line>
           <FieldTitle>Precision: </FieldTitle>
-          <FieldValue>{(supply.split(' ')[0].split('.')[1] || '').length} symbols</FieldValue>
+          <FieldValue>{(supply.split(' ')[0].split('.')[1] || '').length} decimals</FieldValue>
         </Field>
       </TokenItem>
     );
