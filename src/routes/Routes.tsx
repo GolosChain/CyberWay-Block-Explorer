@@ -8,6 +8,7 @@ import Block from '../pages/Block';
 import Transaction from '../pages/Transaction';
 import Account from '../pages/Account';
 import Validators from '../pages/Validators';
+import Tokens from '../pages/Tokens';
 
 export type BlockRouteParams = {
   blockId: string;
@@ -30,6 +31,7 @@ export default function() {
       <Route path="/block/:blockId" exact component={wrapKeySetter(Block)} />
       <Route path="/trx/:transactionId" exact component={wrapKeySetter(Transaction)} />
       <Route path="/validators" exact component={Validators} />
+      <Route path="/tokens" exact component={Tokens} />
       <Route
         path="/account/:accountId/:mode(actor|mention)?"
         exact
