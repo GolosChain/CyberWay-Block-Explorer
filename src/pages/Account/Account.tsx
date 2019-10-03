@@ -64,10 +64,6 @@ const GrantRecipient = styled.span<{ strike?: boolean }>`
   `};
 `;
 
-const AccountNameStyled = styled(AccountName)`
-  display: inline-block;
-`;
-
 const BaseButton = styled.button`
   margin-left: 10px;
   font-size: 14px;
@@ -150,7 +146,7 @@ export default class Account extends PureComponent<Props> {
         <GrantsTHead>
           <tr>
             <th>
-              <AccountNameStyled account={{ id: 'Validator/proxy', golosId: 'username' }} />
+              <AccountName account={{ id: 'Validator/proxy', golosId: 'username' }} />
             </th>
             <th title="Amount of staking voted for validator/proxy">Voted amount</th>
             <th title="When increase staking, will auto-vote this % to validator/proxy">Auto %</th>
@@ -174,7 +170,7 @@ export default class Account extends PureComponent<Props> {
               <GrantItem key={accountId}>
                 <td>
                   <GrantRecipient strike={isCanceled && share === 0 && pct === 0}>
-                    <AccountNameStyled account={{ id: accountId, golosId: username }} />
+                    <AccountName account={{ id: accountId, golosId: username }} />
                   </GrantRecipient>
                 </td>
                 <td>{share > 0 ? '≥' + formatCyber(share) : 0}</td>

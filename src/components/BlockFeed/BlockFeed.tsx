@@ -7,6 +7,7 @@ import { BlockSummary, FiltersType } from '../../types';
 import Link from '../Link';
 import CurrentFilters from '../CurrentFilters';
 import LoaderIndicator from '../LoaderIndicator';
+import AccountName from '../AccountName';
 
 const CHECK_NEW_BLOCKS_EVERY = 3000;
 
@@ -198,7 +199,8 @@ export default class BlockFeed extends PureComponent<Props, State> {
       <Block key={block.id}>
         <LinkStyled to={`/block/${block.id}`} keepHash>
           <Time title={date.toLocaleString()}>{formatTime(date)}</Time>{' '}
-          <BlockNum>({block.blockNum})</BlockNum> <BlockId>{block.id}</BlockId> (txs:{' '}
+          <BlockNum>({block.blockNum})</BlockNum> <BlockId>{block.id}</BlockId>{' '}
+          <AccountName account={{ id: block.producer }} addLink /> (txs:{' '}
           {block.counters.transactions.total}, actions: {block.counters.actions.count})
         </LinkStyled>
       </Block>
