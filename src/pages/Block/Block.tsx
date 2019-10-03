@@ -6,6 +6,7 @@ import { Field, FieldTitle, FieldValue, Id } from '../../components/Form';
 import Transactions from '../../components/Transactions';
 import Navigation from '../../components/Navigation';
 import Link from '../../components/Link';
+import AccountName from '../../components/AccountName';
 
 const Wrapper = styled.div`
   margin: 16px;
@@ -87,6 +88,10 @@ export default class Block extends PureComponent<Props> {
             <Field line>
               <FieldTitle>Block time:</FieldTitle>{' '}
               <FieldValue>{new Date(block.blockTime).toLocaleString()}</FieldValue>
+            </Field>
+            <Field line>
+              <FieldTitle>Block producer:</FieldTitle>{' '}
+              <FieldValue><AccountName account={{ id: block.producer }} addLink /></FieldValue>
             </Field>
             <Field line>
               <FieldTitle>Transactions count:</FieldTitle>{' '}

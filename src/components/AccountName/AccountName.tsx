@@ -6,6 +6,8 @@ import Link from '../../components/Link';
 import { AccountType } from '../../types';
 
 const Wrapper = styled.div<{ twoLines?: boolean }>`
+  display: inline-block;
+
   ${is('twoLines')`
     display: flex;
     flex-direction: column;

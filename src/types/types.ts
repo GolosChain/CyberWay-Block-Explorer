@@ -23,6 +23,7 @@ export type BlockSummary = {
   parentId: string;
   blockNum: number;
   blockTime: string;
+  producer: string;
   counters: {
     transactions: {
       [key: string]: number;
@@ -99,6 +100,11 @@ export type ValidatorType = {
   username: string | null;
   percent: number;
   props: AgentPropsType | null;
+
+  weekMissed: number;
+  allMissed: number;
+  produced: number;
+  latestBlock: Date | undefined;
 };
 
 export type TokenStatType = {

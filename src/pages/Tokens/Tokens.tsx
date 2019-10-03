@@ -29,7 +29,6 @@ const TokenSubtitle = styled.span`
 `;
 
 const AccountNameStyled = styled(AccountName)`
-  display: inline-block;
   color: #000;
 `;
 

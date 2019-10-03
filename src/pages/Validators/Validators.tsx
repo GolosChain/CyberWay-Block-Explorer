@@ -46,7 +46,7 @@ const AccountItem = styled.li<{ paused: boolean }>`
 // TODO: fix
 const AccountNameStyled = styled(AccountName)`
   width: 160px;
-  height: 40px;
+  height: 60px;
   float: left;
 `;
 
@@ -56,6 +56,10 @@ const RewardFee = styled.span`
 
 const MinOwnStakedStyled = styled.span`
   padding-right: 6px;
+`;
+
+const Label = styled.label`
+  padding-right: 32px;
 `;
 
 type MinStakedProps = {
@@ -87,7 +91,9 @@ export type State = {
   supply: number;
   totalStaked: number;
   totalVotes: number;
+  showPausedValidators: boolean;
   showFullCyber: boolean;
+  showCumulativePercent: boolean;
 };
 
 export default class Validators extends PureComponent<Props, State> {
@@ -97,7 +103,9 @@ export default class Validators extends PureComponent<Props, State> {
     supply: 0,
     totalStaked: 0,
     totalVotes: 0,
+    showPausedValidators: true,
     showFullCyber: false,
+    showCumulativePercent: false,
   };
 
   componentDidMount() {
@@ -120,26 +128,55 @@ export default class Validators extends PureComponent<Props, State> {
     }
   }
 
+  pausedModeChange = (e: ChangeEvent<HTMLInputElement>) => {
+    this.setState({ showPausedValidators: !!e.target.checked });
+  };
+
   cyberModeChange = (e: ChangeEvent<HTMLInputElement>) => {
     this.setState({ showFullCyber: !!e.target.checked });
   };
 
-  renderLine({ account, signKey, username, latestPick, votes, percent, props }: ValidatorType) {
-    const { showFullCyber } = this.state;
+  percentModeChange = (e: ChangeEvent<HTMLInputElement>) => {
+    this.setState({ showCumulativePercent: !!e.target.checked });
+  };
+
+  renderLine(
+    {
+      account,
+      signKey,
+      username,
+      latestPick,
+      votes,
+      percent,
+      props,
+      weekMissed,
+      allMissed,
+      produced,
+      latestBlock,
+    }: ValidatorType,
+    pctSum: { sum: number }
+  ) {
+    const { showFullCyber, showCumulativePercent, showPausedValidators } = this.state;
     const paused = signKey === EMPTY_KEY;
+    if (paused && !showPausedValidators) {
+      return null;
+    }
+    const missIdx = weekMissed ? Math.ceil(Math.log10(weekMissed + 1)) : 0;
+    const missGrade = ['✅', '👌', '⚠️', '😱', '🆘', '💀'][missIdx];
     const pickDate = new Date(latestPick);
     const votesStyle = votes < SYSTEM_MIN_OWN_STAKED ? { color: 'darkred' } : {};
     const fee = props && props.fee !== null && props.fee !== undefined ? props.fee / 100 : 100;
+    pctSum.sum += percent;
 
     return (
       <AccountItem key={account} paused={paused}>
         <AccountNameStyled account={{ id: account, golosId: username }} addLink twoLines />
         Votes: <span style={votesStyle}>{formatCyber(votes, showFullCyber)}</span> (
-        {percent.toFixed(3)}%);{' '}
-        <span title="Time when validator appeared in block producing schedule">
+        {(showCumulativePercent ? pctSum.sum : percent).toFixed(3)}%);{' '}
+        <small title="Time when validator appeared in block producing schedule">
           Latest pick:{' '}
           {pickDate.getTime() === NEVER_PICK_TIME ? 'never' : pickDate.toLocaleString()}
-        </span>
+        </small>
         <br />
         {props ? (
           <>
@@ -154,13 +191,22 @@ export default class Validators extends PureComponent<Props, State> {
           </>
         ) : null}
         <br />
+        <small>
+          <span title={`latest block: ${latestBlock ? latestBlock.toLocaleString() : 'never'}`}>
+            Produced blocks: {produced}
+          </span>
+          ; missed: {allMissed};{' '}
+          missed during 7 days: {weekMissed} {produced || weekMissed ? missGrade : '💤'}
+        <br />
+        </small>
         <small>(signing key: {signKey})</small>
       </AccountItem>
     );
   }
 
   render() {
-    const { validators, updateTime, supply, totalStaked, totalVotes, showFullCyber } = this.state;
+    const { validators, updateTime, supply, totalStaked, totalVotes } = this.state;
+    const pctSum = { sum: 0 };
 
     return (
       <Wrapper>
@@ -173,12 +219,34 @@ export default class Validators extends PureComponent<Props, State> {
                 Last updated at {new Date(updateTime as any).toLocaleString()}
               </UpdateTime>
             ) : null}
-            <label>
+            <Label>
+              Show inactive validators:{' '}
+              <input
+                type="checkbox"
+                onChange={this.pausedModeChange}
+                checked={this.state.showPausedValidators}
+              />
+            </Label>
+            <Label>
               Show full CYBER values:{' '}
-              <input type="checkbox" onChange={this.cyberModeChange} checked={showFullCyber} />
-            </label>
+              <input
+                type="checkbox"
+                onChange={this.cyberModeChange}
+                checked={this.state.showFullCyber}
+              />
+            </Label>
+            <Label>
+              Show cumulative %:{' '}
+              <input
+                type="checkbox"
+                onChange={this.percentModeChange}
+                checked={this.state.showCumulativePercent}
+              />
+            </Label>
             <hr />
-            <List>{(validators as any).map((item: ValidatorType) => this.renderLine(item))}</List>
+            <List>
+              {(validators as any).map((item: ValidatorType) => this.renderLine(item, pctSum))}
+            </List>
           </>
         ) : (
           'Loading ...'
