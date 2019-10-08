@@ -149,9 +149,9 @@ export default class Validators extends PureComponent<Props, State> {
       votes,
       percent,
       props,
-      weekMissed,
-      allMissed,
       produced,
+      missed,
+      weekMissed,
       latestBlock,
     }: ValidatorType,
     pctSum: { sum: number }
@@ -195,9 +195,9 @@ export default class Validators extends PureComponent<Props, State> {
           <span title={`latest block: ${latestBlock ? latestBlock.toLocaleString() : 'never'}`}>
             Produced blocks: {produced}
           </span>
-          ; missed: {allMissed};{' '}
-          missed during 7 days: {weekMissed} {produced || weekMissed ? missGrade : '💤'}
-        <br />
+          ; missed: {missed}; missed during 7 days: {weekMissed}{' '}
+          {produced || weekMissed ? missGrade : '💤'}
+          <br />
         </small>
         <small>(signing key: {signKey})</small>
       </AccountItem>

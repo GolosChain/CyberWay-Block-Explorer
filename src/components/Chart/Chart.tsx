@@ -2,23 +2,61 @@ import React, { PureComponent, createRef, RefObject } from 'react';
 import styled from 'styled-components';
 import ChartJs from 'chart.js';
 import ToastsManager from 'toasts-manager';
+import AccountName from '../../components/AccountName';
+
+const WIDTH = 264;
+const HEIGHT = 120;
 
 const Wrapper = styled.div`
-  width: 220px;
-  height: 120px;
+  display: flex;
 `;
+
+const ChartWrapper = styled.div`
+  width: ${WIDTH}px;
+  height: ${HEIGHT}px;
+`;
+
+const MissedWrapper = styled.div`
+  max-width: ${WIDTH}px;
+  max-height: ${HEIGHT}px;
+  font-size: 14px;
+  overflow: hidden;
+  margin: 8px 0 0 8px;
+`;
+
+const MissedBlocks = styled.ul`
+  margin-top: 6px;
+`;
+
+const MissedItem = styled.li`
+  margin: 4px 0;
+`;
+
+type Counter = {
+  [key: string]: number;
+};
 
 type Props = {
   method: string;
   loadData: Function;
 };
 
-export default class Chart extends PureComponent<Props> {
+type State = {
+  skippers: Counter | null;
+  producers: Counter | null;
+};
+
+export default class Chart extends PureComponent<Props, State> {
   private canvasRef: RefObject<HTMLCanvasElement> = createRef();
   private chart: ChartJs | undefined;
   private updateTimeout: number | undefined;
   private interval: number | undefined;
   private lastUpdateTs: number | undefined;
+
+  state = {
+    skippers: null,
+    producers: null,
+  };
 
   componentDidMount() {
     this.loadData();
@@ -77,14 +115,20 @@ export default class Chart extends PureComponent<Props> {
 
   private createGraph({
     series,
+    missed,
     from,
     to,
     interval,
+    producers,
+    skippers,
   }: {
     series: number[];
+    missed: number[];
     from: string;
     to: string;
     interval: number;
+    producers: Counter;
+    skippers: Counter;
   }) {
     if (this.chart) {
       this.chart.destroy();
@@ -102,6 +146,15 @@ export default class Chart extends PureComponent<Props> {
             data: series,
             backgroundColor: 'rgba(24,144,255, 0.7)',
             borderWidth: 1,
+            yAxisID: 'tps',
+          },
+          {
+            label: 'missed blocks',
+            data: missed,
+            backgroundColor: 'rgba(255, 99, 132, 0.7)',
+            borderWidth: 1,
+            fill: false,
+            yAxisID: 'miss',
           },
         ],
       },
@@ -116,9 +169,15 @@ export default class Chart extends PureComponent<Props> {
         scales: {
           yAxes: [
             {
-              ticks: {
-                beginAtZero: true,
-              },
+              id: 'tps',
+              position: 'left',
+              ticks: { beginAtZero: true },
+            },
+            {
+              id: 'miss',
+              position: 'right',
+              gridLines: { drawOnChartArea: false },
+              ticks: { beginAtZero: true },
             },
           ],
           xAxes: [
@@ -129,6 +188,8 @@ export default class Chart extends PureComponent<Props> {
         },
       },
     });
+
+    this.setState({ skippers, producers });
   }
 
   formatLabels(length: number, { to, interval }: { to: string; interval: number }) {
@@ -153,9 +214,35 @@ export default class Chart extends PureComponent<Props> {
   };
 
   render() {
+    const { skippers, producers } = this.state;
+    const safeSkippers: Counter = skippers || {};
+    const safeProducers: Counter = producers || {};
+    const names = Object.keys(safeSkippers);
+
     return (
       <Wrapper>
-        <canvas width="220" height="120" ref={this.canvasRef} />
+        <ChartWrapper>
+          <canvas width={WIDTH} height={HEIGHT} ref={this.canvasRef} />
+        </ChartWrapper>
+        {names.length ? (
+          <MissedWrapper>
+            <h4>Missed Blocks:</h4>
+            <MissedBlocks>
+              {names.map(name => {
+                const count = safeSkippers[name];
+                const total = count + (safeProducers[name] || 0);
+
+                return (
+                  <MissedItem key={`missed-${name}`}>
+                    <span>❗️</span>
+                    <AccountName account={{ id: name }} addLink />: <b>{count}</b>,{' '}
+                    {((count / total) * 100).toFixed(0)}% miss rate
+                  </MissedItem>
+                );
+              })}
+            </MissedBlocks>
+          </MissedWrapper>
+        ) : null}
       </Wrapper>
     );
   }

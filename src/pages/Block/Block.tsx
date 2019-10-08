@@ -91,7 +91,9 @@ export default class Block extends PureComponent<Props> {
             </Field>
             <Field line>
               <FieldTitle>Block producer:</FieldTitle>{' '}
-              <FieldValue><AccountName account={{ id: block.producer }} addLink /></FieldValue>
+              <FieldValue>
+                <AccountName account={{ id: block.producer }} addLink />
+              </FieldValue>
             </Field>
             <Field line>
               <FieldTitle>Transactions count:</FieldTitle>{' '}

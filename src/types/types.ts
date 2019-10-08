@@ -71,6 +71,26 @@ export type AgentPropsType = {
   minStake: number | null;
 };
 
+export type ProducingPeriodType = {
+  count: number;
+  latest: Date;
+};
+
+export type ProducingBucketType = {
+  bucket: string;
+  account: string;
+  blocksCount: number;
+  missesCount: number;
+};
+
+export type ProducingStatsType = {
+  buckets: ProducingBucketType[];
+  dayBlocks: ProducingPeriodType | undefined;
+  weekBlocks: ProducingPeriodType | undefined;
+  dayMisses: number | undefined;
+  weekMisses: number | undefined;
+};
+
 export type AccountType = {
   id: string;
   golosId?: string | null;
@@ -84,6 +104,7 @@ export type ExtendedAccountType = AccountType & {
   tokens: TokenBalanceType[] | null;
   agentProps: AgentPropsType | null;
   registrationTime: string | null;
+  producingStats: ProducingStatsType;
 };
 
 export type AccountLine = {
@@ -101,9 +122,10 @@ export type ValidatorType = {
   percent: number;
   props: AgentPropsType | null;
 
-  weekMissed: number;
-  allMissed: number;
   produced: number;
+  missed: number;
+  weekProduced: number;
+  weekMissed: number;
   latestBlock: Date | undefined;
 };
 

@@ -11,6 +11,7 @@ import {
   ExtendedAccountType,
   TokenBalanceType,
   AgentPropsType,
+  ProducingStatsType,
 } from '../../types';
 import { formatCyber, formatPct, recall, breakGrant, setProxyLevel } from '../../utils/cyberway';
 import { Field, FieldTitle, FieldValue, ErrorLine } from '../../components/Form';
@@ -21,6 +22,21 @@ import LoginDialog from '../../components/LoginDialog';
 import { changeGrantStateArg } from './Account.connect';
 
 const SHOW_BREAKS = 'none'; // hide breaks until implement ui for change them
+
+const MONTHS_SHORT = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+];
 
 const Wrapper = styled.div`
   margin: 16px;
@@ -91,6 +107,22 @@ const TokenItem = styled.li`
 const AgentInfo = styled.div``;
 const RewardFee = styled.div``;
 const MinOwnStaked = styled.div``;
+
+const QualityTable = styled.table`
+  margin: 6px 0;
+  font-size: 14px;
+  border: 1px solid #999;
+
+  & th {
+    background: #eee;
+  }
+  & td,
+  & th {
+    border: 1px solid #eee;
+    border-width: 1px 1px 0 0;
+    padding: 0 3px;
+  }
+`;
 
 export type Props = {
   accountId: string;
@@ -292,6 +324,104 @@ export default class Account extends PureComponent<Props> {
     });
   };
 
+  renderProducingStats(stats: ProducingStatsType, account: string) {
+    let buckets = stats.buckets;
+    const haveBuckets = buckets.length > 0;
+
+    if (haveBuckets) {
+      buckets = buckets
+        .filter(item => item.account === account)
+        .sort((a, b) => b.bucket.localeCompare(a.bucket));
+
+      const totals = buckets.reduce((result, item) => ({
+        bucket: 'total',
+        account,
+        blocksCount: (result.blocksCount || 0) + item.blocksCount,
+        missesCount: (result.missesCount || 0) + item.missesCount,
+      }));
+      const sortedBuckets = [
+        {
+          bucket: 'day',
+          account,
+          blocksCount: (stats.dayBlocks || { count: 0 }).count,
+          missesCount: stats.dayMisses || 0,
+        },
+        {
+          bucket: 'week',
+          account,
+          blocksCount: (stats.weekBlocks || { count: 0 }).count,
+          missesCount: stats.weekMisses || 0,
+        },
+        ...buckets,
+        totals,
+      ];
+
+      const bucketTitle = (bucketName: string) => {
+        const yearMonth = parseInt(bucketName);
+        if (isNaN(yearMonth)) {
+          return bucketName;
+        }
+
+        const year = Math.round(yearMonth / 100);
+        const month = yearMonth - year * 100;
+
+        return `${MONTHS_SHORT[month]} ${2000 + year}`;
+      };
+
+      const thead = [];
+      const prod = [];
+      const miss = [];
+      const rate = [];
+
+      for (const b of sortedBuckets) {
+        const sum = b.blocksCount + b.missesCount;
+
+        thead.push(<th key={`th-${b.bucket}`}>{bucketTitle(b.bucket)}</th>);
+        prod.push(<td key={`tr1-${b.bucket}`}>{b.blocksCount}</td>);
+        miss.push(<td key={`tr2-${b.bucket}`}>{b.missesCount}</td>);
+        rate.push(
+          <td key={`tr3-${b.bucket}`}>
+            {sum ? `${((b.missesCount / sum) * 100).toFixed(2)}%` : '—'}
+          </td>
+        );
+      }
+
+      return (
+        <>
+          <Subtitle>Validation quality:</Subtitle>
+          <QualityTable>
+            <thead>
+              <tr>
+                <th>Period:</th>
+                {thead}
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th>Produced:</th>
+                {prod}
+              </tr>
+              <tr>
+                <th>Missed:</th>
+                {miss}
+              </tr>
+              <tr>
+                <th>Miss rate:</th>
+                {rate}
+              </tr>
+            </tbody>
+          </QualityTable>
+          Latest produced block:{' '}
+          {stats.dayBlocks && stats.dayBlocks.latest
+            ? new Date(stats.dayBlocks.latest).toLocaleString()
+            : 'more than week ago'}
+        </>
+      );
+    } else {
+      return null;
+    }
+  }
+
   render() {
     const { accountId, account, accountError, mode } = this.props;
     const { isLoginOpen } = this.state;
@@ -319,6 +449,8 @@ export default class Account extends PureComponent<Props> {
 
               <Subtitle>Validation role:</Subtitle>
               {this.renderAgent(account.agentProps)}
+
+              {this.renderProducingStats(account.producingStats, accountId)}
 
               {account.grants ? (
                 <>

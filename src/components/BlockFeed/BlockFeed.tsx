@@ -34,12 +34,12 @@ const ListWrapper = styled.div``;
 
 const List = styled.ul``;
 
-const Block = styled.li``;
-
-const LinkStyled = styled(Link)`
-  display: block;
+const Block = styled.li`
   padding: 3px 0;
   font-size: 14px;
+`;
+
+const LinkStyled = styled(Link)`
   color: unset;
   text-decoration: none;
 `;
@@ -49,6 +49,7 @@ const BlockNum = styled.span`
 `;
 
 const BlockId = styled.span`
+  font-size: 13px;
   font-family: monospace;
 `;
 
@@ -200,9 +201,9 @@ export default class BlockFeed extends PureComponent<Props, State> {
         <LinkStyled to={`/block/${block.id}`} keepHash>
           <Time title={date.toLocaleString()}>{formatTime(date)}</Time>{' '}
           <BlockNum>({block.blockNum})</BlockNum> <BlockId>{block.id}</BlockId>{' '}
-          <AccountName account={{ id: block.producer }} addLink /> (txs:{' '}
-          {block.counters.transactions.total}, actions: {block.counters.actions.count})
-        </LinkStyled>
+        </LinkStyled>{' '}
+        <AccountName account={{ id: block.producer }} addLink /> (txs:{' '}
+        {block.counters.transactions.total}, actions: {block.counters.actions.count})
       </Block>
     );
   };
