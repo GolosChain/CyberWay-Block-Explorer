@@ -54,6 +54,58 @@ app.get('/trx/:trxId.json', async (req, res) => {
   }
 });
 
+function getTokenSupply(symbol) {
+  return new Promise((resolve, reject) => {
+    const whitelist = { CYBER: 1, GOLOS: 1 };
+    if (!whitelist[symbol]) {
+      reject({ code: 404 });
+      return;
+    }
+
+    blocksClient.request('getTokensExt', { }, (err, response) => {
+      if (err) {
+        reject(err);
+      } else if (response.error) {
+        reject(response.error);
+      } else {
+        const { items } = response.result;
+        const token = items.find(item => item.symbol === symbol);
+
+        if (!token || token.supply === undefined) {
+          reject('Token not found!'); // should not happen
+        } else {
+          // TODO: subtract nulls
+          console.log(token);
+          resolve(token.supply.toString().split(' ')[0]);
+        }
+      }
+    });
+  });
+}
+
+app.get('/api/supply/:token', async (req, res) => {
+  try {
+    const supply = await getTokenSupply(req.params.token);
+
+    res.send(supply);
+  } catch (err) {
+    if (err.code === 404) {
+      res.status(404);
+      res.json({
+        error: 'Not found',
+      });
+      return;
+    }
+
+    console.error(new Date().toJSON(), 'Token supply fetch failed:', err);
+
+    res.status(500);
+    res.json({
+      error: 'Internal Server Error',
+    });
+  }
+});
+
 // Отдаем index.html на все запросы за text/html
 app.use('/*', (req, res, next) => {
   if (req.method === 'GET' && req.headers.accept && req.headers.accept.startsWith('text/html')) {
