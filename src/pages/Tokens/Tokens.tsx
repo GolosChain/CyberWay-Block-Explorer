@@ -64,7 +64,11 @@ export default class Tokens extends PureComponent<Props, State> {
   }
 
   renderToken(token: TokenStatType) {
-    const { symbol, supply, maxSupply, issuer } = token;
+    const { symbol, supply, maxSupply, issuer, nulls, funds } = token;
+    const supplyValue = supply.split(' ')[0];
+    const precision = (supplyValue.split('.')[1] || '').length;
+    const circulating =
+      parseFloat(supplyValue) - parseFloat(funds.split(' ')[0]) - parseFloat(nulls.split(' ')[0]);
     // const percent = (parseFloat(supply.split(' ')[0]) / parseFloat(maxSupply.split(' ')[0])) * 100;
 
     return (
@@ -76,10 +80,22 @@ export default class Tokens extends PureComponent<Props, State> {
           </TokenSubtitle>
         </TokenTitle>
         <Field line>
+          <FieldTitle>Circulating supply: </FieldTitle>
+          <FieldValue>
+            {circulating.toFixed(precision)} {symbol}
+          </FieldValue>
+        </Field>
+        <Field line>
           <FieldTitle>Supply: </FieldTitle>
           <FieldValue>
             {supply}
             {/* ({percent.toFixed(2)}% of max) */}
+          </FieldValue>
+        </Field>
+        <Field line>
+          <FieldTitle>Burned: </FieldTitle>
+          <FieldValue>
+            {nulls} <small>(included in Supply)</small>
           </FieldValue>
         </Field>
         <Field line>
@@ -88,7 +104,7 @@ export default class Tokens extends PureComponent<Props, State> {
         </Field>
         <Field line>
           <FieldTitle>Precision: </FieldTitle>
-          <FieldValue>{(supply.split(' ')[0].split('.')[1] || '').length} decimals</FieldValue>
+          <FieldValue>{precision} decimals</FieldValue>
         </Field>
       </TokenItem>
     );

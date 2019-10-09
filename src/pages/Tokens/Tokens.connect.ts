@@ -9,7 +9,7 @@ export default connect(
   {
     loadTokens: (params: LoadTokensParams) => ({
       type: CALL_API,
-      method: 'stateReader.getTokens',
+      method: 'chain.getTokensExt',
       params,
       meta: { ...params },
     }),
