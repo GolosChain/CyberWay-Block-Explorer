@@ -62,7 +62,7 @@ function getTokenSupply(symbol) {
       return;
     }
 
-    blocksClient.request('getTokensExt', { }, (err, response) => {
+    blocksClient.request('getTokensExt', {}, (err, response) => {
       if (err) {
         reject(err);
       } else if (response.error) {
@@ -75,7 +75,6 @@ function getTokenSupply(symbol) {
           reject('Token not found!'); // should not happen
         } else {
           // TODO: subtract nulls
-          console.log(token);
           resolve(token.supply.toString().split(' ')[0]);
         }
       }
