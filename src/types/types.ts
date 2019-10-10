@@ -133,6 +133,8 @@ export type TokenStatType = {
   symbol: string; // symbol type; Note this types are more strict than string
   supply: string; // asset type
   maxSupply: string; // asset type
+  nulls: string; // asset type
+  funds: string; // asset type
   issuer: string; // account name type
 };
 
