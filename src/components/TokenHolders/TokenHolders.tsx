@@ -101,7 +101,7 @@ export default class TokenHolders extends PureComponent<Props> {
                         '?'
                       )}
                     </td>
-                    <td>{balance}</td>
+                    <td>{balance.split(' ')[0]}</td>
                     <td>{percent.toFixed(3)}%</td>
                   </tr>
                 );
