@@ -9,6 +9,7 @@ import Transaction from '../pages/Transaction';
 import Account from '../pages/Account';
 import Validators from '../pages/Validators';
 import Tokens from '../pages/Tokens';
+import Token from '../pages/Token';
 
 export type BlockRouteParams = {
   blockId: string;
@@ -23,6 +24,10 @@ export type AccountRouteParams = {
   mode?: AccountTransactionsMode;
 };
 
+export type TokenRouteParams = {
+  symbol: string;
+};
+
 export default function() {
   return (
     <>
@@ -32,6 +37,7 @@ export default function() {
       <Route path="/trx/:transactionId" exact component={wrapKeySetter(Transaction)} />
       <Route path="/validators" exact component={Validators} />
       <Route path="/tokens" exact component={Tokens} />
+      <Route path="/token/:symbol" exact component={wrapKeySetter(Token)} />
       <Route
         path="/account/:accountId/:mode(actor|mention)?"
         exact

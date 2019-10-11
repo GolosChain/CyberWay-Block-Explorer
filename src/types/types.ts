@@ -61,8 +61,9 @@ export type GrantsInfoType = {
 };
 
 export type TokenBalanceType = {
-  balance: string;
-  payments?: string;
+  balance: string; // asset type
+  payments?: string; // asset type
+  account?: string; // account name type
 };
 
 export type AgentPropsType = {
