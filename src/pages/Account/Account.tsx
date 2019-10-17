@@ -333,12 +333,15 @@ export default class Account extends PureComponent<Props> {
         .filter(item => item.account === account)
         .sort((a, b) => b.bucket.localeCompare(a.bucket));
 
-      const totals = buckets.reduce((result, item) => ({
-        bucket: 'total',
-        account,
-        blocksCount: result.blocksCount + item.blocksCount,
-        missesCount: result.missesCount + item.missesCount,
-      }), {bucket: 'total', blocksCount:0, missesCount:0});
+      const totals = buckets.reduce(
+        (result, item) => ({
+          bucket: 'total',
+          account,
+          blocksCount: result.blocksCount + item.blocksCount,
+          missesCount: result.missesCount + item.missesCount,
+        }),
+        { bucket: 'total', blocksCount: 0, missesCount: 0 }
+      );
       const sortedBuckets = [
         {
           bucket: 'day',

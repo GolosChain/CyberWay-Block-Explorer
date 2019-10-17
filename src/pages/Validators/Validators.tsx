@@ -246,7 +246,9 @@ export default class Validators extends PureComponent<Props, State> {
             </Label>
             <hr />
             <List>
-              {(validators as any).map((item: ValidatorType) => this.renderLine(item, totalVotes, pctSum))}
+              {(validators as any).map((item: ValidatorType) =>
+                this.renderLine(item, totalVotes, pctSum)
+              )}
             </List>
           </>
         ) : (
