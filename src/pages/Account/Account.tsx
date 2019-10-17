@@ -198,27 +198,27 @@ export default class Account extends PureComponent<Props> {
         </GrantsTHead>
         <GrantsTBody>
           {grants.map(
-            ({ accountId, username, share, pct, breakFee, breakMinStaked, isCanceled }) => (
-              <GrantItem key={accountId}>
+            ({ recipient, username, share, percent, breakFee, breakMinStaked, isCanceled }) => (
+              <GrantItem key={recipient}>
                 <td>
-                  <GrantRecipient strike={isCanceled && share === 0 && pct === 0}>
-                    <AccountName account={{ id: accountId, golosId: username }} />
+                  <GrantRecipient strike={isCanceled && share === 0 && percent === 0}>
+                    <AccountName account={{ id: recipient, golosId: username }} />
                   </GrantRecipient>
                 </td>
                 <td>{share > 0 ? '≥' + formatCyber(share) : 0}</td>
-                <td>{pct > 0 ? formatPct(pct) : '–'}</td>
+                <td>{percent > 0 ? formatPct(percent) : '–'}</td>
                 <td style={show}>{breakFee < 10000 ? `>${formatPct(breakFee)}` : 'no'}</td>
                 <td style={show}>
                   {breakMinStaked > 0 ? `<${formatCyber(breakMinStaked)}` : 'no'}
                 </td>
                 <td>
                   {share === 0 ? null : (
-                    <RecallButton onClick={() => this.onRecallClick(accountId)}>
+                    <RecallButton onClick={() => this.onRecallClick(recipient)}>
                       Recall
                     </RecallButton>
                   )}
-                  {share > 0 || pct === 0 ? null : (
-                    <BreakButton onClick={() => this.onBreakClick(accountId)}>Break</BreakButton>
+                  {share > 0 || percent === 0 ? null : (
+                    <BreakButton onClick={() => this.onBreakClick(recipient)}>Break</BreakButton>
                   )}
                 </td>
               </GrantItem>
@@ -336,9 +336,9 @@ export default class Account extends PureComponent<Props> {
       const totals = buckets.reduce((result, item) => ({
         bucket: 'total',
         account,
-        blocksCount: (result.blocksCount || 0) + item.blocksCount,
-        missesCount: (result.missesCount || 0) + item.missesCount,
-      }));
+        blocksCount: result.blocksCount + item.blocksCount,
+        missesCount: result.missesCount + item.missesCount,
+      }), {bucket: 'total', blocksCount:0, missesCount:0});
       const sortedBuckets = [
         {
           bucket: 'day',

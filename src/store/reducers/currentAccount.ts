@@ -55,7 +55,7 @@ export default function(
       };
 
     case CHANGE_GRANT_STATE:
-      const { accountId, recipientId, share, pct } = payload;
+      const { accountId, recipientId, share, percent } = payload;
 
       if (!state.account || !state.account.grants || state.account.id !== accountId) {
         return state;
@@ -65,7 +65,7 @@ export default function(
         ['account', 'grants', 'items'],
         (items: GrantInfoType[]) =>
           items.map(grant => {
-            if (grant.accountId !== recipientId) {
+            if (grant.recipient !== recipientId) {
               return grant;
             }
 
@@ -73,7 +73,7 @@ export default function(
               ...grant,
               isCanceled: true,
               share: share !== null ? share : grant.share,
-              pct: pct !== null ? pct : grant.pct,
+              percent: percent !== null ? percent : grant.percent,
             };
           }),
         state

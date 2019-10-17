@@ -68,6 +68,7 @@ export default class TokenHolders extends PureComponent<Props> {
 
   render() {
     const { supply, items, offset, isLoading } = this.props;
+    let sum = 0;
 
     return (
       <Wrapper>
@@ -80,6 +81,7 @@ export default class TokenHolders extends PureComponent<Props> {
                 <th>Account</th>
                 <th>Quantity</th>
                 <th>Percentage</th>
+                <th>∑%</th>
               </tr>
             </thead>
             <InfiniteScroll
@@ -90,9 +92,10 @@ export default class TokenHolders extends PureComponent<Props> {
               {items.map((holder: TokenBalanceType, idx: number) => {
                 const { account, balance } = holder;
                 const percent = (100 * parseFloat(balance)) / supply;
+                sum += percent;
 
                 return (
-                  <tr>
+                  <tr key={account}>
                     <td>{idx + 1}</td>
                     <td>
                       {account !== undefined ? (
@@ -103,6 +106,7 @@ export default class TokenHolders extends PureComponent<Props> {
                     </td>
                     <td>{balance.split(' ')[0]}</td>
                     <td>{percent.toFixed(3)}%</td>
+                    <td>{sum.toFixed(3)}%</td>
                   </tr>
                 );
               })}
