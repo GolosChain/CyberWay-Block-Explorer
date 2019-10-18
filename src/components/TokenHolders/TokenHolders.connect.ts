@@ -29,7 +29,7 @@ export default connect(
       const params = {
         token: symbol,
         offset,
-        limit: offset ? 20 : 40,
+        limit: offset ? 25 : 100,
       };
 
       return {

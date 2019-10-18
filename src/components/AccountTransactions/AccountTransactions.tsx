@@ -87,7 +87,7 @@ export default class AccountTransactions extends PureComponent<Props> {
       .filter(
         action =>
           action.auth.some(({ actor }) => actor === accountId) ||
-          action.accounts.includes(accountId)
+          (action.accounts && action.accounts.includes(accountId))
       )
       .map(action => this.renderAction(action));
 

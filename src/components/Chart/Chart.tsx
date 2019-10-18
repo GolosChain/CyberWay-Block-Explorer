@@ -52,6 +52,7 @@ export default class Chart extends PureComponent<Props, State> {
   private updateTimeout: number | undefined;
   private interval: number | undefined;
   private lastUpdateTs: number | undefined;
+  private stopUpdates = false;
 
   state = {
     skippers: null,
@@ -59,12 +60,15 @@ export default class Chart extends PureComponent<Props, State> {
   };
 
   componentDidMount() {
+    this.stopUpdates = false;
     this.loadData();
     document.addEventListener('visibilitychange', this.onVisibilityChange);
   }
 
   componentWillUnmount() {
     document.removeEventListener('visibilitychange', this.onVisibilityChange);
+    this.lastUpdateTs = this.interval = 1; // force stop updates on unmount. TODO: it's not clear logic, rewrite
+    this.stopUpdates = true;
     this.stopUpdateInterval();
   }
 
@@ -74,7 +78,7 @@ export default class Chart extends PureComponent<Props, State> {
     try {
       const results = await loadData({ method });
 
-      if (this.lastUpdateTs && document.hidden) {
+      if (this.lastUpdateTs && this.stopUpdates) {
         return;
       }
 

@@ -46,10 +46,10 @@ export type Suggest = {
 };
 
 export type GrantInfoType = {
-  accountId: string;
+  recipient: string;
   username?: string;
   share: number;
-  pct: number;
+  percent: number;
   breakFee: number;
   breakMinStaked: number;
   isCanceled?: boolean;
@@ -117,10 +117,9 @@ export type ValidatorType = {
   account: string;
   enabled: boolean;
   latestPick: Date;
-  signKey: string;
+  signingKey: string;
   votes: number;
   username: string | null;
-  percent: number;
   props: AgentPropsType | null;
 
   produced: number;

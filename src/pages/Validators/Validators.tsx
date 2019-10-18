@@ -143,21 +143,21 @@ export default class Validators extends PureComponent<Props, State> {
   renderLine(
     {
       account,
-      signKey,
+      signingKey,
       username,
       latestPick,
       votes,
-      percent,
       props,
       produced,
       missed,
       weekMissed,
       latestBlock,
     }: ValidatorType,
+    totalVotes: number,
     pctSum: { sum: number }
   ) {
     const { showFullCyber, showCumulativePercent, showPausedValidators } = this.state;
-    const paused = signKey === EMPTY_KEY;
+    const paused = signingKey === EMPTY_KEY;
     if (paused && !showPausedValidators) {
       return null;
     }
@@ -166,6 +166,7 @@ export default class Validators extends PureComponent<Props, State> {
     const pickDate = new Date(latestPick);
     const votesStyle = votes < SYSTEM_MIN_OWN_STAKED ? { color: 'darkred' } : {};
     const fee = props && props.fee !== null && props.fee !== undefined ? props.fee / 100 : 100;
+    const percent = (100 * votes) / totalVotes;
     pctSum.sum += percent;
 
     return (
@@ -199,7 +200,7 @@ export default class Validators extends PureComponent<Props, State> {
           {produced || weekMissed ? missGrade : '💤'}
           <br />
         </small>
-        <small>(signing key: {signKey})</small>
+        <small>(signing key: {signingKey})</small>
       </AccountItem>
     );
   }
@@ -245,7 +246,9 @@ export default class Validators extends PureComponent<Props, State> {
             </Label>
             <hr />
             <List>
-              {(validators as any).map((item: ValidatorType) => this.renderLine(item, pctSum))}
+              {(validators as any).map((item: ValidatorType) =>
+                this.renderLine(item, totalVotes, pctSum)
+              )}
             </List>
           </>
         ) : (
