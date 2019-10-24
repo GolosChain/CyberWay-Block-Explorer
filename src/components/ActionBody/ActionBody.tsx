@@ -2,7 +2,7 @@ import React, { PureComponent, Fragment } from 'react';
 import styled from 'styled-components';
 import JSONPretty from 'react-json-pretty';
 
-import { AuthLine, TransactionAction } from '../../types';
+import { AuthType, TransactionAction } from '../../types';
 
 import { Field, FieldTitle, FieldValue } from '../Form';
 import Link from '../Link';
@@ -107,7 +107,7 @@ export default class ActionBody extends PureComponent<Props, State> {
   }
 }
 
-function renderActors(auth: AuthLine[]) {
+function renderActors(auth: AuthType[]) {
   return auth.map((auth, index) => (
     <Fragment key={index}>
       <Link to={`/account/${auth.actor}`}>{auth.actor}</Link>@{auth.permission}

@@ -238,7 +238,7 @@ export default class Chart extends PureComponent<Props, State> {
 
                 return (
                   <MissedItem key={`missed-${name}`}>
-                    <span>❗️</span>
+                    <span>{'❗️'}</span>
                     <AccountName account={{ id: name }} addLink />: <b>{count}</b>,{' '}
                     {((count / total) * 100).toFixed(0)}% miss rate
                   </MissedItem>
