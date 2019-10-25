@@ -3,6 +3,7 @@ import { TextEncoder, TextDecoder } from 'text-encoding';
 import JsSignatureProvider from 'cyberwayjs/dist/eosjs-jssig';
 
 import { KeyAuthType, KeyRole } from '../types';
+import { setProxyLevelAction, recallVoteAction, setGrantTermsAction } from './cyberwayActions';
 
 const HOST = process.env.GLS_NODE_HOST || 'https://node-cyberway.golos.io';
 
@@ -33,70 +34,6 @@ export async function getAccountPublicKey(accountId: string, keyRole = 'active')
   return key || null;
 }
 
-function makeRecallVoteAction(grantor: string, recipient: string, pct: number) {
-  return {
-    account: 'cyber.stake',
-    name: 'recallvote',
-    authorization: [
-      {
-        actor: grantor,
-        permission: 'active',
-      },
-    ],
-    data: {
-      grantor_name: grantor,
-      recipient_name: recipient,
-      token_code: 'CYBER',
-      pct,
-    },
-  };
-}
-
-function makeSetGrantTermsAction(
-  grantor: string,
-  recipient: string,
-  pct: number,
-  maxFee: number,
-  minStaked: number
-) {
-  return {
-    account: 'cyber.stake',
-    name: 'setgrntterms',
-    authorization: [
-      {
-        actor: grantor,
-        permission: 'active',
-      },
-    ],
-    data: {
-      grantor_name: grantor,
-      recipient_name: recipient,
-      token_code: 'CYBER',
-      pct,
-      break_fee: maxFee,
-      break_min_own_staked: minStaked,
-    },
-  };
-}
-
-export function makeSetProxyLevelAction(account: string, level: number) {
-  return {
-    account: 'cyber.stake',
-    name: 'setproxylvl',
-    authorization: [
-      {
-        actor: account,
-        permission: 'active',
-      },
-    ],
-    data: {
-      account,
-      token_code: 'CYBER',
-      level,
-    },
-  };
-}
-
 export async function pushTransaction({ auth, trx }: { auth: KeyAuthType; trx: any }) {
   return await pushTransactionUsingKeys({ keys: [auth.key], trx });
 }
@@ -121,7 +58,7 @@ export async function pushTransactionUsingKeys({ keys, trx }: { keys: string[]; 
 
 export async function setProxyLevel({ auth, level }: { auth: KeyAuthType; level: number }) {
   if (Number.isInteger(level) && level >= 0 && level <= 4) {
-    const actions = [makeSetProxyLevelAction(auth.accountId, level)];
+    const actions = [setProxyLevelAction(auth.accountId, level)];
     await pushTransaction({ auth, trx: { actions } });
   } else {
     throw new Error('Level must be integer between 0 and 4 inclusive');
@@ -133,7 +70,7 @@ export async function recall({ auth, recipients }: { auth: KeyAuthType; recipien
   const actions = [];
 
   for (const recipient of recipients) {
-    actions.push(makeRecallVoteAction(grantor, recipient, 10000));
+    actions.push(recallVoteAction(grantor, recipient));
   }
 
   await pushTransaction({ auth, trx: { actions } });
@@ -150,7 +87,7 @@ export async function breakGrant({
   const actions = [];
 
   for (const recipient of recipients) {
-    actions.push(makeSetGrantTermsAction(grantor, recipient, 0, 10000, 0));
+    actions.push(setGrantTermsAction(grantor, recipient));
   }
 
   await pushTransaction({ auth, trx: { actions } });

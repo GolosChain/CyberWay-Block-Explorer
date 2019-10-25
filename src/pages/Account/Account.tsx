@@ -13,19 +13,18 @@ import {
   AgentPropsType,
   ProducingStatsType,
 } from '../../types';
+import { formatCyber, formatPct, recall, breakGrant, setProxyLevel } from '../../utils/cyberway';
 import {
-  formatCyber,
-  formatPct,
-  recall,
-  breakGrant,
-  setProxyLevel,
-  makeSetProxyLevelAction,
-} from '../../utils/cyberway';
+  setProxyLevelAction,
+  recallVoteAction,
+  setGrantTermsAction,
+} from '../../utils/cyberwayActions';
 import { Field, FieldTitle, FieldValue, ErrorLine } from '../../components/Form';
 import AccountTransactions from '../../components/AccountTransactions';
 import AccountKeys from '../../components/AccountKeys';
 import AccountName from '../../components/AccountName';
 import LoginDialog from '../../components/LoginDialog';
+import Link from '../../components/Link';
 import { changeGrantStateArg } from './Account.connect';
 
 const SHOW_BREAKS = 'none'; // hide breaks until implement ui for change them
@@ -70,6 +69,10 @@ const GrantsTHead = styled.thead`
   background: #eee;
 `;
 
+const GrantsTFoot = styled.tfoot`
+  background: #eee;
+`;
+
 const GrantsTBody = styled.tbody``;
 
 const GrantItem = styled.tr`
@@ -87,13 +90,27 @@ const GrantRecipient = styled.span<{ strike?: boolean }>`
   `};
 `;
 
-const BaseButton = styled.button`
+const BUTTON_STYLE = `
   margin-left: 10px;
   font-size: 14px;
   border-radius: 4px;
   color: #333;
   background: #eee;
   cursor: pointer;
+`;
+
+const LinkButton = styled(Link)`
+  ${BUTTON_STYLE}
+  padding: 1px 7px 2px;
+  border: 1px solid #aaa;
+  border-color: rgb(216, 216, 216) rgb(209, 209, 209) rgb(186, 186, 186);
+  display: inline-block;
+  background: #edd;
+  text-decoration: none;
+`;
+
+const BaseButton = styled.button`
+  ${BUTTON_STYLE}
 `;
 
 const RecallButton = styled(BaseButton)``;
@@ -173,7 +190,7 @@ export default class Account extends PureComponent<Props> {
   }
 
   onSetLevelClick(currentLevel: number) {
-    const action = makeSetProxyLevelAction(this.props.accountId, 1);
+    const action = setProxyLevelAction(this.props.accountId, 1);
     const trx = encodeURIComponent(JSON.stringify({ actions: [action] }));
 
     this.setState({
@@ -183,8 +200,22 @@ export default class Account extends PureComponent<Props> {
     });
   }
 
+  recallTrx(recalls: string[], breaks?: string[]) {
+    const { accountId } = this.props;
+    const actions: any[] = [
+      ...recalls.map(recipient => recallVoteAction(accountId, recipient)),
+      ...(breaks || []).map(recipient => setGrantTermsAction(accountId, recipient)),
+    ];
+    return `/sign?trx=${encodeURIComponent(JSON.stringify({ actions }))}`;
+  }
+
   renderGrants(grants: GrantInfoType[]) {
     const show = { display: SHOW_BREAKS };
+    const toRecall: string[] = [];
+    const toBreak: string[] = [];
+    let votes = 0;
+    let percents = 0;
+
     return (
       <GrantsTable>
         <GrantsTHead>
@@ -209,15 +240,36 @@ export default class Account extends PureComponent<Props> {
           </tr>
         </GrantsTHead>
         <GrantsTBody>
-          {grants.map(
-            ({ recipient, username, share, percent, breakFee, breakMinStaked, isCanceled }) => (
+          {grants.map(grant => {
+            const {
+              recipient,
+              username,
+              share,
+              percent,
+              breakFee,
+              breakMinStaked,
+              agent,
+              isCanceled,
+            } = grant;
+            const voted = Math.round((share * (agent.proxied + agent.balance)) / agent.sharesSum);
+
+            if (voted) {
+              toRecall.push(recipient);
+              votes += voted;
+            }
+            if (percent) {
+              toBreak.push(recipient);
+              percents += percent;
+            }
+
+            return (
               <GrantItem key={recipient}>
                 <td>
                   <GrantRecipient strike={isCanceled && share === 0 && percent === 0}>
                     <AccountName account={{ id: recipient, golosId: username }} />
                   </GrantRecipient>
                 </td>
-                <td>{share > 0 ? '≥' + formatCyber(share) : 0}</td>
+                <td>{share > 0 ? formatCyber(voted) : 0}</td>
                 <td>{percent > 0 ? formatPct(percent) : '–'}</td>
                 <td style={show}>{breakFee < 10000 ? `>${formatPct(breakFee)}` : 'no'}</td>
                 <td style={show}>
@@ -234,9 +286,27 @@ export default class Account extends PureComponent<Props> {
                   )}
                 </td>
               </GrantItem>
-            )
-          )}
+            );
+          })}
         </GrantsTBody>
+        {grants.length > 1 ? (
+          <GrantsTFoot>
+            <tr>
+              <td>Total:</td>
+              <td>{formatCyber(votes)}</td>
+              <td>N/A</td>
+              <td style={show}>N/A</td>
+              <td style={show}>N/A</td>
+              <td>
+                {votes ? <LinkButton to={this.recallTrx(toRecall)}>Recall all</LinkButton> : null}
+                <br />
+                {percents ? (
+                  <LinkButton to={this.recallTrx(toRecall, toBreak)}>Delete all</LinkButton>
+                ) : null}
+              </td>
+            </tr>
+          </GrantsTFoot>
+        ) : null}
       </GrantsTable>
     );
   }
