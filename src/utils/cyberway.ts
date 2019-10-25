@@ -116,7 +116,6 @@ export async function pushTransactionUsingKeys({ keys, trx }: { keys: string[]; 
     expireSeconds: 3600,
   });
 
-  console.log('Sent transaction:', result);
   return result;
 }
 
