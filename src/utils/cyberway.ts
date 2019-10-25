@@ -2,7 +2,7 @@ import { JsonRpc, Api } from 'cyberwayjs';
 import { TextEncoder, TextDecoder } from 'text-encoding';
 import JsSignatureProvider from 'cyberwayjs/dist/eosjs-jssig';
 
-import { AuthType, KeyRole } from '../types';
+import { KeyAuthType, KeyRole } from '../types';
 
 const HOST = process.env.GLS_NODE_HOST || 'https://node-cyberway.golos.io';
 
@@ -79,7 +79,7 @@ function makeSetGrantTermsAction(
   };
 }
 
-function makeSetProxyLevelAction(account: string, level: number) {
+export function makeSetProxyLevelAction(account: string, level: number) {
   return {
     account: 'cyber.stake',
     name: 'setproxylvl',
@@ -97,8 +97,12 @@ function makeSetProxyLevelAction(account: string, level: number) {
   };
 }
 
-export async function pushTransaction({ auth, trx }: { auth: AuthType; trx: any }) {
-  const signatureProvider = new JsSignatureProvider([auth.key]);
+export async function pushTransaction({ auth, trx }: { auth: KeyAuthType; trx: any }) {
+  return await pushTransactionUsingKeys({ keys: [auth.key], trx });
+}
+
+export async function pushTransactionUsingKeys({ keys, trx }: { keys: string[]; trx: any }) {
+  const signatureProvider = new JsSignatureProvider(keys);
 
   const api = new Api({
     rpc,
@@ -107,15 +111,15 @@ export async function pushTransaction({ auth, trx }: { auth: AuthType; trx: any 
     textEncoder: new TextEncoder(),
   });
 
-  const results = await api.transact(trx, {
+  const result = await api.transact(trx, {
     blocksBehind: 5,
     expireSeconds: 3600,
   });
 
-  console.log('Sent transaction:', results);
+  return result;
 }
 
-export async function setProxyLevel({ auth, level }: { auth: AuthType; level: number }) {
+export async function setProxyLevel({ auth, level }: { auth: KeyAuthType; level: number }) {
   if (Number.isInteger(level) && level >= 0 && level <= 4) {
     const actions = [makeSetProxyLevelAction(auth.accountId, level)];
     await pushTransaction({ auth, trx: { actions } });
@@ -124,7 +128,7 @@ export async function setProxyLevel({ auth, level }: { auth: AuthType; level: nu
   }
 }
 
-export async function recall({ auth, recipients }: { auth: AuthType; recipients: string[] }) {
+export async function recall({ auth, recipients }: { auth: KeyAuthType; recipients: string[] }) {
   const grantor = auth.accountId;
   const actions = [];
 
@@ -135,7 +139,13 @@ export async function recall({ auth, recipients }: { auth: AuthType; recipients:
   await pushTransaction({ auth, trx: { actions } });
 }
 
-export async function breakGrant({ auth, recipients }: { auth: AuthType; recipients: string[] }) {
+export async function breakGrant({
+  auth,
+  recipients,
+}: {
+  auth: KeyAuthType;
+  recipients: string[];
+}) {
   const grantor = auth.accountId;
   const actions = [];
 

@@ -3,10 +3,11 @@ import styled from 'styled-components';
 import is from 'styled-is';
 import Modal from 'react-responsive-modal';
 
-import { AccountType, AuthType } from '../../types';
+import { AccountType, KeyAuthType } from '../../types';
 import { getKey } from '../../utils/password';
 import { getAccountPublicKey } from '../../utils/cyberway';
 import { Field, FieldTitle } from '../Form';
+import Link from '../Link';
 
 const Form = styled.form``;
 
@@ -47,7 +48,7 @@ const Buttons = styled.div`
   padding: 0 40px 12px;
 `;
 
-const Button = styled.button<{ primary?: boolean }>`
+const Button = styled.button<{ primary?: boolean; link?: boolean }>`
   appearance: none;
   padding: 6px 10px;
   border: 1px solid #777;
@@ -63,12 +64,21 @@ const Button = styled.button<{ primary?: boolean }>`
     color: #fff;
     background: #4277f2;
   `};
+
+  ${is('link')`
+    border-color: transparent;
+  `};
+`;
+
+const Span = styled.span`
+  padding: 7px 0;
 `;
 
 type Props = {
   account?: AccountType | null;
+  signLink?: string | null;
   lockAccountId?: boolean;
-  onLogin: (auth: AuthType) => void;
+  onLogin: (auth: KeyAuthType) => void;
   onClose: () => void;
 };
 
@@ -115,7 +125,7 @@ export default class LoginDialog extends PureComponent<Props> {
   };
 
   render() {
-    const { lockAccountId, onClose } = this.props;
+    const { lockAccountId, onClose, signLink } = this.props;
     const { accountId, password } = this.state;
 
     return (
@@ -144,10 +154,15 @@ export default class LoginDialog extends PureComponent<Props> {
             </FieldStyled>
           </Fields>
           <Buttons>
-            <Button primary>Authorize</Button>
             <Button type="button" onClick={onClose}>
               Cancel
             </Button>
+            <Button primary>Authorize</Button>
+            {signLink ? (
+              <Span>
+                or <Link to={signLink}>Sign</Link>
+              </Span>
+            ) : null}
           </Buttons>
         </Form>
       </Modal>

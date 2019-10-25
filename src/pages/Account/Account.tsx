@@ -7,13 +7,20 @@ import {
   AccountTransactionsMode,
   ApiError,
   GrantInfoType,
-  AuthType,
+  KeyAuthType,
   ExtendedAccountType,
   TokenBalanceType,
   AgentPropsType,
   ProducingStatsType,
 } from '../../types';
-import { formatCyber, formatPct, recall, breakGrant, setProxyLevel } from '../../utils/cyberway';
+import {
+  formatCyber,
+  formatPct,
+  recall,
+  breakGrant,
+  setProxyLevel,
+  makeSetProxyLevelAction,
+} from '../../utils/cyberway';
 import { Field, FieldTitle, FieldValue, ErrorLine } from '../../components/Form';
 import AccountTransactions from '../../components/AccountTransactions';
 import AccountKeys from '../../components/AccountKeys';
@@ -140,6 +147,7 @@ export default class Account extends PureComponent<Props> {
     changingProxyLevel: false,
     recallingForAccountId: null,
     breakingGrantToAccountId: null,
+    signLink: null,
   };
 
   componentDidMount() {
@@ -165,7 +173,11 @@ export default class Account extends PureComponent<Props> {
   }
 
   onSetLevelClick(currentLevel: number) {
+    const action = makeSetProxyLevelAction(this.props.accountId, 1);
+    const trx = encodeURIComponent(JSON.stringify({ actions: [action] }));
+
     this.setState({
+      signLink: `/sign?trx=${trx}`,
       isLoginOpen: true,
       changingProxyLevel: true,
     });
@@ -282,7 +294,7 @@ export default class Account extends PureComponent<Props> {
     );
   }
 
-  onLogin = async (auth: AuthType) => {
+  onLogin = async (auth: KeyAuthType) => {
     const { changeGrantState } = this.props;
     const { recallingForAccountId, breakingGrantToAccountId, changingProxyLevel } = this.state;
 
@@ -427,7 +439,7 @@ export default class Account extends PureComponent<Props> {
 
   render() {
     const { accountId, account, accountError, mode } = this.props;
-    const { isLoginOpen } = this.state;
+    const { isLoginOpen, signLink } = this.state;
 
     return (
       <Wrapper>
@@ -488,6 +500,7 @@ export default class Account extends PureComponent<Props> {
             lockAccountId
             onLogin={this.onLogin}
             onClose={this.onLoginClose}
+            signLink={signLink}
           />
         ) : null}
       </Wrapper>

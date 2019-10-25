@@ -31,6 +31,7 @@ const Table = styled.table`
     padding: 2px 3px;
   }
   & td:nth-child(3),
+  & td:nth-child(4),
   & td:last-child {
     text-align: right;
   }

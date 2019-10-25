@@ -177,9 +177,16 @@ export type ActionEvent = {
   event: string;
 };
 
-export type AuthLine = {
+export type AuthType = {
   actor: string;
   permission: string;
+};
+
+export type ActionType = {
+  account: string;
+  name: string;
+  authorization: AuthType[];
+  data: any;
 };
 
 export type TransactionAction = {
@@ -187,7 +194,7 @@ export type TransactionAction = {
   code: string;
   action: string;
   receiver: string;
-  auth: AuthLine[];
+  auth: AuthType[];
   accounts: string[];
   args: Object | null;
   data?: string;
@@ -202,7 +209,7 @@ export type FiltersType = {
   nonEmpty?: boolean;
 };
 
-export type AuthType = {
+export type KeyAuthType = {
   accountId: string;
   key: string;
 };

@@ -10,6 +10,7 @@ import Account from '../pages/Account';
 import Validators from '../pages/Validators';
 import Tokens from '../pages/Tokens';
 import Token from '../pages/Token';
+import Sign from '../pages/Sign';
 
 export type BlockRouteParams = {
   blockId: string;
@@ -38,6 +39,7 @@ export default function() {
       <Route path="/validators" exact component={Validators} />
       <Route path="/tokens" exact component={Tokens} />
       <Route path="/token/:symbol" exact component={wrapKeySetter(Token)} />
+      <Route path="/sign" component={wrapKeySetter(Sign)} />
       <Route
         path="/account/:accountId/:mode(actor|mention)?"
         exact
