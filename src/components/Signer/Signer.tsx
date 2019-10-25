@@ -30,7 +30,6 @@ const Info = styled(Panel)`
 
 const Tabs = styled.div`
   margin-bottom: 16px;
-  // border: 1px solid #aaa;
   background: #f8f8f8;
 `;
 
@@ -38,16 +37,12 @@ const TabHead = styled.label`
   display: inline-block;
   padding: 4px 8px;
   margin: 8px 8px 0 0;
-  // border: 1px solid #999;
-  // border-bottom-width: 0;
   background: #f0f0f0;
   border-radius: 4px 4px 0 0;
 `;
 
 const TabBody = styled.div`
   padding: 16px 0;
-  // border: 1px solid #999;
-  // border-top-width: 0;
 `;
 
 const Auth = styled.code`
@@ -103,10 +98,10 @@ function stringifyObj(obj: any, maxLength = 40) {
   } else if (typeof obj !== 'object' || Array.isArray(obj)) {
     return JSON.stringify(obj);
   }
-  let props: string = Object.keys(obj)
+  const props: string = Object.keys(obj)
     .map(k => `${k.match(/^[_a-zA-Z0-9]+$/) ? k : `"${k}"`}:${stringifyObj(obj[k])}`)
     .join(', ');
-  return `{${props}}`;
+  return `{${props}}`; // adds {} around props
 }
 
 export type Props = {
@@ -152,7 +147,7 @@ export default class Signer extends PureComponent<Props> {
       const good = account != null && name != null && data != null && Array.isArray(authorization);
 
       if (good) {
-        for (const {actor, permission} of authorization) {
+        for (const { actor, permission } of authorization) {
           if (actor != null && permission != null) {
             actionAuths.push(`${actor}@${permission}`);
             keys.push('');
@@ -239,7 +234,7 @@ export default class Signer extends PureComponent<Props> {
                   <h4>Actions summary:</h4>
                   <Actions>
                     {actions.map(([action, params, auth], i) => (
-                      <Action key={`action-${i}`}>
+                      <Action key={i}>
                         <code>
                           <ActionName>{action}</ActionName>({params})
                         </code>{' '}
@@ -261,7 +256,7 @@ export default class Signer extends PureComponent<Props> {
             <form onSubmit={this.onSubmit}>
               {keys.map((key, i) => (
                 <Input
-                  key={`key${i}`}
+                  key={i}
                   value={key}
                   disabled={cantSign}
                   onChange={e => this.onChangeKey(i, e.target.value)}
