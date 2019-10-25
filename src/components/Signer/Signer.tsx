@@ -137,8 +137,7 @@ export default class Signer extends PureComponent<Props> {
     }
     const { actions } = trx;
     const funcs: string[][] = [];
-    const auths: string[] = [];
-    const keys: string[] = [];
+    let auths: string[] = [];
     let valid = true;
 
     for (const action of actions) {
@@ -150,7 +149,6 @@ export default class Signer extends PureComponent<Props> {
         for (const { actor, permission } of authorization) {
           if (actor != null && permission != null) {
             actionAuths.push(`${actor}@${permission}`);
-            keys.push('');
           } else {
             valid = false;
           }
@@ -163,11 +161,12 @@ export default class Signer extends PureComponent<Props> {
       }
     }
 
+    auths = auths.filter((auth, idx, self) => self.indexOf(auth) === idx);
     this.setState({
       actions: funcs,
-      auths: auths.filter((auth, idx, self) => self.indexOf(auth) === idx),
+      auths,
       valid: valid && funcs.length > 0,
-      keys,
+      keys: auths.map(() => ''),
     });
   }
 
