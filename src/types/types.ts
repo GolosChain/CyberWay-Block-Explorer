@@ -52,7 +52,7 @@ export type GrantInfoType = {
   percent: number;
   breakFee: number;
   breakMinStaked: number;
-  agent: GrantAgentType;
+  agent: AgentPropsType;
   isCanceled?: boolean;
 };
 
@@ -67,14 +67,8 @@ export type TokenBalanceType = {
   account?: string; // account name type
 };
 
-export type AgentPropsType = {
-  fee: number | null;
-  proxyLevel: number | null;
-  minStake: number | null;
-};
 
-// intersects with AgentPropsType; TODO: unify/?combine
-export type GrantAgentType = {
+export type AgentPropsType = {
   account: string;
   fee: number;
   proxyLevel: number;

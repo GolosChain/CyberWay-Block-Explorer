@@ -294,9 +294,9 @@ export default class Account extends PureComponent<Props> {
             <tr>
               <td>Total:</td>
               <td>{formatCyber(votes)}</td>
-              <td>N/A</td>
-              <td style={show}>N/A</td>
-              <td style={show}>N/A</td>
+              <td></td>
+              <td style={show}></td>
+              <td style={show}></td>
               <td>
                 {votes ? <LinkButton to={this.recallTrx(toRecall)}>Recall all</LinkButton> : null}
                 <br />
@@ -338,7 +338,7 @@ export default class Account extends PureComponent<Props> {
     const votes = [0, 30, 1, 1, 1, '?'][lvl];
     const voting = lvl ? `up to ${votes} vote${votes > 1 ? 's' : ''}` : `can't vote for others`;
     const fee = agent.fee !== null ? agent.fee / 100 : 100;
-    const minStake = agent.minStake || 0;
+    const minStake = agent.minOwnStaked;
 
     return (
       <AgentInfo>
