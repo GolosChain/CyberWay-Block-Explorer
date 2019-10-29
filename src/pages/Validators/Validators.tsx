@@ -76,7 +76,7 @@ function MinOwnStaked({ value, systemMin, cyberFull, ...props }: MinStakedProps)
 
   return (
     <MinOwnStakedStyled {...props}>
-      Min own staked: <b style={{ color: color }}>{formatCyber(value || 0, cyberFull)}</b>
+      Min own staked: <b style={{ color }}>{formatCyber(value || 0, cyberFull)}</b>
     </MinOwnStakedStyled>
   );
 }
@@ -165,7 +165,7 @@ export default class Validators extends PureComponent<Props, State> {
     const missGrade = ['✅', '👌', '⚠️', '😱', '🆘', '💀'][missIdx];
     const pickDate = new Date(latestPick);
     const votesStyle = votes < SYSTEM_MIN_OWN_STAKED ? { color: 'darkred' } : {};
-    const fee = props && props.fee !== null && props.fee !== undefined ? props.fee / 100 : 100;
+    const fee = props ? props.fee / 100 : 100;
     const percent = (100 * votes) / totalVotes;
     pctSum.sum += percent;
 
@@ -185,7 +185,7 @@ export default class Validators extends PureComponent<Props, State> {
               Reward fee: <b>{fee.toFixed(0)}%</b>;
             </RewardFee>
             <MinOwnStaked
-              value={props.minStake}
+              value={props.minOwnStaked}
               title="Validator declares he staked at least this amount"
               cyberFull={showFullCyber}
             />
