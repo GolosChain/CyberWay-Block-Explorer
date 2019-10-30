@@ -1,15 +1,12 @@
 import React, { PureComponent, FormEvent } from 'react';
 import styled from 'styled-components';
 import ToastsManager from 'toasts-manager';
-import JSONPretty from 'react-json-pretty';
 
 import { ActionType } from '../../types';
-import { ErrorLine } from '../Form';
+import TrxPretty from '../TrxPretty';
+import { State as TrxState } from '../TrxPretty/TrxPretty';
 import Link from '../Link';
 import { pushTransactionUsingKeys } from '../../utils/cyberway';
-
-const CLR_AUTH = '#d56';
-const CLR_ACT_NAME = '#55f';
 
 const Wrapper = styled.div``;
 
@@ -26,42 +23,6 @@ const Warning = styled(Panel)`
 
 const Info = styled(Panel)`
   background: #e0ffbc;
-`;
-
-const Tabs = styled.div`
-  margin-bottom: 16px;
-  background: #f8f8f8;
-`;
-
-const TabHead = styled.label`
-  display: inline-block;
-  padding: 4px 8px;
-  margin: 8px 8px 0 0;
-  background: #f0f0f0;
-  border-radius: 4px 4px 0 0;
-`;
-
-const TabBody = styled.div`
-  padding: 16px 0;
-`;
-
-const Auth = styled.code`
-  font-size: 14px;
-  color: ${CLR_AUTH};
-`;
-
-// TODO: link from action name to docs
-const ActionName = styled.code`
-  color: ${CLR_ACT_NAME};
-`;
-
-const Actions = styled.ol`
-  margin-left: 24px;
-`;
-
-const Action = styled.li`
-  list-style: decimal;
-  margin: 8px 0;
 `;
 
 const Input = styled.input`
@@ -92,87 +53,25 @@ type UnsignedTransaction = {
   actions: ActionType[];
 };
 
-function stringifyObj(obj: any, maxLength = 40) {
-  if (typeof obj === 'string') {
-    return `"${obj.length < maxLength ? obj : obj.substr(0, maxLength) + '…'}"`;
-  } else if (typeof obj !== 'object' || Array.isArray(obj)) {
-    return JSON.stringify(obj);
-  }
-  const props: string = Object.keys(obj)
-    .map(k => `${k.match(/^[_a-zA-Z0-9]+$/) ? k : `"${k}"`}:${stringifyObj(obj[k])}`)
-    .join(', ');
-  return `{${props}}`; // adds {} around props
-}
-
-export type Props = {
+type Props = {
   trx: any | null;
 };
 
-export type State = {
-  actions: string[];
-  auths: string[];
+type State = {
   valid: boolean;
-  tab: 'full' | 'summ';
   keys: string[];
   signing: boolean;
   trxId: string;
-  trxDetails: any;
+  trxDetails?: any;
 };
 
-export default class Signer extends PureComponent<Props> {
+export default class Signer extends PureComponent<Props, State> {
   state = {
-    actions: [],
-    auths: [],
     valid: false,
-    tab: 'full',
-    keys: [],
     signing: false,
+    keys: [] as string[],
     trxId: '',
   };
-
-  componentDidMount() {
-    const trx: UnsignedTransaction = this.props.trx;
-    if (!trx) {
-      return;
-    }
-    const { actions } = trx;
-    const funcs: string[][] = [];
-    let auths: string[] = [];
-    let valid = true;
-
-    for (const action of actions) {
-      const { account, name, authorization, data } = action;
-      const actionAuths: string[] = [];
-      const good = account != null && name != null && data != null && Array.isArray(authorization);
-
-      if (good) {
-        for (const { actor, permission } of authorization) {
-          if (actor != null && permission != null) {
-            actionAuths.push(`${actor}@${permission}`);
-          } else {
-            valid = false;
-          }
-        }
-        funcs.push([`${account}::${name}`, stringifyObj(data), actionAuths.join(', ')]);
-        auths.push(...actionAuths);
-      } else {
-        funcs.push(['? wrong format', '']);
-        valid = false;
-      }
-    }
-
-    auths = auths.filter((auth, idx, self) => self.indexOf(auth) === idx);
-    this.setState({
-      actions: funcs,
-      auths,
-      valid: valid && funcs.length > 0,
-      keys: auths.map(() => ''),
-    });
-  }
-
-  onChangeTab(e: any) {
-    this.setState({ tab: e.target.value });
-  }
 
   onChangeKey(index: number, newKey: string) {
     const updated: string[] = [...this.state.keys];
@@ -201,9 +100,13 @@ export default class Signer extends PureComponent<Props> {
     }
   };
 
+  onTrxParse(data: TrxState) {
+    this.setState({ valid: data.valid, keys: data.auths.map(() => '') });
+  }
+
   render() {
     const { trx } = this.props;
-    const { actions, auths, valid, tab, keys, signing, trxId } = this.state;
+    const { valid, keys, signing, trxId } = this.state;
     const cantSign = !valid || signing || trxId !== '';
 
     return (
@@ -214,44 +117,7 @@ export default class Signer extends PureComponent<Props> {
               <span>{'⚠️'}</span> <b>Warning!</b> Please review transaction before signing.
             </Warning>
             <h3>Transaction:</h3>
-            <Tabs onChange={this.onChangeTab.bind(this)}>
-              <TabHead>
-                <input type="radio" name="trx-tab" value="full" checked={tab === 'full'} /> Full
-                transaction
-              </TabHead>
-              <TabHead>
-                <input type="radio" name="trx-tab" value="summ" checked={tab === 'summ'} /> Actions
-                summary
-              </TabHead>
-              {tab === 'full' ? (
-                <TabBody>
-                  <h4>Full transaction:</h4>
-                  <JSONPretty json={trx} />
-                </TabBody>
-              ) : (
-                <TabBody>
-                  <h4>Actions summary:</h4>
-                  <Actions>
-                    {actions.map(([action, params, auth], i) => (
-                      <Action key={i}>
-                        <code>
-                          <ActionName>{action}</ActionName>({params})
-                        </code>{' '}
-                        🔑&nbsp;<Auth>{auth}</Auth>
-                      </Action>
-                    ))}
-                  </Actions>
-                </TabBody>
-              )}
-            </Tabs>
-            {valid ? null : <ErrorLine>Error: invalid transaction structure</ErrorLine>}
-            <h3>Required auths:</h3>
-            {auths.map((auth, i) => (
-              <>
-                {i === 0 ? '' : ', '}
-                <Auth>{auth}</Auth>
-              </>
-            ))}
+            <TrxPretty trx={trx} showAuths onParse={(x: TrxState) => this.onTrxParse(x)} />
             <form onSubmit={this.onSubmit}>
               {keys.map((key, i) => (
                 <Input

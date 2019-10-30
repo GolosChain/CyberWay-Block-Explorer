@@ -34,6 +34,19 @@ export async function getAccountPublicKey(accountId: string, keyRole = 'active')
   return key || null;
 }
 
+export async function deserializeTrx({ trx }: { trx: string | Uint8Array }) {
+  const api = new Api({ rpc, signatureProvider: new JsSignatureProvider([]) });
+  const bytes = typeof trx === 'string' ? Uint8Array.from(Buffer.from(trx, 'hex')) : trx;
+  let result = api.deserializeTransaction(bytes);
+
+  try {
+    result = await api.deserializeTransactionWithActions(bytes);
+  } catch (e) {
+    console.error('failed to deserialize transaction actions', e);
+  }
+  return result;
+}
+
 export async function pushTransaction({ auth, trx }: { auth: KeyAuthType; trx: any }) {
   return await pushTransactionUsingKeys({ keys: [auth.key], trx });
 }
