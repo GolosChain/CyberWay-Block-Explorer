@@ -7,6 +7,7 @@ import Feed from '../pages/Feed';
 import Block from '../pages/Block';
 import Transaction from '../pages/Transaction';
 import Account from '../pages/Account';
+import Proposal from '../pages/Proposal';
 import Validators from '../pages/Validators';
 import Tokens from '../pages/Tokens';
 import Token from '../pages/Token';
@@ -23,6 +24,11 @@ export type TransactionRouteParams = {
 export type AccountRouteParams = {
   accountId: string;
   mode?: AccountTransactionsMode;
+};
+
+export type ProposalRouteParams = {
+  account: string;
+  proposal: string;
 };
 
 export type TokenRouteParams = {
@@ -44,6 +50,11 @@ export default function() {
         path="/account/:accountId/:mode(actor|mention)?"
         exact
         component={wrapKeySetter(Account)}
+      />
+      <Route
+        path="/account/:account/proposal/:proposal"
+        exact
+        component={wrapKeySetter(Proposal)}
       />
     </>
   );

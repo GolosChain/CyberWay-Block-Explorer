@@ -1,3 +1,5 @@
+import { AuthType } from '../types';
+
 // constructs actions
 const SYS_TOKEN = 'CYBER';
 
@@ -50,6 +52,74 @@ export function setProxyLevelAction(account: string, level: number) {
       account,
       token_code: SYS_TOKEN,
       level,
+    },
+  };
+}
+
+// cyber.msig
+
+function msigAction(action: string, actor: string) {
+  return actionBase('cyber.msig', action, actor);
+}
+
+export function propose(proposer: string, proposal: string, requested: AuthType[], trx: any) {
+  return {
+    ...msigAction('propose', proposer),
+    data: {
+      proposer,
+      proposal_name: proposal,
+      requested,
+      trx,
+    },
+  };
+}
+
+export function approveProposal(
+  proposer: string,
+  proposal: string,
+  level: AuthType,
+  hash?: string
+) {
+  return {
+    ...msigAction('approve', level.actor),
+    data: {
+      proposer,
+      proposal_name: proposal,
+      level,
+      proposal_hash: hash,
+    },
+  };
+}
+
+export function unapproveProposal(proposer: string, proposal: string, level: AuthType) {
+  return {
+    ...msigAction('unapprove', level.actor),
+    data: {
+      proposer,
+      proposal_name: proposal,
+      level,
+    },
+  };
+}
+
+export function cancelProposal(proposer: string, proposal: string, canceler = proposer) {
+  return {
+    ...msigAction('cancel', canceler),
+    data: {
+      proposer,
+      proposal_name: proposal,
+      canceler,
+    },
+  };
+}
+
+export function execProposal(proposer: string, proposal: string, executer = proposer) {
+  return {
+    ...msigAction('exec', executer),
+    data: {
+      proposer,
+      proposal_name: proposal,
+      executer,
     },
   };
 }
