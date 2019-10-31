@@ -21,8 +21,8 @@ export default class Sign extends PureComponent {
     let trx: object | null = null;
     try {
       trx = JSON.parse(param);
-    } catch (e) {
-      console.error(`Failed to parse transaction: ${e.message}`);
+    } catch (err) {
+      console.error(`Failed to parse transaction: ${err.message}`);
     }
 
     return (

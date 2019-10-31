@@ -143,11 +143,11 @@ export default class TrxPretty extends PureComponent<Props, State> {
 
     valid = valid && funcs.length > 0;
     auths = auths.filter((auth, idx, self) => self.indexOf(auth) === idx);
-    const update = { actions: funcs, auths, valid };
-    this.setState(update);
-    if (valid && onParse) {
-      onParse({ ...this.state, ...update }); // `this.state` is still didn't update at this point
-    }
+    this.setState({ actions: funcs, auths, valid }, () => {
+      if (valid && onParse) {
+        onParse(this.state);
+      }
+    });
   }
 
   onChangeTab(e: any) {
@@ -155,7 +155,7 @@ export default class TrxPretty extends PureComponent<Props, State> {
   }
 
   renderAuths() {
-    const auths = this.state.auths;
+    const { auths } = this.state;
     return (
       <>
         <h4>Required auths:</h4>

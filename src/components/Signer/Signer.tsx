@@ -94,8 +94,8 @@ export default class Signer extends PureComponent<Props, State> {
         trxDetails: result,
         keys: keys.map(() => ''),
       });
-    } catch (e) {
-      ToastsManager.error(`Failed to push: ${e.message}`);
+    } catch (err) {
+      ToastsManager.error(`Failed to push: ${err.message}`);
       this.setState({ signing: false });
     }
   };

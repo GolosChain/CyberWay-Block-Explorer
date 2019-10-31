@@ -41,8 +41,8 @@ export async function deserializeTrx({ trx }: { trx: string | Uint8Array }) {
 
   try {
     result = await api.deserializeTransactionWithActions(bytes);
-  } catch (e) {
-    console.error('failed to deserialize transaction actions', e);
+  } catch (err) {
+    console.error('failed to deserialize transaction actions', err);
   }
   return result;
 }

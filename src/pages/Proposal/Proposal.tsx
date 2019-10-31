@@ -112,12 +112,8 @@ export default class Proposal extends PureComponent<Props, State> {
     try {
       const empty = { packedTrx: '', trx: null, rev: -1 };
       this.setState({ loadingProposal: proposal, ...empty });
+
       const { items } = await loadProposal({ proposer: account, proposal });
-
-      if (this.props.account !== account || this.props.proposal !== proposal) {
-        return;
-      }
-
       const ok = items && items.length === 1;
       const item = ok ? items[0] : empty;
 
@@ -125,8 +121,8 @@ export default class Proposal extends PureComponent<Props, State> {
       if (ok) {
         try {
           trx = await deserializeTrx({ trx: item.packedTransaction });
-        } catch (e) {
-          console.error('%%%% failed to deserialize trx', e.message, e);
+        } catch (err) {
+          console.error('%%%% failed to deserialize trx', err.message, err); // debug; TODO: remove/replace
         }
       }
 
@@ -140,10 +136,10 @@ export default class Proposal extends PureComponent<Props, State> {
       if (!ok) {
         this.appendError('proposal not found');
       }
-    } catch (e) {
-      const err = 'Failed to load proposal';
-      this.appendError(err);
-      ToastsManager.error(`${err}: ${e.message}`);
+    } catch (err) {
+      const error = 'Failed to load proposal';
+      this.appendError(error);
+      ToastsManager.error(`${error}: ${err.message}`);
     }
   }
 
@@ -154,14 +150,10 @@ export default class Proposal extends PureComponent<Props, State> {
       this.setState({ loadingApprovals: proposal, ...empty });
 
       const { items } = await loadApprovals({ proposer: account, proposal });
-
-      if (this.props.account !== account || this.props.proposal !== proposal) {
-        return;
-      }
-
       const ok = items && items.length === 1;
       const item = ok ? items[0] : empty;
       const timeFixer = (x: any) => ({ ...x, time: new Date(x.time || EMPTY_DATE) });
+
       this.setState({
         loadingApprovals: null,
         requested: item.requested.map(timeFixer),
@@ -170,10 +162,10 @@ export default class Proposal extends PureComponent<Props, State> {
       if (!ok) {
         this.appendError('approvals not found');
       }
-    } catch (e) {
-      const err = 'Failed to load approvals';
-      this.appendError(err);
-      ToastsManager.error(`${err}: ${e.message}`);
+    } catch (err) {
+      const error = 'Failed to load approvals';
+      this.appendError(error);
+      ToastsManager.error(`${error}: ${err.message}`);
     }
   }
 
@@ -221,7 +213,7 @@ export default class Proposal extends PureComponent<Props, State> {
             <Approval key={x.level.actor} className={got ? 'got' : haveTime ? 'lost' : ''}>
               {x.level.actor} @ {x.level.permission}
               {haveTime
-                ? ` / ${got ? '' : 'un'}approved: ${new Date(time).toLocaleString()}`
+                ? ` / ${got ? 'approved' : 'unapproved'}: ${new Date(time).toLocaleString()}`
                 : null}{' '}
               <LinkButton to={this.approveTrx(x, got)}>{got ? 'Unapprove' : 'Approve'}</LinkButton>
             </Approval>
