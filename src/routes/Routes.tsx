@@ -22,7 +22,7 @@ export type TransactionRouteParams = {
 };
 
 export type AccountRouteParams = {
-  accountId: string;
+  name: string; // now it accepts account names + usernames/domains
   mode?: AccountTransactionsMode;
 };
 
@@ -46,11 +46,7 @@ export default function() {
       <Route path="/tokens" exact component={Tokens} />
       <Route path="/token/:symbol" exact component={wrapKeySetter(Token)} />
       <Route path="/sign" component={wrapKeySetter(Sign)} />
-      <Route
-        path="/account/:accountId/:mode(actor|mention)?"
-        exact
-        component={wrapKeySetter(Account)}
-      />
+      <Route path="/account/:name/:mode(actor|mention)?" exact component={wrapKeySetter(Account)} />
       <Route
         path="/account/:account/proposal/:proposal"
         exact

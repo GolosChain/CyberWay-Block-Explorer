@@ -12,13 +12,13 @@ import {
 
 export type State = {
   account: ExtendedAccountType | null;
-  loadingAccountId: string | null;
+  loadingName: string | null;
   error: ApiError | null;
 };
 
 const initialState: State = {
   account: null,
-  loadingAccountId: null,
+  loadingName: null,
   error: null,
 };
 
@@ -30,27 +30,27 @@ export default function(
     case FETCH_ACCOUNT:
       return {
         ...state,
-        loadingAccountId: meta.accountId,
+        loadingName: meta.name,
       };
     case FETCH_ACCOUNT_SUCCESS:
-      if (meta.accountId !== state.loadingAccountId) {
+      if (meta.name !== state.loadingName) {
         return state;
       }
 
       return {
         account: payload,
-        loadingAccountId: null,
+        loadingName: null,
         error: null,
       };
 
     case FETCH_ACCOUNT_ERROR:
-      if (meta.accountId !== state.loadingAccountId) {
+      if (meta.name !== state.loadingName) {
         return state;
       }
 
       return {
         account: payload,
-        loadingAccountId: null,
+        loadingName: null,
         error: error || null,
       };
 
