@@ -499,8 +499,8 @@ export default class Account extends PureComponent<Props> {
             </tbody>
           </QualityTable>
           Latest produced block:{' '}
-          {stats.dayBlocks && stats.dayBlocks.latest
-            ? new Date(stats.dayBlocks.latest).toLocaleString()
+          {stats.weekBlocks && stats.weekBlocks.latest
+            ? new Date(stats.weekBlocks.latest).toLocaleString()
             : 'more than week ago'}
         </>
       );
