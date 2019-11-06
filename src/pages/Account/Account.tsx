@@ -297,7 +297,7 @@ export default class Account extends PureComponent<Props> {
             <tr>
               <td>Total:</td>
               <td>{formatCyber(votes)}</td>
-              <td></td>
+              <td>{percents > 0 ? formatPct(percents) : '–'}</td>
               <td style={show}></td>
               <td style={show}></td>
               <td>
