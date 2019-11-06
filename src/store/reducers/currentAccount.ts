@@ -11,12 +11,14 @@ import {
 } from '../constants';
 
 export type State = {
+  name: string | null;
   account: ExtendedAccountType | null;
   loadingName: string | null;
   error: ApiError | null;
 };
 
 const initialState: State = {
+  name: null,
   account: null,
   loadingName: null,
   error: null,
@@ -30,6 +32,7 @@ export default function(
     case FETCH_ACCOUNT:
       return {
         ...state,
+        name: meta.name,
         loadingName: meta.name,
       };
     case FETCH_ACCOUNT_SUCCESS:
@@ -38,6 +41,7 @@ export default function(
       }
 
       return {
+        ...state,
         account: payload,
         loadingName: null,
         error: null,
@@ -49,6 +53,7 @@ export default function(
       }
 
       return {
+        ...state,
         account: payload,
         loadingName: null,
         error: error || null,
