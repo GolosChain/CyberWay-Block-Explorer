@@ -149,7 +149,8 @@ const QualityTable = styled.table`
 `;
 
 export type Props = {
-  accountId: string;
+  name: string;
+  accountId: string | null;
   mode: AccountTransactionsMode | undefined;
   account: ExtendedAccountType | null;
   accountError: ApiError | null;
@@ -168,29 +169,30 @@ export default class Account extends PureComponent<Props> {
   };
 
   componentDidMount() {
-    const { accountId, loadAccount } = this.props;
+    const { name, accountError, loadAccount } = this.props;
 
-    loadAccount(accountId).catch((err: Error) => {
-      ToastsManager.error(`Account loading failed: ${err.message}`);
+    if (!accountError)
+      loadAccount(name).catch((err: Error) => {
+        ToastsManager.error(`Account loading failed: ${err.message}`);
+      });
+  }
+
+  onRecallClick(account: string) {
+    this.setState({
+      isLoginOpen: true,
+      recallingForAccountId: account,
     });
   }
 
-  onRecallClick(accountId: string) {
+  onBreakClick(account: string) {
     this.setState({
       isLoginOpen: true,
-      recallingForAccountId: accountId,
-    });
-  }
-
-  onBreakClick(accountId: string) {
-    this.setState({
-      isLoginOpen: true,
-      breakingGrantToAccountId: accountId,
+      breakingGrantToAccountId: account,
     });
   }
 
   onSetLevelClick(currentLevel: number) {
-    const action = setProxyLevelAction(this.props.accountId, 1);
+    const action = setProxyLevelAction(this.props.accountId || '', 1);
     const trx = encodeURIComponent(JSON.stringify({ actions: [action] }));
 
     this.setState({
@@ -201,10 +203,10 @@ export default class Account extends PureComponent<Props> {
   }
 
   recallTrx(recalls: string[], breaks?: string[]) {
-    const { accountId } = this.props;
+    const account = this.props.accountId || '';
     const actions: any[] = [
-      ...recalls.map(recipient => recallVoteAction(accountId, recipient)),
-      ...(breaks || []).map(recipient => setGrantTermsAction(accountId, recipient)),
+      ...recalls.map(recipient => recallVoteAction(account, recipient)),
+      ...(breaks || []).map(recipient => setGrantTermsAction(account, recipient)),
     ];
     return `/sign?trx=${encodeURIComponent(JSON.stringify({ actions }))}`;
   }
@@ -497,8 +499,8 @@ export default class Account extends PureComponent<Props> {
             </tbody>
           </QualityTable>
           Latest produced block:{' '}
-          {stats.dayBlocks && stats.dayBlocks.latest
-            ? new Date(stats.dayBlocks.latest).toLocaleString()
+          {stats.weekBlocks && stats.weekBlocks.latest
+            ? new Date(stats.weekBlocks.latest).toLocaleString()
             : 'more than week ago'}
         </>
       );
@@ -518,7 +520,7 @@ export default class Account extends PureComponent<Props> {
           <Field line>
             <FieldTitle>Account id:</FieldTitle> <FieldValue>{accountId}</FieldValue>
           </Field>
-          {account ? (
+          {account && accountId ? (
             <>
               {account.golosId ? (
                 <Field line>
@@ -563,8 +565,8 @@ export default class Account extends PureComponent<Props> {
             'Loading ...'
           )}
         </Info>
-        <AccountTransactions accountId={accountId} mode={mode || 'all'} />
-        {isLoginOpen ? (
+        {accountId && <AccountTransactions accountId={accountId} mode={mode || 'all'} />}
+        {isLoginOpen && accountId ? (
           <LoginDialog
             account={account || { id: accountId, keys: null }}
             lockAccountId
