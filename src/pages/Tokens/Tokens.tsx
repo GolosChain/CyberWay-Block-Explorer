@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react';
+import Helmet from 'react-helmet';
 import styled from 'styled-components';
 import ToastsManager from 'toasts-manager';
 import { LoadTokensParams } from './Tokens.connect';
@@ -47,6 +48,7 @@ export default class Tokens extends PureComponent<Props, State> {
 
     return (
       <Wrapper>
+        <Helmet title="Tokens" />
         <Title>Tokens</Title>
         {tokens
           ? (tokens as any).map((token: TokenStatType) => (

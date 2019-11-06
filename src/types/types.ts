@@ -67,7 +67,6 @@ export type TokenBalanceType = {
   account?: string; // account name type
 };
 
-
 export type AgentPropsType = {
   account: string;
   fee: number;

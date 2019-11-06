@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react';
+import Helmet from 'react-helmet';
 import styled from 'styled-components';
 
 import { FiltersType, TransactionType } from '../../types';
@@ -56,6 +57,7 @@ export default class Transaction extends PureComponent<Props> {
             },
           ]}
         />
+        <Helmet title={`Trx: ${transactionId}`} />
         <Title>Transaction</Title>
         <Field>
           <FieldTitle>Transaction id:</FieldTitle>

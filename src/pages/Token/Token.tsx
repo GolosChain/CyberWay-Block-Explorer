@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react';
+import Helmet from 'react-helmet';
 import styled from 'styled-components';
 import ToastsManager from 'toasts-manager';
 import { LoadTokenParams } from './Token.connect';
@@ -53,6 +54,7 @@ export default class Token extends PureComponent<Props, State> {
 
     return (
       <Wrapper>
+        <Helmet title={`Token: ${symbol}`} />
         {token ? (
           <>
             <Title>{symbol} token details</Title>

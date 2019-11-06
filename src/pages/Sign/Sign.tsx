@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react';
+import Helmet from 'react-helmet';
 import styled from 'styled-components';
 import { ErrorLine } from '../../components/Form';
 import Signer from '../../components/Signer';
@@ -27,6 +28,7 @@ export default class Sign extends PureComponent {
 
     return (
       <Wrapper>
+        <Helmet title="Sign transaction" />
         <Title>Sign transaction</Title>
         {param && !trx ? <ErrorLine>Can't parse trx</ErrorLine> : null}
         <Signer trx={trx} />

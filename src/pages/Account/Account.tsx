@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react';
+import Helmet from 'react-helmet';
 import styled from 'styled-components';
 import is from 'styled-is';
 import ToastsManager from 'toasts-manager';
@@ -510,11 +511,12 @@ export default class Account extends PureComponent<Props> {
   }
 
   render() {
-    const { accountId, account, accountError, mode } = this.props;
+    const { name, accountId, account, accountError, mode } = this.props;
     const { isLoginOpen, signLink } = this.state;
 
     return (
       <Wrapper>
+        <Helmet title={`Account: ${name}`} />
         <Title>Account</Title>
         <Info>
           <Field line>

@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react';
+import Helmet from 'react-helmet';
 import styled from 'styled-components';
 
 import { BlockSummary } from '../../types';
@@ -65,6 +66,7 @@ export default class Block extends PureComponent<Props> {
             },
           ]}
         />
+        <Helmet title={`Block: ${blockId}`} />
         <Title>Block</Title>
         <Field>
           <FieldTitle>Block id:</FieldTitle>
