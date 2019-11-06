@@ -1,4 +1,5 @@
 import React, { PureComponent, ChangeEvent } from 'react';
+import Helmet from 'react-helmet';
 import styled from 'styled-components';
 import is from 'styled-is';
 import ToastsManager from 'toasts-manager';
@@ -211,6 +212,7 @@ export default class Validators extends PureComponent<Props, State> {
 
     return (
       <Wrapper>
+        <Helmet title="Validators" />
         <EmissionInfo supply={supply} staked={totalStaked} voted={totalVotes} />
         <Title>Validators:</Title>
         {validators ? (

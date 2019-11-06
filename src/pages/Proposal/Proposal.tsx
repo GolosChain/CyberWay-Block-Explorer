@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react';
+import Helmet from 'react-helmet';
 import styled from 'styled-components';
 import ToastsManager from 'toasts-manager';
 
@@ -239,6 +240,7 @@ export default class Proposal extends PureComponent<Props, State> {
 
     return (
       <Wrapper>
+        <Helmet title={`Proposal "${proposal}" by ${account}`} />
         <Title>Proposer: {account}</Title>
         <h2>Proposal: {proposal}</h2>
         {error ? (

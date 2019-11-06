@@ -30,13 +30,11 @@ export type changeGrantStateArg = {
 export default connect(
   ({ currentAccount }: State, props: Props) => {
     const { name, mode } = props.match.params;
-    const { account, error } = currentAccount;
+    const { name: curName, account, error } = currentAccount;
     const parsed = parseName(name);
     const parseError = validateParsedName(parsed);
     const accountId =
-      currentAccount && currentAccount.account
-        ? currentAccount.account.id
-        : !parseError && !parsed.username && parsed.account; // exclude user@@acc
+      curName === name && account ? account.id : !parseError && !parsed.username && parsed.account; // exclude user@@acc
 
     return {
       name,
