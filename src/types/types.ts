@@ -101,9 +101,6 @@ export type ProducingStatsType = {
 export type AccountType = {
   id: string;
   golosId?: string | null;
-  keys?: {
-    [keyName: string]: KeyInfo;
-  } | null;
 };
 
 export type ExtendedAccountType = AccountType & {
@@ -112,6 +109,13 @@ export type ExtendedAccountType = AccountType & {
   agentProps: AgentPropsType | null;
   registrationTime: string | null;
   producingStats: ProducingStatsType;
+  permissions: { [name: string]: BasePermissionType };
+};
+
+export type BasePermissionType = {
+  auth: AuthorityType;
+  parent: string; // name type
+  lastUpdated: Date;
 };
 
 export type AccountLine = {
@@ -144,16 +148,31 @@ export type TokenStatType = {
   issuer: string; // account name type
 };
 
-export type KeyInfo = {
+export type AuthorityType = {
   threshold: number;
-  keys: KeyLine[];
-  accounts: any[]; // -- Структура accounts неизвестна
-  waits: any[]; // -- Структура waits неизвестна
+  keys: AuthKeyType[];
+  accounts: AuthAccountType[];
+  waits: AuthWaitType[];
 };
 
-export type KeyLine = {
-  key: string;
+export type PermissionType = {
+  name: string; // name type
+  auth: AuthorityType;
+  children?: PermissionType[];
+};
+
+type WeightedAuth = {
   weight: number;
+};
+
+export type AuthKeyType = WeightedAuth & {
+  key: string;
+};
+export type AuthAccountType = WeightedAuth & {
+  permission: AuthType;
+};
+export type AuthWaitType = WeightedAuth & {
+  waitSec: number;
 };
 
 export type TransactionStatus = 'executed' | 'expired' | 'soft_fail';
@@ -215,6 +234,7 @@ export type FiltersType = {
   nonEmpty?: boolean;
 };
 
+// to pass keys to trx signer
 export type KeyAuthType = {
   accountId: string;
   key: string;
