@@ -198,10 +198,9 @@ export default class Chart extends PureComponent<Props, State> {
 
   formatLabels(length: number, { to, interval }: { to: string; interval: number }) {
     const labels = [];
-
     const startTs = new Date(to).getTime();
 
-    for (let currentTs = startTs; labels.length < length; currentTs - interval * 1000) {
+    for (let currentTs = startTs; labels.length < length; currentTs -= interval * 1000) {
       const date = new Date(currentTs);
       labels.push(date.toLocaleString());
     }

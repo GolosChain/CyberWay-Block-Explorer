@@ -13,6 +13,7 @@ import {
   TokenBalanceType,
   AgentPropsType,
   ProducingStatsType,
+  PermissionType,
 } from '../../types';
 import { formatCyber, formatPct, recall, breakGrant, setProxyLevel } from '../../utils/cyberway';
 import {
@@ -22,7 +23,7 @@ import {
 } from '../../utils/cyberwayActions';
 import { Field, FieldTitle, FieldValue, ErrorLine } from '../../components/Form';
 import AccountTransactions from '../../components/AccountTransactions';
-import AccountKeys from '../../components/AccountKeys';
+import AccountPermission from '../../components/AccountPermission';
 import AccountName from '../../components/AccountName';
 import LoginDialog from '../../components/LoginDialog';
 import Link from '../../components/Link';
@@ -510,9 +511,45 @@ export default class Account extends PureComponent<Props> {
     }
   }
 
+  findPermissionChildren(perms: any[], parent?: string, found: string[] = []) {
+    const result: PermissionType[] = [];
+    let more = true;
+
+    while (more) {
+      const p = perms.find(([name, perm]) => perm.parent === parent && !found.includes(name));
+      if (p) {
+        const [name, perm] = p;
+        found.push(name);
+        result.push({
+          name,
+          auth: perm.auth,
+          children: this.findPermissionChildren(perms, name, found),
+        });
+      } else {
+        more = false;
+      }
+    }
+    return result;
+  }
+
+  nestedPermissions() {
+    const { account } = this.props;
+    if (!account) {
+      return null;
+    }
+    const { permissions } = account;
+    const perms = Object.entries(permissions);
+    const roots = this.findPermissionChildren(perms);
+    if (roots && roots.length === 1) {
+      return roots[0];
+    }
+    return null;
+  }
+
   render() {
     const { name, accountId, account, accountError, mode } = this.props;
     const { isLoginOpen, signLink } = this.state;
+    const permissions = this.nestedPermissions();
 
     return (
       <Wrapper>
@@ -529,10 +566,10 @@ export default class Account extends PureComponent<Props> {
                   <FieldTitle>Golos id:</FieldTitle> <FieldValue>{account.golosId}</FieldValue>
                 </Field>
               ) : null}
-              {account.keys ? (
+              {permissions ? (
                 <>
-                  <Subtitle>Keys:</Subtitle>
-                  <AccountKeys keys={account.keys} />
+                  <Subtitle>Permissions:</Subtitle>
+                  <AccountPermission perm={permissions} />
                 </>
               ) : null}
 
@@ -570,7 +607,7 @@ export default class Account extends PureComponent<Props> {
         {accountId && <AccountTransactions accountId={accountId} mode={mode || 'all'} />}
         {isLoginOpen && accountId ? (
           <LoginDialog
-            account={account || { id: accountId, keys: null }}
+            account={account || { id: accountId }}
             lockAccountId
             onLogin={this.onLogin}
             onClose={this.onLoginClose}
