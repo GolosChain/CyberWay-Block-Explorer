@@ -69,8 +69,8 @@ type State = {
 };
 
 export default class Filters extends PureComponent<Props, State> {
-  static getStateFromHash(values?: FiltersType) {
-    const { code, action, actor, event, nonEmpty } = values || extractFilterValuesFromHash();
+  static getStateFromFilters(values: FiltersType) {
+    const { code, action, actor, event, nonEmpty } = values;
 
     return {
       contractText: code || '',
@@ -82,7 +82,7 @@ export default class Filters extends PureComponent<Props, State> {
     };
   }
 
-  state = Filters.getStateFromHash();
+  state = Filters.getStateFromFilters(extractFilterValuesFromHash());
 
   componentDidMount() {
     window.addEventListener('hashchange', this.onHashChange);
@@ -97,7 +97,7 @@ export default class Filters extends PureComponent<Props, State> {
 
     const values = extractFilterValuesFromHash();
 
-    const updatedState = Filters.getStateFromHash(values);
+    const updatedState = Filters.getStateFromFilters(values);
 
     this.setState({
       ...updatedState,
