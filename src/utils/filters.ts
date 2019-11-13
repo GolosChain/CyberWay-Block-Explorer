@@ -1,8 +1,25 @@
 import { FiltersType } from '../types';
 
 export function extractFilterValuesFromHash(): FiltersType {
-  const hash = decodeURI(window.location.hash.substr(1).replace(/\++/g, '%20'));
+  try {
+    const hash = decodeURI(window.location.hash.substr(1).replace(/\++/g, '%20'));
 
+    if (!hash.trim()) {
+      return {};
+    }
+
+    if (hash.includes('=')) {
+      return parseFilters(hash);
+    }
+
+    return parseFiltersOldFormat(hash);
+  } catch (err) {
+    console.error('Hash parsing failed:', err);
+    return {};
+  }
+}
+
+function parseFilters(hash: string): FiltersType {
   const pairs = hash.split('&');
 
   const values: FiltersType = {
@@ -43,6 +60,40 @@ export function extractFilterValuesFromHash(): FiltersType {
   }
 
   return values;
+}
+
+export function parseFiltersOldFormat(hash: string): FiltersType {
+  const filters: FiltersType = {};
+
+  const matches = hash.match(/\b(?:action|code|actor|event)\s*:\s*[\w\d\\.]+\b/g);
+
+  if (matches) {
+    for (const subString of matches) {
+      const pair = subString.match(/^(\w+)\s*:\s*([\w\d.]+)$/);
+
+      if (!pair) {
+        continue;
+      }
+
+      const [, type, value] = pair;
+
+      if (type === 'action') {
+        filters.action = value;
+      } else if (type === 'code') {
+        filters.code = value;
+      } else if (type === 'actor') {
+        filters.actor = value;
+      } else if (type === 'event') {
+        filters.event = value;
+      }
+    }
+  }
+
+  if (/\bnon?-?Empty\b/i.test(hash)) {
+    filters.nonEmpty = true;
+  }
+
+  return filters;
 }
 
 export function setHash(values: FiltersType): void {

@@ -54,8 +54,11 @@ const HiddenSubmitButton = styled.button`
   display: none;
 `;
 
+const ClearButton = styled.button``;
+
 type Props = {
   isForceShow: boolean;
+  isForceHide: boolean;
   applyFilter: Function;
 };
 
@@ -78,11 +81,31 @@ export default class Filters extends PureComponent<Props, State> {
       actorText: actor || '',
       eventText: event || '',
       nonEmpty: Boolean(nonEmpty),
-      isShow: Boolean(code || action || actor || event || nonEmpty),
     };
   }
 
-  state = Filters.getStateFromFilters(extractFilterValuesFromHash());
+  static hasChanges(values: any) {
+    for (const key of Object.keys(values)) {
+      const value = values[key];
+
+      if (value !== '' && value !== false) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  constructor(props: Props) {
+    super(props);
+
+    const stateValues = Filters.getStateFromFilters(extractFilterValuesFromHash());
+
+    this.state = {
+      ...stateValues,
+      isShow: Filters.hasChanges(stateValues),
+    };
+  }
 
   componentDidMount() {
     window.addEventListener('hashchange', this.onHashChange);
@@ -148,7 +171,6 @@ export default class Filters extends PureComponent<Props, State> {
     }
 
     const { applyFilter } = this.props;
-
     const { contractText, actionText, actorText, eventText, nonEmpty } = this.state;
 
     const values: FiltersType = {
@@ -166,12 +188,30 @@ export default class Filters extends PureComponent<Props, State> {
     }, 0);
   };
 
+  onClearClick = () => {
+    const { applyFilter } = this.props;
+
+    this.setState(
+      {
+        ...Filters.getStateFromFilters({}),
+        isShow: true,
+      },
+      () => {
+        applyFilter({});
+
+        setTimeout(() => {
+          setHash({});
+        }, 0);
+      }
+    );
+  };
+
   render() {
-    const { isForceShow } = this.props;
+    const { isForceShow, isForceHide } = this.props;
     const { contractText, actionText, actorText, eventText, nonEmpty, isShow } = this.state;
 
     return (
-      <Wrapper isShow={isForceShow || isShow} onSubmit={this.onFiltersSubmit}>
+      <Wrapper isShow={(isForceShow || isShow) && !isForceHide} onSubmit={this.onFiltersSubmit}>
         <Line>
           <Field>
             <FieldTitle>Contract:</FieldTitle>
@@ -200,6 +240,9 @@ export default class Filters extends PureComponent<Props, State> {
             />{' '}
             <FieldTitle>Non Empty</FieldTitle>
           </Field>
+          <ClearButton type="button" onClick={this.onClearClick}>
+            Clear
+          </ClearButton>
         </Line>
         {/* Button must be in form for submitting by Enter key */}
         <HiddenSubmitButton />

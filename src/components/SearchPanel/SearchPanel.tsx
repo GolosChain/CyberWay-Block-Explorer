@@ -35,7 +35,14 @@ const SearchInput = styled.input`
 `;
 
 const Button = styled.button`
+  height: 24px;
   margin-left: 6px;
+`;
+
+const FiltersButton = styled(Button)`
+  display: flex;
+  line-height: 16px;
+  font-size: 21px;
 `;
 
 type Props = {
@@ -45,7 +52,7 @@ type Props = {
 type State = {
   searchText: string;
   isSuggestClosed: boolean;
-  isShowFilters: boolean;
+  isShowFilters: boolean | undefined;
   items: Suggest[] | null;
 };
 
@@ -56,7 +63,7 @@ export default class SearchPanel extends PureComponent<Props, State> {
   state = {
     searchText: '',
     isSuggestClosed: true,
-    isShowFilters: false,
+    isShowFilters: undefined,
     items: null,
   };
 
@@ -132,8 +139,10 @@ export default class SearchPanel extends PureComponent<Props, State> {
   };
 
   onShowFiltersClick = () => {
+    const { isShowFilters } = this.state;
+
     this.setState({
-      isShowFilters: true,
+      isShowFilters: !isShowFilters,
     });
   };
 
@@ -161,11 +170,14 @@ export default class SearchPanel extends PureComponent<Props, State> {
             ) : null}
           </InputWrapper>
           <Button>Find</Button>
-          <Button title="Show filters" type="button" onClick={this.onShowFiltersClick}>
-            ↩
-          </Button>
+          <FiltersButton title="Toggle filters" type="button" onClick={this.onShowFiltersClick}>
+            ⚙
+          </FiltersButton>
         </SearchForm>
-        <Filters isForceShow={isShowFilters} />
+        <Filters
+          isForceShow={typeof isShowFilters === 'boolean' ? Boolean(isShowFilters) : false}
+          isForceHide={typeof isShowFilters === 'boolean' ? !isShowFilters : false}
+        />
       </div>
     );
   }
