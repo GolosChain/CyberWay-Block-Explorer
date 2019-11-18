@@ -34,6 +34,11 @@ export async function getAccountPublicKey(accountId: string, keyRole = 'active')
   return key || null;
 }
 
+export async function getAbi({ account }: { account: string }) {
+  const api = new Api({ rpc, signatureProvider: new JsSignatureProvider([]) });
+  return await api.getAbi(account);
+}
+
 export async function deserializeTrx({ trx }: { trx: string | Uint8Array }) {
   const api = new Api({ rpc, signatureProvider: new JsSignatureProvider([]) });
   const bytes = typeof trx === 'string' ? Uint8Array.from(Buffer.from(trx, 'hex')) : trx;
