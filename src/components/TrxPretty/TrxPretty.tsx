@@ -64,7 +64,7 @@ type UnsignedTransaction = {
 function stringifyObj(obj: any, maxLength = 40) {
   if (typeof obj === 'string') {
     return `"${obj.length < maxLength ? obj : obj.substr(0, maxLength) + '…'}"`;
-  } else if (typeof obj !== 'object' || Array.isArray(obj)) {
+  } else if (!obj || typeof obj !== 'object' || Array.isArray(obj)) {
     return JSON.stringify(obj);
   }
   const props: string = Object.keys(obj)

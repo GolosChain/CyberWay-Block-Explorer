@@ -12,6 +12,7 @@ import Validators from '../pages/Validators';
 import Tokens from '../pages/Tokens';
 import Token from '../pages/Token';
 import Sign from '../pages/Sign';
+import Contract from '../pages/Contract';
 
 export type BlockRouteParams = {
   blockId: string;
@@ -35,6 +36,10 @@ export type TokenRouteParams = {
   symbol: string;
 };
 
+export type ContractRouteParams = {
+  account: string;
+};
+
 export default function() {
   return (
     <>
@@ -47,6 +52,7 @@ export default function() {
       <Route path="/token/:symbol" exact component={wrapKeySetter(Token)} />
       <Route path="/sign" component={wrapKeySetter(Sign)} />
       <Route path="/account/:name/:mode(actor|mention)?" exact component={wrapKeySetter(Account)} />
+      <Route path="/account/:account/contract" exact component={wrapKeySetter(Contract)} />
       <Route
         path="/account/:account/proposal/:proposal"
         exact
