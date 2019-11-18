@@ -2,6 +2,7 @@ import React, { PureComponent } from 'react';
 import styled from 'styled-components';
 
 const Body = styled.div`
+  overflow: hidden;
   margin: 0 4px 4px;
 `;
 
@@ -23,7 +24,9 @@ export default class Accordion extends PureComponent<Props> {
   ref: HTMLElement | null = null;
 
   getHeight() {
-    return this.ref ? (this.ref.children[0] as HTMLElement).offsetHeight : 'auto';
+    return this.ref
+      ? (this.ref.children[0] as HTMLElement).offsetHeight
+      : 'auto';
   }
 
   transitionCss(prop: string, fn = 'ease') {
@@ -33,7 +36,6 @@ export default class Accordion extends PureComponent<Props> {
   render() {
     const { children, active } = this.props;
     const style = {
-      overflow: 'hidden',
       transition: this.transitionCss('height', 'ease-in-out'),
       height: active ? this.getHeight() : 0, // TODO: set this to 'auto' after expanding (and to px before collapsing) to prevent resizing problems
     };
