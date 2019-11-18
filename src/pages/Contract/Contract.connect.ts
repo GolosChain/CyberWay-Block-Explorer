@@ -11,11 +11,8 @@ type Props = {
 
 export type LoadTokenParams = {};
 
-export default connect(
-  (state: State, props: Props) => {
-    const { account } = props.match.params;
+export default connect((state: State, props: Props) => {
+  const { account } = props.match.params;
 
-    return { account };
-  },
-  {}
-)(Contract);
+  return { account };
+})(Contract);

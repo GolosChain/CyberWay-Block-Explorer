@@ -34,7 +34,7 @@ export default class Accordion extends PureComponent<Props> {
     const { children, active } = this.props;
     const style = {
       overflow: 'hidden',
-      transition: this.transitionCss('all', 'ease-in-out'),
+      transition: this.transitionCss('height', 'ease-in-out'),
       height: active ? this.getHeight() : 0, // TODO: set this to 'auto' after expanding (and to px before collapsing) to prevent resizing problems
     };
 

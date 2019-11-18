@@ -23,6 +23,7 @@ export default class AccordionItem extends PureComponent<Props> {
       console.warn('AccordionItem must contain inner items!');
       return null;
     }
+
     return (
       <Wrap>
         {React.Children.map(children, child => {

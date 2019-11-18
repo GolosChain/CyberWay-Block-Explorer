@@ -17,6 +17,7 @@ export default class Accordion extends PureComponent<Props, State> {
   static defaultProps = {
     transitionDuration: 400,
   };
+
   state = {
     active: -1,
   };
@@ -36,8 +37,8 @@ export default class Accordion extends PureComponent<Props, State> {
           cloneElement(item as React.ReactElement<any>, {
             key: i,
             active: i === active,
-            headOnClick: () => this.toggle(i),
             transitionDuration,
+            headOnClick: () => this.toggle(i),
           })
         )}
       </Wrap>
