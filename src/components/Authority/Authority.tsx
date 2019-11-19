@@ -21,7 +21,7 @@ const Threshold = styled.span`
 `;
 
 const Items = styled.ul`
-  background: linear-gradient(90deg, #dde, #eef);
+  background: linear-gradient(90deg, rgba(0, 0, 128, 0.08), transparent);
   margin: -6px 8px;
   padding: 6px;
 `;

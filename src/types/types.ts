@@ -110,6 +110,13 @@ export type ExtendedAccountType = AccountType & {
   registrationTime: string | null;
   producingStats: ProducingStatsType;
   permissions: { [name: string]: BasePermissionType };
+  permissionLinks: BasePermissionLink[];
+};
+
+export type BasePermissionLink = {
+  code: string; // account name
+  action: string; // name
+  permission: string; // name
 };
 
 export type BasePermissionType = {

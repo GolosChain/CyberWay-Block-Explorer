@@ -3,7 +3,7 @@ import Helmet from 'react-helmet';
 import { RouteComponentProps } from 'react-router-dom';
 import styled from 'styled-components';
 import is from 'styled-is';
-import { ErrorLine, Field, FieldTitle } from '../../components/Form';
+import { Field, FieldTitle } from '../../components/Form';
 import Accordion, { AccordionItem, AccordionHead, AccordionBody } from '../../components/Accordion';
 import { Abi } from 'cyberwayjs/dist/eosjs-rpc-interfaces';
 import { getAbi } from '../../utils/cyberway';
