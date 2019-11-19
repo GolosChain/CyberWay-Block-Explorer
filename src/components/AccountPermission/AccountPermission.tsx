@@ -46,12 +46,8 @@ const Name = styled.span`
 `;
 
 const AuthLinks = styled.ul`
-  align-self: flex-start;
-  margin: -6px -6px 0 auto;
+  margin: -6px -6px -6px auto;
   padding: 6px;
-  border: 3px solid #fff;
-  border-width: 0 0 3px 3px;
-  border-radius: 0 0 0 6px;
   background: linear-gradient(90deg, rgba(0, 0, 128, 0.05), transparent);
 `;
 
