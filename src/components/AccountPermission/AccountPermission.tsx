@@ -11,6 +11,17 @@ const Permission = styled.div`
   margin: 4px 0 4px 16px;
   font-size: 12px;
   max-width: 880px;
+  position:relative;
+
+  &:not(:last-child)::before {
+    content: '';
+    position: absolute;
+    height: 100%;
+    width: 0;
+    left: -7px;
+    border: 1px solid #777;
+    border-width: 0 1px 0 0;
+  }
 `;
 
 const Base = styled.div<{ root?: boolean }>`
@@ -29,7 +40,6 @@ const Base = styled.div<{ root?: boolean }>`
     &::before {
       content: '';
       position: absolute;
-      display: inline-block;
       left: -8px;
       top: -6px;
       width: 7px;
