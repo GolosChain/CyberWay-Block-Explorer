@@ -569,7 +569,7 @@ export default class Account extends PureComponent<Props> {
               {permissions ? (
                 <>
                   <Subtitle>Permissions:</Subtitle>
-                  <AccountPermission perm={permissions} />
+                  <AccountPermission perm={permissions} links={account.permissionLinks} />
                 </>
               ) : null}
 

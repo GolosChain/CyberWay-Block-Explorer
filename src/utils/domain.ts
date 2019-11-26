@@ -8,8 +8,12 @@ export function isNameValid(name: string) {
   );
 }
 
+// it's impossible to create 13-symbol name: https://github.com/cyberway/cyberway/blob/668c450fb5f510187d9ae57cd282f6d79c579828/libraries/chain/eosio_contract.cpp#L95
+// but genesis contains `cyber.appfund`
+const EXCEPTIONAL_NAMES = ['cyber.appfund'];
+
 export function isAccountNameValid(name: string) {
-  return name.length <= 12 && isNameValid(name);
+  return EXCEPTIONAL_NAMES.includes(name) || (name.length <= 12 && isNameValid(name));
 }
 
 export type ParsedName = {

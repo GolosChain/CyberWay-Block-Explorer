@@ -1,14 +1,27 @@
 import React, { PureComponent } from 'react';
 import styled from 'styled-components';
 import { isNot } from 'styled-is';
-import { PermissionType } from '../../types';
+import { PermissionType, BasePermissionLink } from '../../types';
 import Authority from '../Authority';
+import AccountName from '../AccountName';
 
 const Wrapper = styled.div``;
 
 const Permission = styled.div`
   margin: 4px 0 4px 16px;
   font-size: 12px;
+  max-width: 880px;
+  position:relative;
+
+  &:not(:last-child)::before {
+    content: '';
+    position: absolute;
+    height: 100%;
+    width: 0;
+    left: -7px;
+    border: 1px solid #777;
+    border-width: 0 1px 0 0;
+  }
 `;
 
 const Base = styled.div<{ root?: boolean }>`
@@ -19,11 +32,14 @@ const Base = styled.div<{ root?: boolean }>`
   position: relative;
   display: flex;
 
+  &:hover {
+    background: #f4f4ff;
+  }
+
   ${isNot('root')`
     &::before {
       content: '';
       position: absolute;
-      display: inline-block;
       left: -8px;
       top: -6px;
       width: 7px;
@@ -39,17 +55,44 @@ const Name = styled.span`
   font-size: 14px;
 `;
 
+const AuthLinks = styled.ul`
+  margin: -6px -6px -6px auto;
+  padding: 6px;
+  background: linear-gradient(90deg, rgba(0, 0, 128, 0.05), transparent);
+`;
+
 type Props = {
   perm: PermissionType;
+  links?: BasePermissionLink[];
 };
 
 export default class AccountPermission extends PureComponent<Props> {
+  getPermissionLinks(name: string) {
+    const links = this.props.links || [];
+    return links.filter(({ permission }) => permission === name);
+  }
+
   renderPerm({ name, auth, children }: PermissionType, root?: boolean) {
+    const links = this.getPermissionLinks(name);
+
     return (
       <Permission key={name}>
         <Base root={root}>
           <Name>{name}</Name>
           <Authority auth={auth} />
+          {links.length ? (
+            <AuthLinks>
+              {links.map(({ code, action }, i) => {
+                const title = `allows to execute ${action || 'ANY'} action of ${code} contract`;
+                return (
+                  <li key={i} title={title}>
+                    <AccountName account={{ id: code }} addLink />
+                    ::{action || '*'}
+                  </li>
+                );
+              })}
+            </AuthLinks>
+          ) : null}
         </Base>
         {children && children.length ? children.map(x => this.renderPerm(x)) : null}
       </Permission>
