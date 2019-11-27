@@ -62,7 +62,7 @@ function msigAction(action: string, actor: string) {
   return actionBase('cyber.msig', action, actor);
 }
 
-export function propose(proposer: string, proposal: string, requested: AuthType[], trx: any) {
+export function maigPropose(proposer: string, proposal: string, requested: AuthType[], trx: any) {
   return {
     ...msigAction('propose', proposer),
     data: {
@@ -74,12 +74,7 @@ export function propose(proposer: string, proposal: string, requested: AuthType[
   };
 }
 
-export function approveProposal(
-  proposer: string,
-  proposal: string,
-  level: AuthType,
-  hash?: string
-) {
+export function msigApprove(proposer: string, proposal: string, level: AuthType, hash?: string) {
   return {
     ...msigAction('approve', level.actor),
     data: {
@@ -91,7 +86,7 @@ export function approveProposal(
   };
 }
 
-export function unapproveProposal(proposer: string, proposal: string, level: AuthType) {
+export function msigUnapprove(proposer: string, proposal: string, level: AuthType) {
   return {
     ...msigAction('unapprove', level.actor),
     data: {
@@ -102,7 +97,7 @@ export function unapproveProposal(proposer: string, proposal: string, level: Aut
   };
 }
 
-export function cancelProposal(proposer: string, proposal: string, canceler = proposer) {
+export function msigCancel(proposer: string, proposal: string, canceler = proposer) {
   return {
     ...msigAction('cancel', canceler),
     data: {
@@ -113,7 +108,7 @@ export function cancelProposal(proposer: string, proposal: string, canceler = pr
   };
 }
 
-export function execProposal(proposer: string, proposal: string, executer = proposer) {
+export function msigExec(proposer: string, proposal: string, executer = proposer) {
   return {
     ...msigAction('exec', executer),
     data: {

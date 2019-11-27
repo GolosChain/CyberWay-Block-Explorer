@@ -11,7 +11,7 @@ const Permission = styled.div`
   margin: 4px 0 4px 16px;
   font-size: 12px;
   max-width: 880px;
-  position:relative;
+  position: relative;
 
   &:not(:last-child)::before {
     content: '';

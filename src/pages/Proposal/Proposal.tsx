@@ -8,12 +8,7 @@ import { Field, FieldTitle, ErrorLine } from '../../components/Form';
 import TrxPretty from '../../components/TrxPretty';
 import Link from '../../components/Link';
 import { deserializeTrx } from '../../utils/cyberway';
-import {
-  approveProposal,
-  unapproveProposal,
-  cancelProposal,
-  execProposal,
-} from '../../utils/cyberwayActions';
+import { msigApprove, msigUnapprove, msigCancel, msigExec } from '../../utils/cyberwayActions';
 
 const EMPTY_DATE = new Date('1970-01-01T00:00:00.000Z');
 
@@ -33,6 +28,12 @@ const Approval = styled.li`
   &.lost {
     color: darkred;
   }
+  & a {
+    display: none;
+  }
+  &:hover a {
+    display: inline;
+  }
 `;
 
 const BUTTON_STYLE = `
@@ -42,6 +43,10 @@ const BUTTON_STYLE = `
   color: #333;
   background: #eee;
   cursor: pointer;
+`;
+
+const TinyLink = styled(Link)`
+  font-size: 70%;
 `;
 
 const LinkButton = styled(Link)`
@@ -58,28 +63,31 @@ const RedLinkButton = styled(LinkButton)`
 `;
 
 type ApprovalType = {
-  level: AuthType;
-  time?: Date;
+  level: string;
+  status?: string;
+  time?: string; //Date;
 };
 
 type Props = {
   account: string;
   proposal: string;
   error: string | null;
-  loadProposal: Function;
-  loadApprovals: Function;
+  loadProposals: Function;
 };
 
 type State = {
   proposalName: string;
   packedTrx: string;
   trx: any;
-  rev: number;
-  requested: ApprovalType[];
-  provided: ApprovalType[];
+  blockNum: number;
+  approvals: ApprovalType[];
+
+  updateTime?: string; //Date,
+  expires: string; //Date,
+  finalStatus?: string;
+  execTrxId?: string;
 
   loadingProposal: string | null;
-  loadingApprovals: string | null;
   err: string[];
 };
 
@@ -88,18 +96,20 @@ export default class Proposal extends PureComponent<Props, State> {
     proposalName: '',
     packedTrx: '',
     trx: null,
-    rev: -1,
-    requested: [],
-    provided: [],
+    blockNum: -1,
+    approvals: [] as ApprovalType[],
+    updateTime: undefined,
+    expires: '',
+    finalStatus: undefined,
+    execTrxId: undefined,
+
     loadingProposal: null,
-    loadingApprovals: null,
     err: [],
   };
 
   componentDidMount() {
     if (!this.props.error) {
       this.loadProposal();
-      this.loadApprovals();
     }
   }
 
@@ -109,21 +119,30 @@ export default class Proposal extends PureComponent<Props, State> {
   }
 
   async loadProposal() {
-    const { account, proposal, loadProposal } = this.props;
+    const { account, proposal, loadProposals } = this.props;
     try {
-      const empty = { packedTrx: '', trx: null, rev: -1 };
+      const empty = { packedTrx: '', trx: null };
       this.setState({ loadingProposal: proposal, ...empty });
 
-      const { items } = await loadProposal({ proposer: account, proposal });
-      const ok = items && items.length === 1;
-      const item = ok ? items[0] : empty;
+      const { items } = await loadProposals({ proposer: account, name: proposal });
+      const ok = items && items.length >= 1;
+      const item = ok ? items[0] : empty; // TODO: support several proposals with same proposer/name
+      const { packedTrx, blockNum, approvals, updateTime, finalStatus, execTrxId } = item;
+      let { expires } = item;
 
       let trx = null;
       if (ok) {
-        try {
-          trx = await deserializeTrx({ trx: item.packedTransaction });
-        } catch (err) {
-          console.error('%%%% failed to deserialize trx', err.message, err); // debug; TODO: remove/replace
+        if (packedTrx) {
+          try {
+            trx = await deserializeTrx({ trx: item.packedTrx });
+            if (!expires) {
+              expires = trx.expiration;
+            }
+          } catch (err) {
+            console.error('%%%% failed to deserialize trx', err.message, err); // debug; TODO: remove/replace
+          }
+        } else {
+          trx = item.trx; //TODO: deserialize actions
         }
       }
 
@@ -131,8 +150,13 @@ export default class Proposal extends PureComponent<Props, State> {
         proposalName: proposal,
         loadingProposal: null,
         trx,
-        packedTrx: item.packedTransaction,
-        rev: item.rev,
+        packedTrx,
+        blockNum,
+        approvals,
+        updateTime,
+        expires,
+        finalStatus,
+        execTrxId,
       });
       if (!ok) {
         this.appendError('proposal not found');
@@ -144,79 +168,71 @@ export default class Proposal extends PureComponent<Props, State> {
     }
   }
 
-  async loadApprovals() {
-    const { account, proposal, loadApprovals } = this.props;
-    try {
-      const empty = { requested: [], provided: [] };
-      this.setState({ loadingApprovals: proposal, ...empty });
-
-      const { items } = await loadApprovals({ proposer: account, proposal });
-      const ok = items && items.length === 1;
-      const item = ok ? items[0] : empty;
-      const timeFixer = (x: any) => ({ ...x, time: new Date(x.time || EMPTY_DATE) });
-
-      this.setState({
-        loadingApprovals: null,
-        requested: item.requested.map(timeFixer),
-        provided: item.provided.map(timeFixer),
-      });
-      if (!ok) {
-        this.appendError('approvals not found');
-      }
-    } catch (err) {
-      const error = 'Failed to load approvals';
-      this.appendError(error);
-      ToastsManager.error(`${error}: ${err.message}`);
-    }
-  }
-
   _signUrl(actions: any[]) {
     return `/sign?trx=${encodeURIComponent(JSON.stringify({ actions }))}`;
   }
 
-  approveTrx(approval: ApprovalType, got: boolean) {
+  _strToLevel(level: string) {
+    const [actor, permission] = level.split('@');
+    return { actor, permission } as AuthType;
+  }
+
+  _formatTime(time: string | number) {
+    return new Date(time).toLocaleString();
+  }
+
+  approveTrx(approval: ApprovalType, no: boolean, both?: boolean) {
     // TODO: add hash for `approve`
     const { account, proposal } = this.props;
-    const actions = [
-      (got ? unapproveProposal : approveProposal)(account, proposal, approval.level),
-    ];
+    const level = this._strToLevel(approval.level);
+    const actions = [(no ? msigUnapprove : msigApprove)(account, proposal, level)];
+
+    if (both && no) {
+      actions.unshift(msigApprove(account, proposal, level));
+    }
 
     return this._signUrl(actions);
   }
 
   cancelProposalTrx() {
     const { account, proposal } = this.props;
-    return this._signUrl([cancelProposal(account, proposal)]);
+    return this._signUrl([msigCancel(account, proposal)]);
   }
 
   executeProposalTrx() {
     const { account, proposal } = this.props;
-    return this._signUrl([execProposal(account, proposal)]);
+    return this._signUrl([msigExec(account, proposal)]);
   }
 
-  renderApprovals(requested: ApprovalType[], approved: ApprovalType[]) {
-    function equal(a: ApprovalType, b: ApprovalType) {
-      return a.level.actor === b.level.actor && a.level.permission === b.level.permission;
-    }
+  renderApproveButton(approval: ApprovalType, got: boolean, both?: boolean) {
+    return (
+      <LinkButton to={this.approveTrx(approval, got, both)} key={String(both)}>
+        {got ? 'Unapprove 👎' : 'Approve 👍'}
+      </LinkButton>
+    );
+  }
 
-    const approvals = [...approved, ...requested];
+  renderApproveButtons(approval: ApprovalType, got: boolean) {
+    const first = this.renderApproveButton(approval, got);
+    const second = approval.time ? null : this.renderApproveButton(approval, !got, true);
+    return [first, second];
+  }
 
-    return this.state.loadingApprovals ? (
-      'Loading…'
-    ) : (
+  renderApprovals(approvals: ApprovalType[], exists: boolean) {
+    return (
       <ol>
         {approvals.map(x => {
-          const got = Boolean(approved.find(a => equal(x, a)));
-          const time = (x.time || EMPTY_DATE).getTime();
+          const got = (x.status || '').startsWith('approve');
+          const time = (x.time ? new Date(x.time) : EMPTY_DATE).getTime();
           const haveTime = time !== EMPTY_DATE.getTime();
 
           return (
-            <Approval key={x.level.actor} className={got ? 'got' : haveTime ? 'lost' : ''}>
-              {x.level.actor} @ {x.level.permission}
+            <Approval key={x.level} className={got ? 'got' : haveTime ? 'lost' : ''}>
+              {x.level}
               {haveTime
-                ? ` / ${got ? 'approved' : 'unapproved'}: ${new Date(time).toLocaleString()}`
+                ? ` / ${got ? 'approved' : 'unapproved'}: ${this._formatTime(time)}`
                 : null}{' '}
-              <LinkButton to={this.approveTrx(x, got)}>{got ? 'Unapprove' : 'Approve'}</LinkButton>
+              {exists ? this.renderApproveButtons(x, got) : null}
             </Approval>
           );
         })}
@@ -230,13 +246,30 @@ export default class Proposal extends PureComponent<Props, State> {
       proposalName,
       packedTrx,
       trx,
-      rev,
-      requested,
-      provided,
+      blockNum,
+      approvals,
+      updateTime,
+      expires,
+      finalStatus,
+      execTrxId,
       loadingProposal,
       err,
     } = this.state;
-    const totalApprovals = requested.length + provided.length;
+
+    const STATUS = {
+      exec: 'executed',
+      cancel: 'cancelled',
+      wait: 'waiting',
+      ready: '✅ready to exec',
+      old: '❗️expired',
+    };
+
+    const exists = !finalStatus;
+    const expired = Date.now() >= new Date(expires).getTime();
+    const waitingStatus = expired ? 'old' : 'wait';
+    const nRequested = approvals.length;
+    const nApproved = approvals.filter(x => (x.status || '').startsWith('approve')).length;
+    const status = finalStatus || (nApproved === nRequested ? 'ready' : waitingStatus);
 
     return (
       <Wrapper>
@@ -247,7 +280,7 @@ export default class Proposal extends PureComponent<Props, State> {
           <ErrorLine>{error}</ErrorLine>
         ) : err.length ? (
           err.map(e => (
-            <p>
+            <p key={e}>
               <ErrorLine>{e}</ErrorLine>
             </p>
           ))
@@ -255,18 +288,38 @@ export default class Proposal extends PureComponent<Props, State> {
           <div>
             <Field line>
               {/* TODO: Created on block <Link to={`/block/${rev}`}>#{rev}</Link> */}
-              <FieldTitle>Created on block:</FieldTitle> #{rev}
+              <FieldTitle>Created on block:</FieldTitle> #{blockNum}
+            </Field>
+            <Field line>
+              <FieldTitle>Status:</FieldTitle> <b>{STATUS[status]}</b>{' '}
+              {execTrxId && <TinyLink to={`/trx/${execTrxId}`}>{execTrxId}</TinyLink>}
+            </Field>
+            {exists ? (
+              <Field line>
+                <FieldTitle>{expired ? 'Expired' : 'Expires'}:</FieldTitle>{' '}
+                {this._formatTime(expires)}
+              </Field>
+            ) : null}
+            <Field line>
+              <FieldTitle title="Someone approved, unapproved, executed or cancelled the proposal">
+                Last updated:
+              </FieldTitle>{' '}
+              {updateTime ? this._formatTime(updateTime!) : 'never'}
             </Field>
             <FieldTitle>Transaction:</FieldTitle>
             <TrxPretty trx={trx} packedTrx={packedTrx} />
             <Field line>
-              <FieldTitle>Approvals:</FieldTitle> {provided.length}/{totalApprovals}{' '}
-              {this.renderApprovals(requested, provided)}
+              <FieldTitle>Approvals:</FieldTitle> {nApproved}/{nRequested}{' '}
+              {this.renderApprovals(approvals, exists)}
             </Field>
-            <hr />
-            <FieldTitle>Actions:</FieldTitle>{' '}
-            <RedLinkButton to={this.cancelProposalTrx()}>Cancel</RedLinkButton>{' '}
-            <LinkButton to={this.executeProposalTrx()}>Try exec</LinkButton>
+            {exists ? (
+              <>
+                <hr />
+                <FieldTitle>Actions:</FieldTitle>{' '}
+                <RedLinkButton to={this.cancelProposalTrx()}>Cancel</RedLinkButton>{' '}
+                {expired ? null : <LinkButton to={this.executeProposalTrx()}>Try exec</LinkButton>}
+              </>
+            ) : null}
           </div>
         ) : loadingProposal ? (
           'Loading…'
