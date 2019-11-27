@@ -11,7 +11,7 @@ type Props = {
   };
 };
 
-export type LoadProposalParams = { proposer: string; proposal: string };
+export type LoadProposalsParams = { proposer: string; name: string };
 
 export default connect(
   (state: State, props: Props) => {
@@ -24,21 +24,13 @@ export default connect(
     return { account, proposal, error };
   },
   {
-    loadProposal: (params: LoadProposalParams) => ({
+    loadProposals: (params: LoadProposalsParams) => ({
       type: CALL_API,
-      method: 'stateReader.getProposals',
+      method: 'accounts.getProposals',
       params: {
-        filter: {
-          proposer: params.proposer,
-          proposal_name: params.proposal,
-        },
+        proposer: params.proposer,
+        name: params.name,
       },
-      meta: { ...params },
-    }),
-    loadApprovals: (params: LoadProposalParams) => ({
-      type: CALL_API,
-      method: 'stateReader.getProposalApprovals',
-      params,
       meta: { ...params },
     }),
   }
