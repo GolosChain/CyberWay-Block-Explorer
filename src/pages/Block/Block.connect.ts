@@ -14,17 +14,37 @@ type Props = {
 
 export default connect(
   (state: State, props: Props) => {
-    const { blockId } = props.match.params;
+    const { block } = props.match.params;
+
+    let blockId: string | null = block;
+    let blockNum: string | null = null;
+
+    if (block.length !== 64 && /^\d+$/.test(block)) {
+      blockId = null;
+      blockNum = block;
+    }
+
+    if (blockNum) {
+      blockId = state.blockIdByNum[blockNum];
+    }
 
     return {
       blockId,
-      block: state.blocks[blockId],
+      blockNum,
+      block: blockId ? state.blocks[blockId] : null,
     };
   },
   {
-    loadBlock: ({ blockId }: { blockId: string }) => async (dispatch: Function) => {
+    loadBlock: ({
+      blockId,
+      blockNum,
+    }: {
+      blockId: string | null;
+      blockNum: number | null;
+    }) => async (dispatch: Function) => {
       const block = await Connection.get().callApi('blocks.getBlock', {
         blockId,
+        blockNum,
       });
 
       return dispatch({

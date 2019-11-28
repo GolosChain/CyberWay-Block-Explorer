@@ -22,11 +22,13 @@ export default class Connection {
 
   private readonly url: string;
   private queue: QueueItem[];
-  private socket: Client;
+  private socket: Client | null;
 
   constructor({ url }: { url: string }) {
     this.url = url;
     this.queue = [];
+    this.socket = null;
+
     instance = this;
 
     if (process.env.NODE_ENV !== 'production') {
@@ -66,7 +68,7 @@ export default class Connection {
     });
   }
 
-  async callApi(apiName: string, params = {}) {
+  async callApi(apiName: string, params = {}): Promise<any> {
     if (!this.socket) {
       return new Promise((resolve, reject) => {
         const delayedItem = {

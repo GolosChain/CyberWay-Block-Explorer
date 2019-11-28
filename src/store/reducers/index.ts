@@ -1,6 +1,7 @@
 import { combineReducers } from 'redux';
 
 import blocks, { State as BlocksState } from './blocks';
+import blockIdByNum, { State as BlockIdByNumState } from './blockIdByNum';
 import blocksFeed, { State as BlocksFeedState } from './blocksFeed';
 import transactions, { State as TransactionsState } from './transactions';
 import blockTransactions, { State as BlockTransactionsState } from './blockTransactions';
@@ -12,6 +13,7 @@ import tokenHolders, { State as TokenHoldersState } from './tokenHolders';
 
 export type State = {
   blocks: BlocksState;
+  blockIdByNum: BlockIdByNumState;
   blocksFeed: BlocksFeedState;
   transactions: TransactionsState;
   blockTransactions: BlockTransactionsState;
@@ -24,6 +26,7 @@ export type State = {
 
 export default combineReducers({
   blocks,
+  blockIdByNum,
   blocksFeed,
   transactions,
   blockTransactions,
