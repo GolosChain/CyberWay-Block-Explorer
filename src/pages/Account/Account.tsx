@@ -126,6 +126,11 @@ const UpdatedAt = styled.div`
   font-size: 13px;
 `;
 
+const StakeType = styled(FieldTitle)`
+  min-width: 128px;
+  display: inline-block;
+`;
+
 const TokenItem = styled.li`
   margin: 3px 0;
 `;
@@ -546,6 +551,41 @@ export default class Account extends PureComponent<Props> {
     return null;
   }
 
+  renderStakingRow(name: string, value: number, precise?: boolean) {
+    const note = precise ? undefined : 'Note: can be less than actual, updates on resource usage';
+    return (
+      <li key={name}>
+        <StakeType title={note}>
+          {name}
+          {precise ? null : <sup>*</sup>}:
+        </StakeType>{' '}
+        {formatCyber(value, true)}
+      </li>
+    );
+  }
+
+  renderStaking(agent: AgentPropsType | null) {
+    const { balance = 0, proxied = 0, ownShare = 0, sharesSum = 1 } = agent || {};
+    const own = (balance * ownShare) / sharesSum;
+    const precise = proxied === 0;
+
+    return (
+      <>
+        <Subtitle>Staking:</Subtitle>
+        {agent ? (
+          <ul>
+            {this.renderStakingRow('Own', proxied + own, precise)}
+            {this.renderStakingRow('Received votes', balance - own, true)}
+            {this.renderStakingRow('Total', balance + proxied, precise)}
+            {this.renderStakingRow('Voted for others', proxied, precise)}
+          </ul>
+        ) : (
+          'none'
+        )}
+      </>
+    );
+  }
+
   render() {
     const { name, accountId, account, accountError, mode } = this.props;
     const { isLoginOpen, signLink } = this.state;
@@ -591,6 +631,9 @@ export default class Account extends PureComponent<Props> {
                   </UpdatedAt>
                 </>
               ) : null}
+
+              {this.renderStaking(account.agentProps)}
+
               {account.tokens && account.tokens.length ? (
                 <>
                   <Subtitle>Balances:</Subtitle>
