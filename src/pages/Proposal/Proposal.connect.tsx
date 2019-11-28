@@ -15,13 +15,20 @@ export type LoadProposalsParams = { proposer: string; name: string };
 
 export default connect(
   (state: State, props: Props) => {
-    const { account, proposal } = props.match.params;
-    const error = isAccountNameValid(account)
+    const { account, proposal, version } = props.match.params;
+    let error = isAccountNameValid(account)
       ? isNameValid(proposal)
         ? null
         : 'invalid proposal'
       : 'invalid account';
-    return { account, proposal, error };
+
+    let ver = 1;
+    if (!error && version != null) {
+      ver = parseInt(version);
+      error = ver >= 1 && version === `${ver}` ? null : 'invalid proposal version';
+    }
+
+    return { account, proposal, version: ver, error };
   },
   {
     loadProposals: (params: LoadProposalsParams) => ({
