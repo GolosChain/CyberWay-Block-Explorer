@@ -1,5 +1,6 @@
 import React, { ComponentType } from 'react';
 import { Route, RouteComponentProps } from 'react-router-dom';
+import { omit } from 'ramda';
 
 import { AccountTransactionsMode } from '../types';
 import Home from '../pages/Home';
@@ -30,6 +31,7 @@ export type AccountRouteParams = {
 export type ProposalRouteParams = {
   account: string;
   proposal: string;
+  version?: string; // it's number, but router can't
 };
 
 export type TokenRouteParams = {
@@ -54,9 +56,9 @@ export default function() {
       <Route path="/account/:name/:mode(actor|mention)?" exact component={wrapKeySetter(Account)} />
       <Route path="/account/:account/contract" exact component={wrapKeySetter(Contract)} />
       <Route
-        path="/account/:account/proposal/:proposal"
+        path="/account/:account/proposal/:proposal/:version?"
         exact
-        component={wrapKeySetter(Proposal)}
+        component={wrapKeySetter(Proposal, ['version'])}
       />
     </>
   );
@@ -64,8 +66,10 @@ export default function() {
 
 // Key выставляется для того, чтобы при навигации создавался новый компонент.
 // В противном случае компонент продолжает отображать прошлое состояние.
-function wrapKeySetter(Comp: ComponentType<any>) {
+// Параметр exclude позволяет исключить некоторые свойства из генерации ключа
+// (используется например в Proposal для перехода по страницам без доп.загрузки).
+function wrapKeySetter(Comp: ComponentType<any>, exclude: string[] = []) {
   return (props: RouteComponentProps) => (
-    <Comp key={JSON.stringify(props.match.params)} {...props} />
+    <Comp key={JSON.stringify(omit(exclude, props.match.params))} {...props} />
   );
 }

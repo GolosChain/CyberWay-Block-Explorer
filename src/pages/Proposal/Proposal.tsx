@@ -9,6 +9,7 @@ import TrxPretty from '../../components/TrxPretty';
 import Link from '../../components/Link';
 import { deserializeTrx } from '../../utils/cyberway';
 import { msigApprove, msigUnapprove, msigCancel, msigExec } from '../../utils/cyberwayActions';
+import { COLORS } from '../../utils/theme';
 
 const EMPTY_DATE = new Date('1970-01-01T00:00:00.000Z');
 
@@ -62,21 +63,27 @@ const RedLinkButton = styled(LinkButton)`
   background: #edd;
 `;
 
+const List = styled.div`
+  background: ${COLORS.yellow};
+  padding: 12px;
+  border-radius: 4px;
+  margin: 8px 0;
+
+  & ul {
+    margin: 8px 12px;
+  }
+  & li {
+    list-style: disc;
+  }
+`;
+
 type ApprovalType = {
   level: string;
   status?: string;
   time?: string; //Date;
 };
 
-type Props = {
-  account: string;
-  proposal: string;
-  error: string | null;
-  loadProposals: Function;
-};
-
-type State = {
-  proposalName: string;
+type ProposalType = {
   packedTrx: string;
   trx: any;
   blockNum: number;
@@ -86,6 +93,19 @@ type State = {
   expires: string; //Date,
   finalStatus?: string;
   execTrxId?: string;
+};
+
+type Props = {
+  account: string;
+  proposal: string;
+  version: number;
+  error: string | null;
+  loadProposals: Function;
+};
+
+type State = {
+  proposalName: string;
+  items: ProposalType[];
 
   loadingProposal: string | null;
   err: string[];
@@ -94,14 +114,7 @@ type State = {
 export default class Proposal extends PureComponent<Props, State> {
   state = {
     proposalName: '',
-    packedTrx: '',
-    trx: null,
-    blockNum: -1,
-    approvals: [] as ApprovalType[],
-    updateTime: undefined,
-    expires: '',
-    finalStatus: undefined,
-    execTrxId: undefined,
+    items: [] as ProposalType[],
 
     loadingProposal: null,
     err: [],
@@ -119,22 +132,28 @@ export default class Proposal extends PureComponent<Props, State> {
   }
 
   async loadProposal() {
-    const { account, proposal, loadProposals } = this.props;
+    const { account, proposal, version, loadProposals } = this.props;
     try {
-      const empty = { packedTrx: '', trx: null };
-      this.setState({ loadingProposal: proposal, ...empty });
+      this.setState({ loadingProposal: proposal });
 
+      const idx = version - 1;
       const { items } = await loadProposals({ proposer: account, name: proposal });
-      const ok = items && items.length >= 1;
-      const item = ok ? items[0] : empty; // TODO: support several proposals with same proposer/name
-      const { packedTrx, blockNum, approvals, updateTime, finalStatus, execTrxId } = item;
+      let ok = items && items.length >= 1;
+
+      if (ok && idx >= items.length) {
+        this.appendError('There is no such version of the proposal');
+        ok = false;
+      }
+
+      const item = ok ? items[idx] : {};
+      const { packedTrx } = item;
       let { expires } = item;
 
       let trx = null;
       if (ok) {
         if (packedTrx) {
           try {
-            trx = await deserializeTrx({ trx: item.packedTrx });
+            trx = await deserializeTrx({ trx: packedTrx });
             if (!expires) {
               expires = trx.expiration;
             }
@@ -146,17 +165,12 @@ export default class Proposal extends PureComponent<Props, State> {
         }
       }
 
+      items[idx] = { ...item, trx, expires };
+
       this.setState({
         proposalName: proposal,
+        items,
         loadingProposal: null,
-        trx,
-        packedTrx,
-        blockNum,
-        approvals,
-        updateTime,
-        expires,
-        finalStatus,
-        execTrxId,
       });
       if (!ok) {
         this.appendError('proposal not found');
@@ -240,23 +254,27 @@ export default class Proposal extends PureComponent<Props, State> {
     );
   }
 
-  render() {
-    const { account, proposal, error } = this.props;
-    const {
-      proposalName,
-      packedTrx,
-      trx,
-      blockNum,
-      approvals,
-      updateTime,
-      expires,
-      finalStatus,
-      execTrxId,
-      loadingProposal,
-      err,
-    } = this.state;
+  proposalUrl(version: number) {
+    const { account, proposal } = this.props;
+    return `/account/${account}/proposal/${proposal}/${version}`;
+  }
 
-    const STATUS = {
+  render() {
+    const { account, proposal, version, error } = this.props;
+    const { proposalName, items, loadingProposal, err } = this.state;
+    const idx = version - 1;
+    const {
+      packedTrx = '',
+      trx = null,
+      blockNum = -1,
+      approvals = [],
+      updateTime = undefined, // To make TS glad lol…
+      expires = '',
+      finalStatus = undefined,
+      execTrxId = undefined,
+    } = items[idx] || {};
+
+    const STATUS: { [key: string]: string } = {
       exec: 'executed',
       cancel: 'cancelled',
       wait: 'waiting',
@@ -286,9 +304,26 @@ export default class Proposal extends PureComponent<Props, State> {
           ))
         ) : proposalName === proposal ? (
           <div>
+            {items.length > 1 ? (
+              <List>
+                There are several versions of this proposal:
+                <ul>
+                  {items.map((x, i) => {
+                    const ver = i + 1;
+                    const body = `version ${ver}, block: #${x.blockNum}`;
+
+                    return (
+                      <li key={i}>
+                        {i !== idx ? <Link to={this.proposalUrl(ver)}>{body}</Link> : <b>{body}</b>}
+                      </li>
+                    );
+                  })}
+                </ul>
+              </List>
+            ) : null}
             <Field line>
-              {/* TODO: Created on block <Link to={`/block/${rev}`}>#{rev}</Link> */}
-              <FieldTitle>Created on block:</FieldTitle> #{blockNum}
+              <FieldTitle>Created on block:</FieldTitle>{' '}
+              <Link to={`/block/${blockNum}`}>#{blockNum}</Link>
             </Field>
             <Field line>
               <FieldTitle>Status:</FieldTitle> <b>{STATUS[status]}</b>{' '}

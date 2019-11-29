@@ -7,6 +7,7 @@ import TrxPretty from '../TrxPretty';
 import { State as TrxState } from '../TrxPretty/TrxPretty';
 import Link from '../Link';
 import { pushTransactionUsingKeys } from '../../utils/cyberway';
+import { COLORS } from '../../utils/theme';
 
 const Wrapper = styled.div``;
 
@@ -18,11 +19,11 @@ const Panel = styled.div`
 `;
 
 const Warning = styled(Panel)`
-  background: #ffe0bc;
+  background: ${COLORS.yellow};
 `;
 
 const Info = styled(Panel)`
-  background: #e0ffbc;
+  background: ${COLORS.green};
 `;
 
 const Input = styled.input`
