@@ -18,16 +18,20 @@ const Title = styled.h1`
 `;
 
 type Props = {
-  blockId: string;
+  blockId: string | null;
+  blockNum: string | null;
   block: BlockSummary | null;
   loadBlock: Function;
 };
 
 export default class Block extends PureComponent<Props> {
   componentDidMount() {
-    const { blockId } = this.props;
+    const { blockId, blockNum, loadBlock } = this.props;
 
-    this.props.loadBlock({ blockId });
+    loadBlock({
+      blockId,
+      blockNum: Number(blockNum) || undefined,
+    });
   }
 
   renderCounters(counters: { [key: string]: number }) {
@@ -51,7 +55,7 @@ export default class Block extends PureComponent<Props> {
   }
 
   render() {
-    const { blockId, block } = this.props;
+    const { blockId, blockNum, block } = this.props;
 
     return (
       <Wrapper>
@@ -66,7 +70,7 @@ export default class Block extends PureComponent<Props> {
             },
           ]}
         />
-        <Helmet title={`Block: ${blockId}`} />
+        <Helmet title={`Block: ${blockId || `#${blockNum}`}`} />
         <Title>Block</Title>
         <Field>
           <FieldTitle>Block id:</FieldTitle>
@@ -101,9 +105,18 @@ export default class Block extends PureComponent<Props> {
               <FieldTitle>Transactions count:</FieldTitle>{' '}
               <FieldValue>{this.renderCounters(block.counters.transactions)}</FieldValue>
             </Field>
+            <Field line>
+              <FieldTitle>Siblings:</FieldTitle>{' '}
+              {block.blockNum > 2 ? (
+                <>
+                  <Link to={`/block/${block.blockNum - 1}`}>prev</Link> |{' '}
+                </>
+              ) : null}
+              <Link to={`/block/${block.blockNum + 1}`}>next</Link>
+            </Field>
           </>
         ) : null}
-        <Transactions blockId={blockId} />
+        {blockId ? <Transactions blockId={blockId as string} /> : null}
       </Wrapper>
     );
   }

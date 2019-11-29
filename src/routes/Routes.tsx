@@ -15,7 +15,7 @@ import Sign from '../pages/Sign';
 import Contract from '../pages/Contract';
 
 export type BlockRouteParams = {
-  blockId: string;
+  block: string;
 };
 
 export type TransactionRouteParams = {
@@ -45,7 +45,7 @@ export default function() {
     <>
       <Route path="/" exact component={Home} />
       <Route path="/feed" exact component={Feed} />
-      <Route path="/block/:blockId" exact component={wrapKeySetter(Block)} />
+      <Route path="/block/:block" exact component={wrapKeySetter(Block)} />
       <Route path="/trx/:transactionId" exact component={wrapKeySetter(Transaction)} />
       <Route path="/validators" exact component={Validators} />
       <Route path="/tokens" exact component={Tokens} />
