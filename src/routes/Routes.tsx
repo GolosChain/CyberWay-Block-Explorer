@@ -1,5 +1,6 @@
 import React, { ComponentType } from 'react';
 import { Route, RouteComponentProps } from 'react-router-dom';
+import { omit } from 'ramda';
 
 import { AccountTransactionsMode } from '../types';
 import Home from '../pages/Home';
@@ -66,13 +67,9 @@ export default function() {
 // Key выставляется для того, чтобы при навигации создавался новый компонент.
 // В противном случае компонент продолжает отображать прошлое состояние.
 // Параметр exclude позволяет исключить некоторые свойства из генерации ключа
-// (используется например в Proposal kоя перезода по страницам без  доп.загрузки).
+// (используется например в Proposal для перехода по страницам без доп.загрузки).
 function wrapKeySetter(Comp: ComponentType<any>, exclude: string[] = []) {
-  const kill: any = {};
-  for (const field of exclude) {
-    kill[field] = undefined;
-  }
   return (props: RouteComponentProps) => (
-    <Comp key={JSON.stringify({ ...props.match.params, ...kill })} {...props} />
+    <Comp key={JSON.stringify(omit(exclude, props.match.params))} {...props} />
   );
 }

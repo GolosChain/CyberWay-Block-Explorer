@@ -322,8 +322,8 @@ export default class Proposal extends PureComponent<Props, State> {
               </List>
             ) : null}
             <Field line>
-              {/* TODO: Created on block <Link to={`/block/${rev}`}>#{rev}</Link> */}
-              <FieldTitle>Created on block:</FieldTitle> #{blockNum}
+              <FieldTitle>Created on block:</FieldTitle>{' '}
+              <Link to={`/block/${blockNum}`}>#{blockNum}</Link>
             </Field>
             <Field line>
               <FieldTitle>Status:</FieldTitle> <b>{STATUS[status]}</b>{' '}
