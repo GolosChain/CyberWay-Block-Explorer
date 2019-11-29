@@ -24,7 +24,7 @@ export default connect(
 
     let ver = 1;
     if (!error && version != null) {
-      ver = parseInt(version);
+      ver = parseInt(version, 10);
       error = ver >= 1 && version === `${ver}` ? null : 'invalid proposal version';
     }
 
