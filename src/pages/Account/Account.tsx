@@ -566,7 +566,7 @@ export default class Account extends PureComponent<Props> {
 
   renderStaking(agent: AgentPropsType | null) {
     const { balance = 0, proxied = 0, ownShare = 0, sharesSum = 1 } = agent || {};
-    const own = (balance * ownShare) / sharesSum;
+    const own = sharesSum ? (balance * ownShare) / sharesSum : 0;
     const precise = proxied === 0;
 
     return (
