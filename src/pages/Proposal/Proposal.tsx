@@ -180,7 +180,8 @@ export default class Proposal extends PureComponent<Props, State> {
           try {
             trx = await deserializeTrx({ trx: packedTrx });
             if (!expires) {
-              expires = trx.expiration;
+              const exp = trx.expiration;
+              expires = `${exp}${exp.endsWith('Z') ? '' : 'Z'}`;
             }
           } catch (err) {
             console.error('%%%% failed to deserialize trx', err.message, err); // debug; TODO: remove/replace
