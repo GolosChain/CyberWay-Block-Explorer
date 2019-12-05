@@ -13,6 +13,7 @@ import EmissionInfo from '../../components/EmissionInfo';
 const EMPTY_KEY = 'GLS1111111111111111111111111111111114T1Anm';
 const NEVER_PICK_TIME = new Date('2019-08-15T14:00:00.000Z').getTime();
 const SYSTEM_MIN_OWN_STAKED = 500000000;
+const SHOW_BLOCK_MISS_EMOJI = Boolean(localStorage.getItem('showBlockMissEmoji'));
 
 const Wrapper = styled.div`
   margin: 16px;
@@ -198,7 +199,7 @@ export default class Validators extends PureComponent<Props, State> {
             Produced blocks: {produced}
           </span>
           ; missed: {missed}; missed during 7 days: {weekMissed}{' '}
-          {produced || weekMissed ? missGrade : '💤'}
+          {SHOW_BLOCK_MISS_EMOJI ? produced || weekMissed ? missGrade : '💤' : null}
           <br />
         </small>
         <small>(signing key: {signingKey})</small>
