@@ -10,6 +10,7 @@ import filters, { State as FiltersState } from './filters';
 import currentAccount, { State as CurrentAccountState } from './currentAccount';
 import accountTransactions, { State as AccountTransactionsState } from './accountTransactions';
 import tokenHolders, { State as TokenHoldersState } from './tokenHolders';
+import auctions, { State as AuctionsState } from './auctions';
 
 export type State = {
   blocks: BlocksState;
@@ -22,6 +23,7 @@ export type State = {
   currentAccount: CurrentAccountState;
   accountTransactions: AccountTransactionsState;
   tokenHolders: TokenHoldersState;
+  auctions: AuctionsState;
 };
 
 export default combineReducers({
@@ -35,4 +37,5 @@ export default combineReducers({
   currentAccount,
   accountTransactions,
   tokenHolders,
+  auctions,
 });

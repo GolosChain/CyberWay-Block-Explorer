@@ -248,3 +248,18 @@ export type KeyAuthType = {
 };
 
 export type KeyRole = 'owner' | 'active' | 'posting';
+
+export type BidInfo = {
+  name: string;
+  highBidder: string; // accountName
+  highBid: number; // int
+  lastBidTime: string; // Date
+  glsName?: string; // TODO: lookup
+};
+
+export type AuctionInfo = {
+  bids?: BidInfo[];
+  lastClosedBid?: string; // Date
+};
+
+export type AuctionKind = 'account' | 'domain';

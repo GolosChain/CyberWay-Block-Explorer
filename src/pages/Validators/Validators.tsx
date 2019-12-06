@@ -199,7 +199,7 @@ export default class Validators extends PureComponent<Props, State> {
             Produced blocks: {produced}
           </span>
           ; missed: {missed}; missed during 7 days: {weekMissed}{' '}
-          {SHOW_BLOCK_MISS_EMOJI ? produced || weekMissed ? missGrade : '💤' : null}
+          {SHOW_BLOCK_MISS_EMOJI ? (produced || weekMissed ? missGrade : '💤') : null}
           <br />
         </small>
         <small>(signing key: {signingKey})</small>
