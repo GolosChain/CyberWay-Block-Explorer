@@ -110,7 +110,7 @@ export default class TrxPretty extends PureComponent<Props, State> {
   }
 
   componentDidUpdate(prevProps: Props) {
-    const {trx} = this.props;
+    const { trx } = this.props;
     if (trx && trx !== prevProps.trx) {
       this.parseTrx();
     }

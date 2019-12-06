@@ -151,7 +151,7 @@ export default class Proposal extends PureComponent<Props, State> {
 
       this.setState({
         proposalName: proposal,
-        items: items.map((x: ProposalType) => ({...x, partialTrx: x.trx, trx: null})), // TODO: update block-service to return trx in other field
+        items: items.map((x: ProposalType) => ({ ...x, partialTrx: x.trx, trx: null })), // TODO: update block-service to return trx in other field
         loadingProposal: null,
       });
 
