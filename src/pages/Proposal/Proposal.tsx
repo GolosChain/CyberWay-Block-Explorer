@@ -85,6 +85,7 @@ type ApprovalType = {
 
 type ProposalType = {
   packedTrx: string;
+  partialTrx: any; // comes from block service and have serialized actions
   trx: any;
   blockNum: number;
   approvals: ApprovalType[];
@@ -150,7 +151,7 @@ export default class Proposal extends PureComponent<Props, State> {
 
       this.setState({
         proposalName: proposal,
-        items,
+        items: items.map((x: ProposalType) => ({ ...x, partialTrx: x.trx, trx: null })), // TODO: update block-service to return trx in other field
         loadingProposal: null,
       });
 
@@ -174,7 +175,7 @@ export default class Proposal extends PureComponent<Props, State> {
       let trx = item.trx;
 
       if (!trx) {
-        const { packedTrx } = item;
+        const { packedTrx, partialTrx } = item;
 
         if (packedTrx) {
           try {
@@ -187,7 +188,7 @@ export default class Proposal extends PureComponent<Props, State> {
             console.error('%%%% failed to deserialize trx', err.message, err); // debug; TODO: remove/replace
           }
         } else {
-          trx = item.trx; //TODO: deserialize actions
+          trx = partialTrx; //TODO: deserialize actions
         }
       }
 
