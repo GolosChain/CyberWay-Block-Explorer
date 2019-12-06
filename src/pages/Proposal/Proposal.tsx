@@ -126,36 +126,62 @@ export default class Proposal extends PureComponent<Props, State> {
     }
   }
 
+  componentDidUpdate(prevProps: Props) {
+    if (this.props.version !== prevProps.version) {
+      this.updateVersion();
+    }
+  }
+
   appendError(error: string) {
     const err = [...this.state.err, error];
     this.setState({ err });
   }
 
   async loadProposal() {
-    const { account, proposal, version, loadProposals } = this.props;
+    const { account, proposal, loadProposals } = this.props;
     try {
       this.setState({ loadingProposal: proposal });
 
-      const idx = version - 1;
       const { items } = await loadProposals({ proposer: account, name: proposal });
-      let ok = items && items.length >= 1;
 
-      if (ok && idx >= items.length) {
-        this.appendError('There is no such version of the proposal');
-        ok = false;
+      if (!items || !items.length) {
+        this.appendError('proposal not found');
       }
 
-      const item = ok ? items[idx] : {};
-      const { packedTrx } = item;
-      let { expires } = item;
+      this.setState({
+        proposalName: proposal,
+        items,
+        loadingProposal: null,
+      });
 
-      let trx = null;
-      if (ok) {
+      this.updateVersion();
+    } catch (err) {
+      const error = 'Failed to load proposal';
+      this.appendError(error);
+      ToastsManager.error(`${error}: ${err.message}`);
+    }
+  }
+
+  async updateVersion() {
+    const { items } = this.state;
+    const { version } = this.props;
+    const idx = version - 1;
+    const valid = idx < items.length;
+
+    if (valid) {
+      const item = items[idx];
+      let { expires } = item;
+      let trx = item.trx;
+
+      if (!trx) {
+        const { packedTrx } = item;
+
         if (packedTrx) {
           try {
             trx = await deserializeTrx({ trx: packedTrx });
             if (!expires) {
-              expires = trx.expiration;
+              const exp = trx.expiration;
+              expires = `${exp}${exp.endsWith('Z') ? '' : 'Z'}`;
             }
           } catch (err) {
             console.error('%%%% failed to deserialize trx', err.message, err); // debug; TODO: remove/replace
@@ -166,19 +192,9 @@ export default class Proposal extends PureComponent<Props, State> {
       }
 
       items[idx] = { ...item, trx, expires };
-
-      this.setState({
-        proposalName: proposal,
-        items,
-        loadingProposal: null,
-      });
-      if (!ok) {
-        this.appendError('proposal not found');
-      }
-    } catch (err) {
-      const error = 'Failed to load proposal';
-      this.appendError(error);
-      ToastsManager.error(`${error}: ${err.message}`);
+      this.setState({ err: [], items: [...items] });
+    } else {
+      this.appendError('There is no such version of the proposal');
     }
   }
 
@@ -294,6 +310,23 @@ export default class Proposal extends PureComponent<Props, State> {
         <Helmet title={`Proposal "${proposal}" by ${account}`} />
         <Title>Proposer: {account}</Title>
         <h2>Proposal: {proposal}</h2>
+        {items.length > 1 ? (
+          <List>
+            There are several versions of this proposal:
+            <ul>
+              {items.map((x, i) => {
+                const ver = i + 1;
+                const body = `version ${ver}, block: #${x.blockNum}`;
+
+                return (
+                  <li key={i}>
+                    {i !== idx ? <Link to={this.proposalUrl(ver)}>{body}</Link> : <b>{body}</b>}
+                  </li>
+                );
+              })}
+            </ul>
+          </List>
+        ) : null}
         {error ? (
           <ErrorLine>{error}</ErrorLine>
         ) : err.length ? (
@@ -304,23 +337,6 @@ export default class Proposal extends PureComponent<Props, State> {
           ))
         ) : proposalName === proposal ? (
           <div>
-            {items.length > 1 ? (
-              <List>
-                There are several versions of this proposal:
-                <ul>
-                  {items.map((x, i) => {
-                    const ver = i + 1;
-                    const body = `version ${ver}, block: #${x.blockNum}`;
-
-                    return (
-                      <li key={i}>
-                        {i !== idx ? <Link to={this.proposalUrl(ver)}>{body}</Link> : <b>{body}</b>}
-                      </li>
-                    );
-                  })}
-                </ul>
-              </List>
-            ) : null}
             <Field line>
               <FieldTitle>Created on block:</FieldTitle>{' '}
               <Link to={`/block/${blockNum}`}>#{blockNum}</Link>
