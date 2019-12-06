@@ -16,7 +16,7 @@ import { FieldTitle, Field } from '../Form';
 import { COLORS } from '../../utils/theme';
 import { formatCyber } from '../../utils/cyberway';
 import { checkWin, domainCheckWin, bidName, domainBid } from '../../utils/cyberwayActions';
-import { AuctionInfo, BidInfo } from '../../types';
+import { AuctionInfo, BidInfo, AuctionKind } from '../../types';
 
 const NEXT_WIN_DELAY = 1000 * 60 * 60 * 24;
 
@@ -79,7 +79,7 @@ const FieldName = styled(FieldTitle)`
 `;
 
 export type Props = {
-  type: 'account' | 'domain';
+  type: AuctionKind;
   auction: AuctionInfo;
   loadBids: (params: LoadBidsParams) => any;
   loadLastBid: (params: LoadLastBidParams) => any;
@@ -125,7 +125,7 @@ export default class Auction extends PureComponent<Props, State> {
   }
 
   winAction() {
-    const action = (this.isDomain ? domainCheckWin : checkWin)(this.state.actor);
+    const action = (this.isDomain() ? domainCheckWin : checkWin)(this.state.actor);
     return this.actionToUrl(action);
   }
 
