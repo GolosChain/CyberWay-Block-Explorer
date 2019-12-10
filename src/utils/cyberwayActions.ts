@@ -3,8 +3,48 @@ import { AuthType } from '../types';
 // constructs actions
 const SYS_TOKEN = 'CYBER';
 
-function actionBase(account: string, name: string, actor: string) {
-  return { account, name, authorization: [{ actor, permission: 'active' }] };
+function actionBase(account: string, name: string, actor: string, permission = 'active') {
+  return { account, name, authorization: [{ actor, permission }] };
+}
+
+// cyber
+
+function biosAction(action: string, actor: string, permission = 'active') {
+  return actionBase('cyber', action, actor, permission);
+}
+
+export function checkWin(actor: string, permission = 'active') {
+  return {
+    ...biosAction('checkwin', actor, permission),
+    data: {},
+  };
+}
+
+export function bidName(bidder: string, newname: string, bid: string) {
+  return {
+    ...biosAction('bidname', bidder),
+    data: { bidder, newname, bid },
+  };
+}
+
+// cyber.domain
+
+function domainAction(action: string, actor: string, permission = 'active') {
+  return actionBase('cyber.domain', action, actor, permission);
+}
+
+export function domainCheckWin(actor: string, permission = 'active') {
+  return {
+    ...domainAction('checkwin', actor, permission),
+    data: {},
+  };
+}
+
+export function domainBid(bidder: string, name: string, bid: string) {
+  return {
+    ...domainAction('biddomain', bidder),
+    data: { bidder, name, bid },
+  };
 }
 
 // cyber.stake

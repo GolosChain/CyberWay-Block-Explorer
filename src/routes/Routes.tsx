@@ -14,6 +14,7 @@ import Tokens from '../pages/Tokens';
 import Token from '../pages/Token';
 import Sign from '../pages/Sign';
 import Contract from '../pages/Contract';
+import Auctions from '../pages/Auctions';
 
 export type BlockRouteParams = {
   block: string;
@@ -53,6 +54,7 @@ export default function() {
       <Route path="/tokens" exact component={Tokens} />
       <Route path="/token/:symbol" exact component={wrapKeySetter(Token)} />
       <Route path="/sign" component={wrapKeySetter(Sign)} />
+      <Route path="/auction" exact component={Auctions} />
       <Route path="/account/:name/:mode(actor|mention)?" exact component={wrapKeySetter(Account)} />
       <Route path="/account/:account/contract" exact component={wrapKeySetter(Contract)} />
       <Route
