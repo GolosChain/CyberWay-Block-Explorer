@@ -54,7 +54,13 @@ const HiddenSubmitButton = styled.button`
   display: none;
 `;
 
-const ClearButton = styled.button``;
+const Buttons = styled.div`
+  & > :not(:last-child) {
+    margin-right: 6px;
+  }
+`;
+
+const Button = styled.button``;
 
 type Props = {
   isForceShow: boolean;
@@ -240,9 +246,12 @@ export default class Filters extends PureComponent<Props, State> {
             />{' '}
             <FieldTitle>Non Empty</FieldTitle>
           </Field>
-          <ClearButton type="button" onClick={this.onClearClick}>
-            Clear
-          </ClearButton>
+          <Buttons>
+            <Button>Submit</Button>
+            <Button type="button" onClick={this.onClearClick}>
+              Clear
+            </Button>
+          </Buttons>
         </Line>
         {/* Button must be in form for submitting by Enter key */}
         <HiddenSubmitButton />
