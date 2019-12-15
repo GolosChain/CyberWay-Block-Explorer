@@ -11,7 +11,7 @@ type Props = {
   };
 };
 
-export type LoadProposalsParams = { proposer: string; name: string };
+export type LoadProposalParams = { proposer: string; name: string };
 
 export default connect(
   (state: State, props: Props) => {
@@ -31,9 +31,9 @@ export default connect(
     return { account, proposal, version: ver, error };
   },
   {
-    loadProposals: (params: LoadProposalsParams) => ({
+    loadProposal: (params: LoadProposalParams) => ({
       type: CALL_API,
-      method: 'accounts.getProposals',
+      method: 'accounts.getProposal',
       params: {
         proposer: params.proposer,
         name: params.name,

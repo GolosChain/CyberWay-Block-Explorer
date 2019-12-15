@@ -263,3 +263,18 @@ export type AuctionInfo = {
 };
 
 export type AuctionKind = 'account' | 'domain';
+
+export type ProposalFinishType = {
+  actor: string; //account name type
+  status: 'exec' | 'cancel';
+  execTrxId?: string;
+};
+
+export type BaseProposalType = {
+  name: string; // name type
+  blockNum: number;
+  blockTime: string; // Date
+  finished?: ProposalFinishType;
+  updateTime?: string; //Date,
+  expires?: string; //Date,
+};

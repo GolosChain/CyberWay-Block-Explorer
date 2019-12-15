@@ -9,6 +9,7 @@ import Block from '../pages/Block';
 import Transaction from '../pages/Transaction';
 import Account from '../pages/Account';
 import Proposal from '../pages/Proposal';
+import Proposals from '../pages/Proposals';
 import Validators from '../pages/Validators';
 import Tokens from '../pages/Tokens';
 import Token from '../pages/Token';
@@ -29,18 +30,17 @@ export type AccountRouteParams = {
   mode?: AccountTransactionsMode;
 };
 
-export type ProposalRouteParams = {
+export type BaseAccountRouteParams = {
   account: string;
+};
+
+export type ProposalRouteParams = BaseAccountRouteParams & {
   proposal: string;
   version?: string; // it's number, but router can't
 };
 
 export type TokenRouteParams = {
   symbol: string;
-};
-
-export type ContractRouteParams = {
-  account: string;
 };
 
 export default function() {
@@ -57,6 +57,7 @@ export default function() {
       <Route path="/auction" exact component={Auctions} />
       <Route path="/account/:name/:mode(actor|mention)?" exact component={wrapKeySetter(Account)} />
       <Route path="/account/:account/contract" exact component={wrapKeySetter(Contract)} />
+      <Route path="/account/:account/proposals" exact component={wrapKeySetter(Proposals)} />
       <Route
         path="/account/:account/proposal/:proposal/:version?"
         exact

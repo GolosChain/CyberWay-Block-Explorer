@@ -3,11 +3,12 @@ import Helmet from 'react-helmet';
 import styled from 'styled-components';
 import ToastsManager from 'toasts-manager';
 
-import { AuthType } from '../../types';
+import { AuthType, BaseProposalType } from '../../types';
 import { Field, FieldTitle, ErrorLine } from '../../components/Form';
 import TrxPretty from '../../components/TrxPretty';
 import Link from '../../components/Link';
-import { deserializeTrx } from '../../utils/cyberway';
+import AccountName from '../../components/AccountName';
+import { deserializeTrx, formatTime } from '../../utils/cyberway';
 import { msigApprove, msigUnapprove, msigCancel, msigExec } from '../../utils/cyberwayActions';
 import { COLORS } from '../../utils/theme';
 
@@ -83,17 +84,11 @@ type ApprovalType = {
   time?: string; //Date;
 };
 
-type ProposalType = {
+type ProposalType = BaseProposalType & {
   packedTrx: string;
   partialTrx: any; // comes from block service and have serialized actions
   trx: any;
-  blockNum: number;
   approvals: ApprovalType[];
-
-  updateTime?: string; //Date,
-  expires: string; //Date,
-  finalStatus?: string;
-  execTrxId?: string;
 };
 
 type Props = {
@@ -101,7 +96,7 @@ type Props = {
   proposal: string;
   version: number;
   error: string | null;
-  loadProposals: Function;
+  loadProposal: Function;
 };
 
 type State = {
@@ -139,11 +134,11 @@ export default class Proposal extends PureComponent<Props, State> {
   }
 
   async loadProposal() {
-    const { account, proposal, loadProposals } = this.props;
+    const { account, proposal, loadProposal } = this.props;
     try {
       this.setState({ loadingProposal: proposal });
 
-      const { items } = await loadProposals({ proposer: account, name: proposal });
+      const { items } = await loadProposal({ proposer: account, name: proposal });
 
       if (!items || !items.length) {
         this.appendError('proposal not found');
@@ -208,10 +203,6 @@ export default class Proposal extends PureComponent<Props, State> {
     return { actor, permission } as AuthType;
   }
 
-  _formatTime(time: string | number) {
-    return new Date(time).toLocaleString();
-  }
-
   approveTrx(approval: ApprovalType, no: boolean, both?: boolean) {
     // TODO: add hash for `approve`
     const { account, proposal } = this.props;
@@ -260,9 +251,7 @@ export default class Proposal extends PureComponent<Props, State> {
           return (
             <Approval key={x.level} className={got ? 'got' : haveTime ? 'lost' : ''}>
               {x.level}
-              {haveTime
-                ? ` / ${got ? 'approved' : 'unapproved'}: ${this._formatTime(time)}`
-                : null}{' '}
+              {haveTime ? ` / ${got ? 'approved' : 'unapproved'}: ${formatTime(time)}` : null}{' '}
               {exists ? this.renderApproveButtons(x, got) : null}
             </Approval>
           );
@@ -287,24 +276,29 @@ export default class Proposal extends PureComponent<Props, State> {
       approvals = [],
       updateTime = undefined, // To make TS glad lol…
       expires = '',
-      finalStatus = undefined,
-      execTrxId = undefined,
+      finished = undefined,
     } = items[idx] || {};
 
     const STATUS: { [key: string]: string } = {
-      exec: 'executed',
+      exec: 'executed', // TODO: can also check trx id existence to detect, is it executed/failed/delayed
       cancel: 'cancelled',
       wait: 'waiting',
       ready: '✅ready to exec',
       old: '❗️expired',
+      oldcancel: 'expired and then cancelled',
     };
 
-    const exists = !finalStatus;
+    const { status: finalStatus, actor, execTrxId } = finished || {};
+    const exists = !finished;
     const expired = Date.now() >= new Date(expires).getTime();
     const waitingStatus = expired ? 'old' : 'wait';
     const nRequested = approvals.length;
     const nApproved = approvals.filter(x => (x.status || '').startsWith('approve')).length;
-    const status = finalStatus || (nApproved === nRequested ? 'ready' : waitingStatus);
+    let status = finalStatus || (nApproved === nRequested ? 'ready' : waitingStatus);
+
+    if (status === 'cancel' && updateTime && new Date(updateTime) >= new Date(expires)) {
+      status = 'oldcancel';
+    }
 
     return (
       <Wrapper>
@@ -343,20 +337,25 @@ export default class Proposal extends PureComponent<Props, State> {
               <Link to={`/block/${blockNum}`}>#{blockNum}</Link>
             </Field>
             <Field line>
-              <FieldTitle>Status:</FieldTitle> <b>{STATUS[status]}</b>{' '}
+              <FieldTitle>Status:</FieldTitle> <b>{STATUS[status]}</b>
+              {actor && (
+                <>
+                  {' '}
+                  by <AccountName account={{ id: actor }} addLink />
+                </>
+              )}
               {execTrxId && <TinyLink to={`/trx/${execTrxId}`}>{execTrxId}</TinyLink>}
             </Field>
             {exists ? (
               <Field line>
-                <FieldTitle>{expired ? 'Expired' : 'Expires'}:</FieldTitle>{' '}
-                {this._formatTime(expires)}
+                <FieldTitle>{expired ? 'Expired' : 'Expires'}:</FieldTitle> {formatTime(expires)}
               </Field>
             ) : null}
             <Field line>
               <FieldTitle title="Someone approved, unapproved, executed or cancelled the proposal">
                 Last updated:
               </FieldTitle>{' '}
-              {updateTime ? this._formatTime(updateTime!) : 'never'}
+              {updateTime ? formatTime(updateTime!) : 'never'}
             </Field>
             <FieldTitle>Transaction:</FieldTitle>
             <TrxPretty trx={trx} packedTrx={packedTrx} />

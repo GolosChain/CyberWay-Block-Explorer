@@ -33,8 +33,11 @@ const List = styled.ol`
 
 const AccountItem = styled.li<{ paused: boolean }>`
   margin: 4px 0 8px;
+  padding: 4px 0 8px;
   list-style: decimal;
   clear: both;
+
+  border-bottom: 1px solid #ddd;
 
   &:hover {
     background: #ffd;
@@ -198,7 +201,7 @@ export default class Validators extends PureComponent<Props, State> {
           <span title={`latest block: ${latestBlock ? latestBlock.toLocaleString() : 'never'}`}>
             Produced blocks: {produced}
           </span>
-          ; missed: {missed}; missed during 7 days: {weekMissed}{' '}
+          ; missed: {missed}; missed during 7 days: <b>{weekMissed}</b>{' '}
           {SHOW_BLOCK_MISS_EMOJI ? (produced || weekMissed ? missGrade : '💤') : null}
           <br />
         </small>

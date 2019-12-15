@@ -214,10 +214,18 @@ export default class EmissionInfo extends PureComponent<Props, State> {
           <>
             <TextInfo>
               <ul>
-                <li>Current supply: {formatCyber(supply, true)}</li>
-                <li>Total staked: {formatCyber(staked, true)}</li>
-                <li>Total votes: {formatCyber(voted, true)}</li>
-                <li>Current emission: {emission.emissionAnnual.toFixed(2)}%</li>
+                <li>
+                  <b>Current supply:</b> {formatCyber(supply, true)}
+                </li>
+                <li>
+                  <b>Total staked:</b> {formatCyber(staked, true)}
+                </li>
+                <li>
+                  <b>Total votes:</b> {formatCyber(voted, true)}
+                </li>
+                <li>
+                  <b>Current emission:</b> {emission.emissionAnnual.toFixed(2)}%
+                </li>
               </ul>
             </TextInfo>
             <Info>

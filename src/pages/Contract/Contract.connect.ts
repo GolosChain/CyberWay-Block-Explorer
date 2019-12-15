@@ -1,11 +1,11 @@
 import { connect } from 'react-redux';
 import { State } from '../../store';
 import Contract from './Contract';
-import { ContractRouteParams } from '../../routes/Routes';
+import { BaseAccountRouteParams } from '../../routes/Routes';
 
 type Props = {
   match: {
-    params: ContractRouteParams;
+    params: BaseAccountRouteParams;
   };
 };
 
