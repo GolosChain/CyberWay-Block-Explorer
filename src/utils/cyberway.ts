@@ -145,3 +145,7 @@ export function formatCyber(amount: number, full?: boolean) {
 export function formatPct(x: number) {
   return (x / 100).toFixed(2) + '%';
 }
+
+export function formatTime(time: string | number) {
+  return time ? new Date(time).toLocaleString() : '?';
+}
