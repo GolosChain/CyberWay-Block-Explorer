@@ -130,7 +130,7 @@ export default class Proposals extends PureComponent<Props, State> {
         <h2>Proposals</h2>
         {error ? (
           <ErrorLine>{error}</ErrorLine>
-        ) : items.length > 1 ? (
+        ) : items.length ? (
           <List>
             {items.map((x, i) => (
               <li key={i}>{this.renderProposal(x, versions)}</li>

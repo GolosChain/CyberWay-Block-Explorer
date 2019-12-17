@@ -22,6 +22,12 @@ const Title = styled.h1`
   margin: 12px 0;
 `;
 
+const ProposalsLink = styled(Link)`
+  font-size: 12px;
+  font-weight: normal;
+  margin-left: 12px;
+`;
+
 const Approval = styled.li`
   margin: 6px 0;
   &.got {
@@ -49,6 +55,7 @@ const BUTTON_STYLE = `
 
 const TinyLink = styled(Link)`
   font-size: 70%;
+  margin-left: 8px;
 `;
 
 const LinkButton = styled(Link)`
@@ -273,6 +280,7 @@ export default class Proposal extends PureComponent<Props, State> {
       packedTrx = '',
       trx = null,
       blockNum = -1,
+      blockTime = '',
       approvals = [],
       updateTime = undefined, // To make TS glad lol…
       expires = '',
@@ -303,7 +311,10 @@ export default class Proposal extends PureComponent<Props, State> {
     return (
       <Wrapper>
         <Helmet title={`Proposal "${proposal}" by ${account}`} />
-        <Title>Proposer: {account}</Title>
+        <Title>
+          Proposer: {account}
+          <ProposalsLink to={`/account/${account}/proposals`}>all proposals</ProposalsLink>
+        </Title>
         <h2>Proposal: {proposal}</h2>
         {items.length > 1 ? (
           <List>
@@ -333,11 +344,11 @@ export default class Proposal extends PureComponent<Props, State> {
         ) : proposalName === proposal ? (
           <div>
             <Field line>
-              <FieldTitle>Created on block:</FieldTitle>{' '}
-              <Link to={`/block/${blockNum}`}>#{blockNum}</Link>
+              <FieldTitle>Created:</FieldTitle> {blockTime ? `${formatTime(blockTime)}, ` : 'on '}
+              block #<Link to={`/block/${blockNum}`}>{blockNum}</Link>
             </Field>
             <Field line>
-              <FieldTitle>Status:</FieldTitle> <b>{STATUS[status]}</b>
+              <FieldTitle>Status:</FieldTitle> <b>{!expires ? '?' : STATUS[status]}</b>
               {actor && (
                 <>
                   {' '}
