@@ -69,7 +69,8 @@ export default class ActionBody extends PureComponent<Props, State> {
           <FieldTitle>Receiver:</FieldTitle> <FieldValue>{action.receiver}</FieldValue>
         </Field>
         <Field line>
-          <FieldTitle>Authorization:</FieldTitle> {renderActors(action.auth)}
+          <FieldTitle>Authorization:</FieldTitle>
+          {renderActors(action.auth)}
         </Field>
         <ArgsBlock>
           {action.args ? (
@@ -110,6 +111,7 @@ export default class ActionBody extends PureComponent<Props, State> {
 function renderActors(auth: AuthType[]) {
   return auth.map((auth, index) => (
     <Fragment key={index}>
+      {' '}
       <Link to={`/account/${auth.actor}`}>{auth.actor}</Link>@{auth.permission}
     </Fragment>
   ));
