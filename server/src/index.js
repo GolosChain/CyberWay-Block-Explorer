@@ -112,10 +112,13 @@ function getActionsCount(time) {
         reject(err);
       } else if (response.error) {
         reject(response.error);
-      } else {
-        const { blockTime, totals } = response.result;
-        resolve({ blockTime, actions: totals.actions.count });
-      }
+      } else
+        try {
+          const { blockTime, totals } = response.result;
+          resolve({ blockTime, actions: totals.actions.count });
+        } catch (e) {
+          reject(e);
+        }
     });
   });
 }
