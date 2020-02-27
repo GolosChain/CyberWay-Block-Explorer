@@ -56,7 +56,7 @@ app.get('/trx/:trxId.json', async (req, res) => {
 
 function getTokenSupply(symbol) {
   return new Promise((resolve, reject) => {
-    const whitelist = { CYBER: 1, GOLOS: 1 };
+    const whitelist = { CYBER: 1, GOLOS: 1, CMN: 1 };
     if (!whitelist[symbol]) {
       reject({ code: 404 });
       return;
@@ -97,6 +97,50 @@ app.get('/api/supply/:token', async (req, res) => {
     }
 
     console.error(new Date().toJSON(), 'Token supply fetch failed:', err);
+
+    res.status(500);
+    res.json({
+      error: 'Internal Server Error',
+    });
+  }
+});
+
+function getActionsCount(time) {
+  return new Promise((resolve, reject) => {
+    blocksClient.request('getBlock', { blockTime: time.toISOString() }, (err, response) => {
+      if (err) {
+        reject(err);
+      } else if (response.error) {
+        reject(response.error);
+      } else {
+        const { blockTime, totals } = response.result;
+        resolve({ blockTime, actions: totals.actions.count });
+      }
+    });
+  });
+}
+
+app.get('/api/stat/actions/24h', async (req, res) => {
+  try {
+    const high = await getActionsCount(new Date());
+    const time = new Date(high.blockTime);
+    time.setHours(time.getHours() - 24);
+    const low = await getActionsCount(time);
+
+    res.json({
+      actions: high.actions - low.actions,
+      range: { from: time, to: high.blockTime },
+    });
+  } catch (err) {
+    if (err.code === 404) {
+      res.status(404);
+      res.json({
+        error: 'Not found',
+      });
+      return;
+    }
+
+    console.error(new Date().toJSON(), 'Actions stat fetch failed:', err);
 
     res.status(500);
     res.json({
