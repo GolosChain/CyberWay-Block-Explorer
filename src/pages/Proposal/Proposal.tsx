@@ -11,6 +11,8 @@ import AccountName from '../../components/AccountName';
 import { deserializeTrx, formatTime } from '../../utils/cyberway';
 import { msigApprove, msigUnapprove, msigCancel, msigExec } from '../../utils/cyberwayActions';
 import { COLORS } from '../../utils/theme';
+// @ts-ignore
+import ecc from 'eosjs-ecc';
 
 const EMPTY_DATE = new Date('1970-01-01T00:00:00.000Z');
 
@@ -123,6 +125,8 @@ export default class Proposal extends PureComponent<Props, State> {
     err: [],
   };
 
+  _currentPackedTrx = '';
+
   componentDidMount() {
     if (!this.props.error) {
       this.loadProposal();
@@ -214,10 +218,11 @@ export default class Proposal extends PureComponent<Props, State> {
     // TODO: add hash for `approve`
     const { account, proposal } = this.props;
     const level = this._strToLevel(approval.level);
-    const actions = [(no ? msigUnapprove : msigApprove)(account, proposal, level)];
+    const hash = this._currentPackedTrx ? ecc.sha256(Buffer.from(this._currentPackedTrx, 'hex')) : undefined;
+    const actions = [(no ? msigUnapprove : msigApprove)(account, proposal, level, hash)];
 
     if (both && no) {
-      actions.unshift(msigApprove(account, proposal, level));
+      actions.unshift(msigApprove(account, proposal, level, hash));
     }
 
     return this._signUrl(actions);
@@ -286,6 +291,8 @@ export default class Proposal extends PureComponent<Props, State> {
       expires = '',
       finished = undefined,
     } = items[idx] || {};
+
+    this._currentPackedTrx = packedTrx;
 
     const STATUS: { [key: string]: string } = {
       exec: 'executed', // TODO: can also check trx id existence to detect, is it executed/failed/delayed
