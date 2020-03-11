@@ -158,3 +158,14 @@ export function msigExec(proposer: string, proposal: string, executer = proposer
     },
   };
 }
+
+export function msigSchedule(proposer: string, proposal: string, actor = proposer) {
+  return {
+    ...msigAction('schedule', actor),
+    data: {
+      proposer,
+      proposal_name: proposal,
+      actor,
+    },
+  };
+}

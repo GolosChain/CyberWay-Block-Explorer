@@ -9,7 +9,13 @@ import TrxPretty from '../../components/TrxPretty';
 import Link from '../../components/Link';
 import AccountName from '../../components/AccountName';
 import { deserializeTrx, formatTime } from '../../utils/cyberway';
-import { msigApprove, msigUnapprove, msigCancel, msigExec } from '../../utils/cyberwayActions';
+import {
+  msigApprove,
+  msigUnapprove,
+  msigCancel,
+  msigExec,
+  msigSchedule,
+} from '../../utils/cyberwayActions';
 import { COLORS } from '../../utils/theme';
 // @ts-ignore
 import ecc from 'eosjs-ecc';
@@ -111,6 +117,7 @@ type Props = {
 type State = {
   proposalName: string;
   items: ProposalType[];
+  msigVersion?: number;
 
   loadingProposal: string | null;
   err: string[];
@@ -123,7 +130,7 @@ export default class Proposal extends PureComponent<Props, State> {
 
     loadingProposal: null,
     err: [],
-  };
+  } as State;
 
   _currentPackedTrx = '';
 
@@ -149,7 +156,7 @@ export default class Proposal extends PureComponent<Props, State> {
     try {
       this.setState({ loadingProposal: proposal });
 
-      const { items } = await loadProposal({ proposer: account, name: proposal });
+      const { items, msigVersion } = await loadProposal({ proposer: account, name: proposal });
 
       if (!items || !items.length) {
         this.appendError('proposal not found');
@@ -158,10 +165,11 @@ export default class Proposal extends PureComponent<Props, State> {
       this.setState({
         proposalName: proposal,
         items: items.map((x: ProposalType) => ({ ...x, partialTrx: x.trx, trx: null })), // TODO: update block-service to return trx in other field
+        msigVersion,
         loadingProposal: null,
       });
 
-      this.updateVersion();
+      this.updateVersion(); // updates state too; TODO: combine with previous setState
     } catch (err) {
       const error = 'Failed to load proposal';
       this.appendError(error);
@@ -218,7 +226,9 @@ export default class Proposal extends PureComponent<Props, State> {
     // TODO: add hash for `approve`
     const { account, proposal } = this.props;
     const level = this._strToLevel(approval.level);
-    const hash = this._currentPackedTrx ? ecc.sha256(Buffer.from(this._currentPackedTrx, 'hex')) : undefined;
+    const hash = this._currentPackedTrx
+      ? ecc.sha256(Buffer.from(this._currentPackedTrx, 'hex'))
+      : undefined;
     const actions = [(no ? msigUnapprove : msigApprove)(account, proposal, level, hash)];
 
     if (both && no) {
@@ -236,6 +246,11 @@ export default class Proposal extends PureComponent<Props, State> {
   executeProposalTrx() {
     const { account, proposal } = this.props;
     return this._signUrl([msigExec(account, proposal)]);
+  }
+
+  scheduleProposalTrx() {
+    const { account, proposal } = this.props;
+    return this._signUrl([msigSchedule(account, proposal)]);
   }
 
   renderApproveButton(approval: ApprovalType, got: boolean, both?: boolean) {
@@ -279,7 +294,7 @@ export default class Proposal extends PureComponent<Props, State> {
 
   render() {
     const { account, proposal, version, error } = this.props;
-    const { proposalName, items, loadingProposal, err } = this.state;
+    const { proposalName, items, msigVersion, loadingProposal, err } = this.state;
     const idx = version - 1;
     const {
       packedTrx = '',
@@ -290,6 +305,7 @@ export default class Proposal extends PureComponent<Props, State> {
       updateTime = undefined, // To make TS glad lol…
       expires = '',
       finished = undefined,
+      scheduled = undefined,
     } = items[idx] || {};
 
     this._currentPackedTrx = packedTrx;
@@ -303,13 +319,19 @@ export default class Proposal extends PureComponent<Props, State> {
       oldcancel: 'expired and then cancelled',
     };
 
+    const now = Date.now();
+    const delay: number = msigVersion && trx ? trx.delay_sec : 0; // enable new behaviour of delayed transactions if msig updated
+    const hasDelay = delay > 0;
+    const delayFinish = scheduled && hasDelay ? new Date(scheduled).getTime() + 1000 * delay : 0;
+    const delayPassed = scheduled && now >= delayFinish;
+
     const { status: finalStatus, actor, execTrxId } = finished || {};
     const exists = !finished;
-    const expired = Date.now() >= new Date(expires).getTime();
+    const expired = now >= new Date(expires).getTime();
     const waitingStatus = expired ? 'old' : 'wait';
     const nRequested = approvals.length;
     const nApproved = approvals.filter(x => (x.status || '').startsWith('approve')).length;
-    let status = finalStatus || (nApproved === nRequested ? 'ready' : waitingStatus);
+    let status = finalStatus || (!expired && nApproved === nRequested ? 'ready' : waitingStatus);
 
     if (status === 'cancel' && updateTime && new Date(updateTime) >= new Date(expires)) {
       status = 'oldcancel';
@@ -369,6 +391,16 @@ export default class Proposal extends PureComponent<Props, State> {
                 <FieldTitle>{expired ? 'Expired' : 'Expires'}:</FieldTitle> {formatTime(expires)}
               </Field>
             ) : null}
+            {hasDelay && (
+              <Field line>
+                <FieldTitle>Delay:</FieldTitle> {delay} seconds;{' '}
+                {scheduled
+                  ? `scheduled: ${formatTime(scheduled)}, ${
+                      delayPassed ? 'delay passed ✔️' : 'waiting ⏳'
+                    }`
+                  : 'not scheduled yet'}
+              </Field>
+            )}
             <Field line>
               <FieldTitle title="Someone approved, unapproved, executed or cancelled the proposal">
                 Last updated:
@@ -386,7 +418,15 @@ export default class Proposal extends PureComponent<Props, State> {
                 <hr />
                 <FieldTitle>Actions:</FieldTitle>{' '}
                 <RedLinkButton to={this.cancelProposalTrx()}>Cancel</RedLinkButton>{' '}
-                {expired ? null : <LinkButton to={this.executeProposalTrx()}>Try exec</LinkButton>}
+                {hasDelay && !scheduled ? (
+                  <LinkButton to={this.scheduleProposalTrx()}>Try schedule</LinkButton>
+                ) : null}
+                {(!hasDelay || delayPassed) && !expired ? (
+                  <LinkButton to={this.executeProposalTrx()}>Try exec</LinkButton>
+                ) : null}
+                {scheduled && !delayPassed && !expired
+                  ? `Can't exec while scheduled, waiting until ${formatTime(delayFinish)}`
+                  : null}
               </>
             ) : null}
           </div>
