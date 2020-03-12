@@ -98,8 +98,8 @@ export function setProxyLevelAction(account: string, level: number) {
 
 // cyber.msig
 
-function msigAction(action: string, actor: string) {
-  return actionBase('cyber.msig', action, actor);
+function msigAction(action: string, actor: string, permission = 'active') {
+  return actionBase('cyber.msig', action, actor, permission);
 }
 
 export function maigPropose(proposer: string, proposal: string, requested: AuthType[], trx: any) {
@@ -116,7 +116,7 @@ export function maigPropose(proposer: string, proposal: string, requested: AuthT
 
 export function msigApprove(proposer: string, proposal: string, level: AuthType, hash?: string) {
   return {
-    ...msigAction('approve', level.actor),
+    ...msigAction('approve', level.actor, level.permission),
     data: {
       proposer,
       proposal_name: proposal,
@@ -128,7 +128,7 @@ export function msigApprove(proposer: string, proposal: string, level: AuthType,
 
 export function msigUnapprove(proposer: string, proposal: string, level: AuthType) {
   return {
-    ...msigAction('unapprove', level.actor),
+    ...msigAction('unapprove', level.actor, level.permission),
     data: {
       proposer,
       proposal_name: proposal,
@@ -155,6 +155,17 @@ export function msigExec(proposer: string, proposal: string, executer = proposer
       proposer,
       proposal_name: proposal,
       executer,
+    },
+  };
+}
+
+export function msigSchedule(proposer: string, proposal: string, actor = proposer) {
+  return {
+    ...msigAction('schedule', actor),
+    data: {
+      proposer,
+      proposal_name: proposal,
+      actor,
     },
   };
 }

@@ -277,4 +277,5 @@ export type BaseProposalType = {
   finished?: ProposalFinishType;
   updateTime?: string; //Date,
   expires?: string; //Date,
+  scheduled?: string; // Date
 };

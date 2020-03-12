@@ -107,7 +107,7 @@ export default class Proposals extends PureComponent<Props, State> {
           {updateTime && (
             <>
               ,{' '}
-              <span title="Someone approved, unapproved, executed or cancelled the proposal">
+              <span title="Someone approved, unapproved, scheduled, executed or cancelled the proposal">
                 updated: {formatTime(updateTime)}
               </span>
             </>
