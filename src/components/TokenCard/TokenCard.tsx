@@ -58,12 +58,14 @@ export default class TokenCard extends PureComponent<Props> {
             {/* ({percent.toFixed(2)}% of max) */}
           </FieldValue>
         </Field>
-        <Field line>
-          <FieldTitle>Burned: </FieldTitle>
-          <FieldValue>
-            {nulls} <small>(included in Supply)</small>
-          </FieldValue>
-        </Field>
+        {parseFloat(nulls) > 0 && (
+          <Field line>
+            <FieldTitle>Burned: </FieldTitle>
+            <FieldValue>
+              {nulls} <small>(included in Supply)</small>
+            </FieldValue>
+          </Field>
+        )}
         <Field line>
           <FieldTitle>Max supply: </FieldTitle>
           <FieldValue>{maxSupply}</FieldValue>
@@ -72,11 +74,11 @@ export default class TokenCard extends PureComponent<Props> {
           <FieldTitle>Precision: </FieldTitle>
           <FieldValue>{precision} decimals</FieldValue>
         </Field>
-        {addLink ? (
+        {addLink && (
           <Link to={link}>
             <b>Top {symbol} balances &gt;</b>
           </Link>
-        ) : null}
+        )}
       </TokenItem>
     );
   }

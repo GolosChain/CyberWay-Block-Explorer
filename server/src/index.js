@@ -54,7 +54,7 @@ app.get('/trx/:trxId.json', async (req, res) => {
   }
 });
 
-function getTokenSupply(symbol) {
+function getTokenSupply(symbol, isTotal = true) {
   return new Promise((resolve, reject) => {
     const whitelist = { CYBER: 1, GOLOS: 1, CMN: 1 };
     if (!whitelist[symbol]) {
@@ -74,8 +74,14 @@ function getTokenSupply(symbol) {
         if (!token || token.supply === undefined) {
           reject('Token not found!'); // should not happen
         } else {
-          // TODO: subtract nulls
-          resolve(token.supply.toString().split(' ')[0]);
+          const { supply, funds, nulls } = token;
+          let result = supply.toString().split(' ')[0];
+          if (!isTotal) {
+            const precision = (result.split('.')[1] || '').length;
+            const circulating = parseFloat(supply) - parseFloat(funds) - parseFloat(nulls);
+            result = circulating.toFixed(precision);
+          }
+          resolve(result);
         }
       }
     });
@@ -83,27 +89,42 @@ function getTokenSupply(symbol) {
 }
 
 app.get('/api/supply/:token', async (req, res) => {
-  try {
-    const supply = await getTokenSupply(req.params.token);
+  fetchTokenSupply(req, res); // now it's alias to '/api/supply/:token/total'
+});
 
+app.get('/api/supply/:token/total', async (req, res) => {
+  fetchTokenSupply(req, res);
+});
+
+app.get('/api/supply/:token/circulating', async (req, res) => {
+  fetchTokenSupply(req, res, false);
+});
+
+async function fetchTokenSupply(req, res, isTotal) {
+  try {
+    const supply = await getTokenSupply(req.params.token, isTotal);
     res.send(supply);
   } catch (err) {
     if (err.code === 404) {
-      res.status(404);
-      res.json({
-        error: 'Not found',
-      });
+      defaultError(res, 404);
       return;
     }
 
     console.error(new Date().toJSON(), 'Token supply fetch failed:', err);
-
-    res.status(500);
-    res.json({
-      error: 'Internal Server Error',
-    });
+    defaultError(res, 500);
   }
-});
+}
+
+function defaultError(res, code) {
+  const messages = {
+    404: 'Not found',
+    500: 'Internal Server Error',
+  };
+  res.status(code);
+  res.json({
+    error: messages[code] || 'Error',
+  });
+}
 
 function getActionsCount(time) {
   return new Promise((resolve, reject) => {
@@ -136,19 +157,12 @@ app.get('/api/stat/actions/24h', async (req, res) => {
     });
   } catch (err) {
     if (err.code === 404) {
-      res.status(404);
-      res.json({
-        error: 'Not found',
-      });
+      defaultError(res, 404);
       return;
     }
 
     console.error(new Date().toJSON(), 'Actions stat fetch failed:', err);
-
-    res.status(500);
-    res.json({
-      error: 'Internal Server Error',
-    });
+    defaultError(res, 500);
   }
 });
 
